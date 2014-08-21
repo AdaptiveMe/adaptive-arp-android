@@ -1,4 +1,4 @@
-package me.adaptive.rt;
+package me.adaptive.arp.rt;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import me.adaptive.arp.rt.R;
 
 
 public class MainActivity extends Activity {
