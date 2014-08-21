@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="adaptive-arp-impl-android:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/adaptive_arp_impl_android_jar</output-path>
+    <root id="archive" name="arp-android-l.jar">
+      <element id="module-output" name="adaptive-arp-impl-android" />
+    </root>
+  </artifact>
+</component>
