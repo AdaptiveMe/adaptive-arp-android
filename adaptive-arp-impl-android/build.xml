@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="adaptive-arp-impl-android" default="all">
+  
+  
+  <property file="build.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/.bundle/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.ear"/>
+    <include name="*.apk"/>
+    <include name="*.zip"/>
+    <include name="*.swc"/>
+    <include name="*.ane"/>
+    <include name="*.egg"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
+  <path id="jdk.classpath.1.8">
+    <fileset dir="${jdk.home.1.8}">
+      <include name="lib/ant-javafx.jar"/>
+      <include name="lib/dt.jar"/>
+      <include name="lib/javafx-mx.jar"/>
+      <include name="lib/jconsole.jar"/>
+      <include name="lib/sa-jdi.jar"/>
+      <include name="lib/tools.jar"/>
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jfr.jar"/>
+      <include name="jre/lib/jfxswt.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+      <include name="jre/lib/ext/cldrdata.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/jfxrt.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/nashorn.jar"/>
+      <include name="jre/lib/ext/sunec.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="jre/lib/ext/zipfs.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.8}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module adaptive-arp-impl-android -->
+  
+  <dirname property="module.adaptive-arp-impl-android.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.adaptive-arp-impl-android" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.adaptive-arp-impl-android" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.adaptive-arp-impl-android" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.adaptive-arp-impl-android" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="adaptive-arp-impl-android.output.dir" value="${module.adaptive-arp-impl-android.basedir}/out/production/adaptive-arp-impl-android"/>
+  <property name="adaptive-arp-impl-android.testoutput.dir" value="${module.adaptive-arp-impl-android.basedir}/out/test/adaptive-arp-impl-android"/>
+  
+  <path id="adaptive-arp-impl-android.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="adaptive-arp-impl-android.module.production.classpath">
+    <path refid="${module.jdk.classpath.adaptive-arp-impl-android}"/>
+  </path>
+  
+  <path id="adaptive-arp-impl-android.runtime.production.module.classpath">
+    <pathelement location="${adaptive-arp-impl-android.output.dir}"/>
+  </path>
+  
+  <path id="adaptive-arp-impl-android.module.classpath">
+    <path refid="${module.jdk.classpath.adaptive-arp-impl-android}"/>
+    <pathelement location="${adaptive-arp-impl-android.output.dir}"/>
+  </path>
+  
+  <path id="adaptive-arp-impl-android.runtime.module.classpath">
+    <pathelement location="${adaptive-arp-impl-android.testoutput.dir}"/>
+    <pathelement location="${adaptive-arp-impl-android.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.adaptive-arp-impl-android">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.adaptive-arp-impl-android">
+    <patternset refid="excluded.from.module.adaptive-arp-impl-android"/>
+  </patternset>
+  
+  <path id="adaptive-arp-impl-android.module.sourcepath">
+    <dirset dir="${module.adaptive-arp-impl-android.basedir}">
+      <include name="src"/>
+      <include name="adaptive-arp-api/adaptive-arp-api-java/ARP/src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.adaptive-arp-impl-android" depends="compile.module.adaptive-arp-impl-android.production,compile.module.adaptive-arp-impl-android.tests" description="Compile module adaptive-arp-impl-android"/>
+  
+  <target name="compile.module.adaptive-arp-impl-android.production" description="Compile module adaptive-arp-impl-android; production classes">
+    <mkdir dir="${adaptive-arp-impl-android.output.dir}"/>
+    <javac destdir="${adaptive-arp-impl-android.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.adaptive-arp-impl-android}/javac">
+      <compilerarg line="${compiler.args.adaptive-arp-impl-android}"/>
+      <bootclasspath refid="adaptive-arp-impl-android.module.bootclasspath"/>
+      <classpath refid="adaptive-arp-impl-android.module.production.classpath"/>
+      <src refid="adaptive-arp-impl-android.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.adaptive-arp-impl-android"/>
+    </javac>
+    
+    <copy todir="${adaptive-arp-impl-android.output.dir}">
+      <fileset dir="${module.adaptive-arp-impl-android.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.adaptive-arp-impl-android.basedir}/adaptive-arp-api/adaptive-arp-api-java/ARP/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.adaptive-arp-impl-android.tests" depends="compile.module.adaptive-arp-impl-android.production" description="compile module adaptive-arp-impl-android; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.adaptive-arp-impl-android" description="cleanup module">
+    <delete dir="${adaptive-arp-impl-android.output.dir}"/>
+    <delete dir="${adaptive-arp-impl-android.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.adaptive-arp-impl-android" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.adaptive-arp-impl-android" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.adaptive-arp-impl-android:jar" value="${basedir}/out/artifacts/adaptive_arp_impl_android_jar"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.arp-android-l.jar" value="${artifacts.temp.dir}/arp-android-l.jar"/>
+  </target>
+  
+  <target name="artifact.adaptive-arp-impl-android:jar" depends="init.artifacts, compile.module.adaptive-arp-impl-android" description="Build &#39;adaptive-arp-impl-android:jar&#39; artifact">
+    <property name="artifact.temp.output.adaptive-arp-impl-android:jar" value="${artifacts.temp.dir}/adaptive_arp_impl_android_jar"/>
+    <mkdir dir="${artifact.temp.output.adaptive-arp-impl-android:jar}"/>
+    <jar destfile="${temp.jar.path.arp-android-l.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+      <zipfileset dir="${adaptive-arp-impl-android.output.dir}"/>
+    </jar>
+    <copy file="${temp.jar.path.arp-android-l.jar}" tofile="${artifact.temp.output.adaptive-arp-impl-android:jar}/arp-android-l.jar"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.adaptive-arp-impl-android:jar" description="Build all artifacts">
+    <mkdir dir="${artifact.output.adaptive-arp-impl-android:jar}"/>
+    <copy todir="${artifact.output.adaptive-arp-impl-android:jar}">
+      <fileset dir="${artifact.temp.output.adaptive-arp-impl-android:jar}"/>
+    </copy>
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+</project>
