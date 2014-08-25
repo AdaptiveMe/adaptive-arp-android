@@ -1,4 +1,4 @@
-package me.adaptive.arp.impl.Util;/*
+package me.adaptive.arp.impl.Listener;/*
  * =| ADAPTIVE RUNTIME PLATFORM |=======================================================================================
  *
  * (C) Copyright 2013-2014 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
@@ -28,16 +28,22 @@ package me.adaptive.arp.impl.Util;/*
  * =====================================================================================================================
  */
 
-import me.adaptive.arp.api.ILogging;
+import me.adaptive.arp.api.Button;
+import me.adaptive.arp.api.IButtonListener;
 
-public class Logging implements ILogging {
+public class ButtonListenerImpl implements IButtonListener {
     @Override
-    public void log(LogLevel level, String message) {
+    public void onResult(Button button) {
 
     }
 
     @Override
-    public void log(LogLevel level, String category, String message) {
+    public void onWarning(Button button, Warning warning) {
+
+    }
+
+    @Override
+    public void onError(Error error) {
 
     }
 }

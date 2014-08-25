@@ -1,4 +1,4 @@
-package me.adaptive.arp.impl.Communication;/*
+package me.adaptive.arp.impl.Callback;/*
  * =| ADAPTIVE RUNTIME PLATFORM |=======================================================================================
  *
  * (C) Copyright 2013-2014 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
@@ -28,11 +28,22 @@ package me.adaptive.arp.impl.Communication;/*
  * =====================================================================================================================
  */
 
-import me.adaptive.arp.api.ITelephony;
+import me.adaptive.arp.api.Database;
+import me.adaptive.arp.api.IDatabaseResultCallback;
 
-public class Telephony implements ITelephony {
+public class DatabaseResultCallbackImpl implements IDatabaseResultCallback {
     @Override
-    public Status call(String number) {
-        return null;
+    public void onResult(Database database) {
+
+    }
+
+    @Override
+    public void onWarning(Database database, Warning warning) {
+
+    }
+
+    @Override
+    public void onError(Error error) {
+
     }
 }

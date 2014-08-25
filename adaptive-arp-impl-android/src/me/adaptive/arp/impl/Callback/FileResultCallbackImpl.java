@@ -1,4 +1,4 @@
-package me.adaptive.arp.impl.PIM;/*
+package me.adaptive.arp.impl.Callback;/*
  * =| ADAPTIVE RUNTIME PLATFORM |=======================================================================================
  *
  * (C) Copyright 2013-2014 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
@@ -28,18 +28,27 @@ package me.adaptive.arp.impl.PIM;/*
  * =====================================================================================================================
  */
 
-import me.adaptive.arp.api.Email;
-import me.adaptive.arp.api.IMessaging;
-import me.adaptive.arp.api.IMessagingCallback;
+import me.adaptive.arp.api.IFile;
+import me.adaptive.arp.api.IFileResultCallback;
 
-public class Messaging implements IMessaging {
+public class FileResultCallbackImpl implements IFileResultCallback {
     @Override
-    public void sendSMS(String number, String text, IMessagingCallback callback) {
+    public void onResult(IFile storageFile) {
 
     }
 
     @Override
-    public void sendEmail(Email data, IMessagingCallback callback) {
+    public void onWarning(IFile sourceFile, IFile destinationFile, Warning warning) {
+
+    }
+
+    @Override
+    public void onError(Error error) {
+
+    }
+
+    @Override
+    public void onError(IFile file, Error error) {
 
     }
 }
