@@ -8,3 +8,7 @@ adaptive-arp-rt-android/.idea/uiDesigner.xml
 *.name
 *.iml
 *.xml
+
+adaptive-arp-impl-android/.gradle/
+
+adaptive-arp-impl-android/arp-impl-android/build/
