@@ -1,6 +1,7 @@
 package me.adaptive.arp.rt;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,13 +10,18 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 
-import me.adaptive.arp.rt.R;
+import me.adaptive.arp.api.Contact;
+import me.adaptive.arp.impl.Callback.ContactResultCallbackImpl;
+import me.adaptive.arp.impl.PIM.ContactImpl;
 
 
 public class MainActivity extends Activity {
 
     private WebView mWebView;
     private WebSettings webSettings;
+
+    private static Context context;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +38,17 @@ public class MainActivity extends Activity {
                                       }
                                   }
         );
+
+        MainActivity.context = getApplicationContext();
     }
 
     private void runImplTest() {
+        ContactImpl contact = new ContactImpl();
+        //contact.searchContacts(null,new ContactResultCallbackImpl());
+    }
 
+    public static Context getAppContext() {
+        return MainActivity.context;
     }
 
     private void configureWebView(WebView webview) {

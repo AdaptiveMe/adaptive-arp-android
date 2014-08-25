@@ -28,13 +28,15 @@ package me.adaptive.arp.impl.Callback;/*
  * =====================================================================================================================
  */
 
+import android.util.Log;
+
 import me.adaptive.arp.api.Contact;
 import me.adaptive.arp.api.IContactResultCallback;
 
 public class ContactResultCallbackImpl implements IContactResultCallback {
     @Override
     public void onResult(Contact[] contacts) {
-
+        Log.d("ARP TEST", "ARP: Returned " + contacts.length + " Contacts");
     }
 
     @Override
