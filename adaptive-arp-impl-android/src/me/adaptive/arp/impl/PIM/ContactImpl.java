@@ -32,6 +32,7 @@ package me.adaptive.arp.impl.PIM;
 
 import me.adaptive.arp.api.ContactUid;
 import me.adaptive.arp.api.IContact;
+import me.adaptive.arp.api.IContactPhotoResultCallback;
 import me.adaptive.arp.api.IContactResultCallback;
 
 public class ContactImpl implements IContact {
@@ -52,7 +53,7 @@ public class ContactImpl implements IContact {
     }
 
     @Override
-    public void getContactPhoto(ContactUid contact, IContactResultCallback callback) {
+    public void getContactPhoto(ContactUid contact, IContactPhotoResultCallback callback) {
 
     }
 
