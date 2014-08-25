@@ -6,7 +6,7 @@ android {
     sourceSets {
         main {
             java {
-                srcDir '../../adaptive-arp-impl-android/adaptive-arp-api/adaptive-arp-api-java/ARP/src'
+                srcDir '../../adaptive-arp-impl-android/adaptive-arp-api/adaptive-arp-api-java/arp-api-specs/src/main/java'
                 srcDir '../../adaptive-arp-impl-android/src'
                 srcDir 'src'
             }

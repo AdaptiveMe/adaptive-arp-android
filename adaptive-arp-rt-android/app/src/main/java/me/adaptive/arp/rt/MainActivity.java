@@ -1,18 +1,27 @@
 package me.adaptive.arp.rt;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import me.adaptive.arp.rt.R;
+import android.widget.Button;
+
+import me.adaptive.arp.api.Contact;
+import me.adaptive.arp.impl.Callback.ContactResultCallbackImpl;
+import me.adaptive.arp.impl.PIM.ContactImpl;
 
 
 public class MainActivity extends Activity {
 
     private WebView mWebView;
     private WebSettings webSettings;
+
+    private static Context context;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +30,25 @@ public class MainActivity extends Activity {
         mWebView = (WebView) findViewById(R.id.activity_main_webview);
         configureWebView(mWebView);
         mWebView.loadUrl("http://beta.html5test.com/");
+
+        final Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+                                      public void onClick(View v) {
+                                          runImplTest();
+                                      }
+                                  }
+        );
+
+        MainActivity.context = getApplicationContext();
+    }
+
+    private void runImplTest() {
+        ContactImpl contact = new ContactImpl();
+        //contact.searchContacts(null,new ContactResultCallbackImpl());
+    }
+
+    public static Context getAppContext() {
+        return MainActivity.context;
     }
 
     private void configureWebView(WebView webview) {

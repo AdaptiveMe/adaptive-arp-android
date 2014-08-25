@@ -5,3 +5,6 @@ adaptive-arp-impl-android/out/
 adaptive-arp-impl-android/adaptive-arp-api/
 
 adaptive-arp-rt-android/.idea/uiDesigner.xml
+*.name
+*.iml
+*.xml
