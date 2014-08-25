@@ -6,8 +6,7 @@ android {
     sourceSets {
         main {
             java {
-                srcDir '../../adaptive-arp-impl-android/adaptive-arp-api/adaptive-arp-api-java/arp-api-specs/src/main/java'
-                srcDir '../../adaptive-arp-impl-android/src'
+                srcDir '../../adaptive-arp-impl-android/arp-impl-android/src/main/java'
                 srcDir 'src'
             }
         }
@@ -31,4 +30,5 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile group: 'adaptive-arp-api-java', name: 'arp-api-specs', version: '1.0.8', ext: 'jar'
 }

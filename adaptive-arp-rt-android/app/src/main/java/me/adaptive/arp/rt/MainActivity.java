@@ -9,10 +9,7 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
-
-import me.adaptive.arp.api.Contact;
-import me.adaptive.arp.impl.Callback.ContactResultCallbackImpl;
-import me.adaptive.arp.impl.PIM.ContactImpl;
+import me.adaptive.arp.impl.pim.ContactImpl;
 
 
 public class MainActivity extends Activity {
