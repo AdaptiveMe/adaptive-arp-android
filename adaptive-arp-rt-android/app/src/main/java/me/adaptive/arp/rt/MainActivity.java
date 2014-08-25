@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
+
 import me.adaptive.arp.rt.R;
 
 
@@ -21,6 +24,18 @@ public class MainActivity extends Activity {
         mWebView = (WebView) findViewById(R.id.activity_main_webview);
         configureWebView(mWebView);
         mWebView.loadUrl("http://beta.html5test.com/");
+
+        final Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+                                      public void onClick(View v) {
+                                          runImplTest();
+                                      }
+                                  }
+        );
+    }
+
+    private void runImplTest() {
+
     }
 
     private void configureWebView(WebView webview) {
