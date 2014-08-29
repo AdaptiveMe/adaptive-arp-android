@@ -32,18 +32,38 @@ import me.adaptive.arp.api.ILifecycleListener;
 import me.adaptive.arp.api.Lifecycle;
 
 public class LifecycleListenerImpl implements ILifecycleListener {
+
+    /**
+     * Called when lifecycle changes somehow.
+     *
+     * @param lifecycle
+     * @since ARP1.0
+     */
     @Override
     public void onResult(Lifecycle lifecycle) {
 
     }
 
+    /**
+     * Data received with warning
+     *
+     * @param lifecycle
+     * @param warning
+     * @since ARP1.0
+     */
     @Override
-    public void onWarning(Lifecycle lifecycle) {
+    public void onWarning(Lifecycle lifecycle, Warning warning) {
 
     }
 
+    /**
+     * No data received - error condition, not authorized or hardware not available.
+     *
+     * @param error
+     * @since ARP1.0
+     */
     @Override
-    public void onError(Lifecycle lifecycle) {
+    public void onError(Error error) {
 
     }
 }

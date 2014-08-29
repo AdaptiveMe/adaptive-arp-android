@@ -32,18 +32,38 @@ import me.adaptive.arp.api.Geolocation;
 import me.adaptive.arp.api.IGeolocationListener;
 
 public class GeolocationListenerImpl implements IGeolocationListener {
+
+    /**
+     * Correct data received.
+     *
+     * @param geolocation
+     * @since ARP1.0
+     */
     @Override
     public void onResult(Geolocation geolocation) {
 
     }
 
+    /**
+     * Data received with warning - ie. HighDoP
+     *
+     * @param geolocation
+     * @param warning
+     * @since ARP1.0
+     */
     @Override
-    public void onWarning(Geolocation geolocation) {
+    public void onWarning(Geolocation geolocation, Warning warning) {
 
     }
 
+    /**
+     * No data received - error condition, not authorized or hardware not available.
+     *
+     * @param error
+     * @since ARP1.0
+     */
     @Override
-    public void onError(Geolocation geolocation) {
+    public void onError(Error error) {
 
     }
 }

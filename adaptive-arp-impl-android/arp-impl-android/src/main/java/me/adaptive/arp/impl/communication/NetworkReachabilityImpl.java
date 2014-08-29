@@ -29,11 +29,19 @@ package me.adaptive.arp.impl.communication;/*
  */
 
 import me.adaptive.arp.api.INetworkReachability;
+import me.adaptive.arp.api.INetworkReachabilityCallback;
 
 public class NetworkReachabilityImpl implements INetworkReachability {
+
+    /**
+     * Whether there is connectivity to an url or not.
+     *
+     * @param url      to look for
+     * @param callback Callback called at the end
+     */
     @Override
-    public boolean isNetworkReachable(String url) {
-        return false;
+    public void isNetworkReachable(String url, INetworkReachabilityCallback callback) {
+        
     }
 }
 

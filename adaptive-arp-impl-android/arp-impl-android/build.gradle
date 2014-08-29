@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'adaptive-arp-api-java', name: 'arp-api-specs', version: '1.0.8', ext: 'jar'
+    compile group: 'adaptive-arp-api-java', name: 'arp-api-specs', version: '1.0.14', ext: 'jar'
     compile('com.android.support:support-v4:19.1.0'){
         force = true
     }
