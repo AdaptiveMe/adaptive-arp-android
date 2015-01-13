@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Theme.Default" parent="android:Theme.Material"></style>
-    <style name="Theme.NoTitle" parent="android:Theme.Material.NoActionBar"></style>
-    <style name="Theme.FullScreen" parent="android:Theme.Material.NoActionBar.Fullscreen"></style>
-</resources>

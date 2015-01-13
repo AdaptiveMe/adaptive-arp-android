@@ -1,3 +1,0 @@
-rootProject.name = 'adaptive-arp-impl-android'
-include 'arp-impl-android'
-
