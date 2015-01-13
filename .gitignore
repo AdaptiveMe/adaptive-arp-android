@@ -15,3 +15,5 @@ adaptive-arp-impl-android/arp-impl-android/build/
 adaptive-arp-impl-android/build/
 
 adaptive-arp-impl-android/adaptive-arp-impl-android.iws
+
+*.java.new
