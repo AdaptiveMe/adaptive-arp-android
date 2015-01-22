@@ -37,13 +37,17 @@ package me.adaptive.arp.api;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 /**
    ITelephonyStatus custom serializer/deserializer.
 */
-public class ITelephonyStatusAdapter implements JsonDeserializer<ITelephonyStatus> {
+public class ITelephonyStatusAdapter implements JsonDeserializer<ITelephonyStatus>, JsonSerializer<ITelephonyStatus> {
 
      @Override
      public ITelephonyStatus deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -57,6 +61,17 @@ public class ITelephonyStatusAdapter implements JsonDeserializer<ITelephonyStatu
                value = "Unknown";
           }
           return ITelephonyStatus.valueOf(ITelephonyStatus.class, value);
+     }
+
+     @Override
+     public JsonElement serialize(ITelephonyStatus src, Type typeOfSrc, JsonSerializationContext context) {
+          JsonObject jsonObject = new JsonObject();
+          if (src != null) {
+               jsonObject.add("value", new JsonPrimitive(src.name()));
+          } else {
+               jsonObject.add("value", new JsonPrimitive("Unknown"));
+          }
+          return jsonObject;
      }
 
 }

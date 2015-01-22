@@ -37,13 +37,17 @@ package me.adaptive.arp.api;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 /**
    ILoggingLogLevel custom serializer/deserializer.
 */
-public class ILoggingLogLevelAdapter implements JsonDeserializer<ILoggingLogLevel> {
+public class ILoggingLogLevelAdapter implements JsonDeserializer<ILoggingLogLevel>, JsonSerializer<ILoggingLogLevel> {
 
      @Override
      public ILoggingLogLevel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -57,6 +61,17 @@ public class ILoggingLogLevelAdapter implements JsonDeserializer<ILoggingLogLeve
                value = "Unknown";
           }
           return ILoggingLogLevel.valueOf(ILoggingLogLevel.class, value);
+     }
+
+     @Override
+     public JsonElement serialize(ILoggingLogLevel src, Type typeOfSrc, JsonSerializationContext context) {
+          JsonObject jsonObject = new JsonObject();
+          if (src != null) {
+               jsonObject.add("value", new JsonPrimitive(src.name()));
+          } else {
+               jsonObject.add("value", new JsonPrimitive("Unknown"));
+          }
+          return jsonObject;
      }
 
 }

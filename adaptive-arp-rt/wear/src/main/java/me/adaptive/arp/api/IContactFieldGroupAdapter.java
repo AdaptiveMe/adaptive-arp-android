@@ -37,13 +37,17 @@ package me.adaptive.arp.api;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 /**
    IContactFieldGroup custom serializer/deserializer.
 */
-public class IContactFieldGroupAdapter implements JsonDeserializer<IContactFieldGroup> {
+public class IContactFieldGroupAdapter implements JsonDeserializer<IContactFieldGroup>, JsonSerializer<IContactFieldGroup> {
 
      @Override
      public IContactFieldGroup deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -57,6 +61,17 @@ public class IContactFieldGroupAdapter implements JsonDeserializer<IContactField
                value = "Unknown";
           }
           return IContactFieldGroup.valueOf(IContactFieldGroup.class, value);
+     }
+
+     @Override
+     public JsonElement serialize(IContactFieldGroup src, Type typeOfSrc, JsonSerializationContext context) {
+          JsonObject jsonObject = new JsonObject();
+          if (src != null) {
+               jsonObject.add("value", new JsonPrimitive(src.name()));
+          } else {
+               jsonObject.add("value", new JsonPrimitive("Unknown"));
+          }
+          return jsonObject;
      }
 
 }

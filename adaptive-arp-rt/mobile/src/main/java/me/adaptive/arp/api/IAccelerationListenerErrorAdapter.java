@@ -37,13 +37,17 @@ package me.adaptive.arp.api;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 /**
    IAccelerationListenerError custom serializer/deserializer.
 */
-public class IAccelerationListenerErrorAdapter implements JsonDeserializer<IAccelerationListenerError> {
+public class IAccelerationListenerErrorAdapter implements JsonDeserializer<IAccelerationListenerError>, JsonSerializer<IAccelerationListenerError> {
 
      @Override
      public IAccelerationListenerError deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -57,6 +61,17 @@ public class IAccelerationListenerErrorAdapter implements JsonDeserializer<IAcce
                value = "Unknown";
           }
           return IAccelerationListenerError.valueOf(IAccelerationListenerError.class, value);
+     }
+
+     @Override
+     public JsonElement serialize(IAccelerationListenerError src, Type typeOfSrc, JsonSerializationContext context) {
+          JsonObject jsonObject = new JsonObject();
+          if (src != null) {
+               jsonObject.add("value", new JsonPrimitive(src.name()));
+          } else {
+               jsonObject.add("value", new JsonPrimitive("Unknown"));
+          }
+          return jsonObject;
      }
 
 }

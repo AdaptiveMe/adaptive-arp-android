@@ -37,13 +37,17 @@ package me.adaptive.arp.api;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 /**
    ISecurityResultCallbackError custom serializer/deserializer.
 */
-public class ISecurityResultCallbackErrorAdapter implements JsonDeserializer<ISecurityResultCallbackError> {
+public class ISecurityResultCallbackErrorAdapter implements JsonDeserializer<ISecurityResultCallbackError>, JsonSerializer<ISecurityResultCallbackError> {
 
      @Override
      public ISecurityResultCallbackError deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -57,6 +61,17 @@ public class ISecurityResultCallbackErrorAdapter implements JsonDeserializer<ISe
                value = "Unknown";
           }
           return ISecurityResultCallbackError.valueOf(ISecurityResultCallbackError.class, value);
+     }
+
+     @Override
+     public JsonElement serialize(ISecurityResultCallbackError src, Type typeOfSrc, JsonSerializationContext context) {
+          JsonObject jsonObject = new JsonObject();
+          if (src != null) {
+               jsonObject.add("value", new JsonPrimitive(src.name()));
+          } else {
+               jsonObject.add("value", new JsonPrimitive("Unknown"));
+          }
+          return jsonObject;
      }
 
 }

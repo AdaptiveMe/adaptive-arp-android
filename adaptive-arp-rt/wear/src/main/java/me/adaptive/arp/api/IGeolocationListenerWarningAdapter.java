@@ -37,13 +37,17 @@ package me.adaptive.arp.api;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 /**
    IGeolocationListenerWarning custom serializer/deserializer.
 */
-public class IGeolocationListenerWarningAdapter implements JsonDeserializer<IGeolocationListenerWarning> {
+public class IGeolocationListenerWarningAdapter implements JsonDeserializer<IGeolocationListenerWarning>, JsonSerializer<IGeolocationListenerWarning> {
 
      @Override
      public IGeolocationListenerWarning deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -57,6 +61,17 @@ public class IGeolocationListenerWarningAdapter implements JsonDeserializer<IGeo
                value = "Unknown";
           }
           return IGeolocationListenerWarning.valueOf(IGeolocationListenerWarning.class, value);
+     }
+
+     @Override
+     public JsonElement serialize(IGeolocationListenerWarning src, Type typeOfSrc, JsonSerializationContext context) {
+          JsonObject jsonObject = new JsonObject();
+          if (src != null) {
+               jsonObject.add("value", new JsonPrimitive(src.name()));
+          } else {
+               jsonObject.add("value", new JsonPrimitive("Unknown"));
+          }
+          return jsonObject;
      }
 
 }
