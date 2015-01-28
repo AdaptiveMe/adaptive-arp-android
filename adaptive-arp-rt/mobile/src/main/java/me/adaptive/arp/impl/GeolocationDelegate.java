@@ -34,6 +34,16 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import android.app.Service;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,11 +52,22 @@ import me.adaptive.arp.api.*;
 */
 public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocation {
 
+
+    public static String APIService = "networkStatus";
+    static LoggingDelegate Logger;
+    public List<IGeolocationListener> listeners = new ArrayList<IGeolocationListener>();
+
+    private static final long UPDATE_INTERVAL = 5 * 1000;
+
+    private LocationManager locationManager;
+    private boolean searching = false;
      /**
         Default Constructor.
      */
      public GeolocationDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+
      }
 
      /**
@@ -56,8 +77,11 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
         @since ARP1.0
      */
      public void addGeolocationListener(IGeolocationListener listener) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":addGeolocationListener");
+         if (!listeners.contains(listener)){
+             listeners.add(listener);
+             Logger.log(ILoggingLogLevel.DEBUG, APIService, "addGeolocationListener: "+ listener.toString()+" Added!");
+             if(!searching) startUpdatingLocation();
+         }else Logger.log(ILoggingLogLevel.WARN, APIService, "addGeolocationListener: "+ listener.toString() + " is already added!");
      }
 
      /**
@@ -67,8 +91,11 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
         @since ARP1.0
      */
      public void removeGeolocationListener(IGeolocationListener listener) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":removeGeolocationListener");
+         if(listeners.contains(listener)){
+             listeners.remove(listener);
+             Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeGeolocationListener"+ listener.toString()+" Removed!");
+         }else Logger.log(ILoggingLogLevel.WARN, APIService, "removeGeolocationListener: "+ listener.toString() + " is NOT registered");
+         if(listeners.isEmpty()) stopUpdatingLocation();
      }
 
      /**
@@ -77,9 +104,134 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
         @since ARP1.0
      */
      public void removeGeolocationListeners() {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":removeGeolocationListeners");
+         listeners.clear();
+         stopUpdatingLocation();
+         Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeGeolocationListeners: ALL GeolocationListeners have been removed!");
      }
+
+    /**
+     * Define a listener that responds to location updates
+     */
+    private LocationListener locationListener = new LocationListener() {
+        public void onLocationChanged(Location location) {
+            // Called when a new location is found by the network location provider.
+            makeUseOfNewLocation(location);
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+        public void onProviderEnabled(String provider) {}
+
+        public void onProviderDisabled(String provider) {
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            criteria.setAltitudeRequired(false);
+            criteria.setBearingRequired(false);
+            criteria.setCostAllowed(true);
+            criteria.setPowerRequirement(Criteria.POWER_LOW);
+            provider = locationManager.getBestProvider(criteria, true);
+            Location location = locationManager.getLastKnownLocation(provider);
+            Geolocation geo = toARP(location);
+            if(!listeners.isEmpty()){
+                for(IGeolocationListener geoListener: listeners){
+                    geoListener.onWarning(geo, IGeolocationListenerWarning.StaleData);
+                }
+            }
+        }
+    };
+
+    private Geolocation toARP(Location location){
+        return new Geolocation(location.getLatitude(),location.getLongitude(),location.getAltitude(),location.getAccuracy(),location.getAccuracy(),System.currentTimeMillis());
+    }
+
+    private void makeUseOfNewLocation(Location location) {
+        if(!listeners.isEmpty()){
+            Geolocation geo = toARP(location);
+            for(IGeolocationListener geoListener: listeners){
+                geoListener.onResult(geo);
+            }
+        }
+    }
+
+    private boolean startUpdatingLocation() {
+
+        if (locationManager == null) {
+            locationManager = (LocationManager) AppContextDelegate.getMainActivity().getSystemService(Service.LOCATION_SERVICE);
+
+        }
+
+        boolean isGPSRegistered = false;
+        boolean isNetworkRegistered = false;
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Runnable rGPS = new Runnable() {
+
+                @Override
+                public void run() {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER, UPDATE_INTERVAL, 0,
+                            locationListener);
+                }
+            };
+            AppContextDelegate.getExecutorService().submit(rGPS);
+            Logger.log(ILoggingLogLevel.DEBUG, "GPS provider is enabled");
+            isGPSRegistered = true;
+        }
+
+        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            Runnable rNet = new Runnable() {
+
+                @Override
+                public void run() {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER, UPDATE_INTERVAL,
+                            0, locationListener);
+                }
+            };
+            AppContextDelegate.getExecutorService().submit(rNet);
+            Logger.log(ILoggingLogLevel.DEBUG, "Network provider is enabled");
+            isNetworkRegistered = true;
+        }
+
+		/* DO NOT STORE ANY LAST KNOWN LOCATION.
+		 * OTHER PLATFORMS DO NOT HAVE THIS DATA AVAILABLE.
+		 * SAME BEHAVOUR SHOULD BE PRESERVED ACROSS PLATFORMS.
+		 *
+		Location lastGps = locationManager
+				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		Location lastNetwork = locationManager
+				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+		if (!isBetterLocation(lastGps, lastNetwork)) {
+			LOG.Log(Module.PLATFORM,
+					"NETWORK location is better than GPS.");
+			setLocation(lastNetwork);
+		} else {
+			LOG.Log(Module.PLATFORM,
+					"GPS location is better than NETWORK.");
+			setLocation(lastGps);
+		}
+		*/
+        searching = (isGPSRegistered || isNetworkRegistered);
+        return searching;
+    }
+
+    private boolean stopUpdatingLocation() {
+
+        Runnable rRemove = new Runnable() {
+
+            @Override
+            public void run() {
+                if (locationManager == null) {
+                    locationManager = (LocationManager) AppContextDelegate.getMainActivity().getApplicationContext()
+                            .getSystemService(android.app.Service.LOCATION_SERVICE);
+                }
+                locationManager.removeUpdates(locationListener);
+            }
+        };
+        AppContextDelegate.getExecutorService().submit(rRemove);
+
+        return true;
+    }
 
 }
 /**

@@ -34,6 +34,11 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import android.telephony.TelephonyManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,11 +47,18 @@ import me.adaptive.arp.api.*;
 */
 public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
 
+
+    public static String APIService = "device";
+    static LoggingDelegate Logger;
+    public List<IButtonListener> listeners = new ArrayList<IButtonListener>();
+
      /**
         Default Constructor.
      */
      public DeviceDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+
      }
 
      /**
@@ -56,8 +68,10 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
         @since ARP1.0
      */
      public void addButtonListener(IButtonListener listener) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":addButtonListener");
+         if(!listeners.contains(listener)){
+             listeners.add(listener);
+             Logger.log(ILoggingLogLevel.DEBUG, APIService, "addButtonListener: "+ listener.toString()+" Added!");
+         }else Logger.log(ILoggingLogLevel.DEBUG, APIService, "addButtonListener: "+ listener.toString() + " is already added!");
      }
 
      /**
@@ -67,10 +81,9 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
         @since ARP1.0
      */
      public DeviceInfo getDeviceInfo() {
-          DeviceInfo response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":getDeviceInfo");
-          // return response;
+         TelephonyManager tManager = (TelephonyManager)AppContextDelegate.getMainActivity().getSystemService(AppContextDelegate.getMainActivity().getApplicationContext().TELEPHONY_SERVICE);
+         String uuid = tManager.getDeviceId();
+         return new DeviceInfo(android.os.Build.DEVICE, android.os.Build.BOARD,android.os.Build.BRAND,uuid);
      }
 
      /**
@@ -80,10 +93,9 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
         @since ARP1.0
      */
      public Locale getLocaleCurrent() {
-          Locale response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":getLocaleCurrent");
-          // return response;
+         String language = java.util.Locale.getDefault().getLanguage();
+         String country = java.util.Locale.getDefault().getCountry();
+         return new Locale(country,language);
      }
 
      /**
@@ -93,8 +105,10 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
         @since ARP1.0
      */
      public void removeButtonListener(IButtonListener listener) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":removeButtonListener");
+         if(listeners.contains(listener)){
+             listeners.remove(listener);
+             Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeButtonListener: "+ listener.toString()+" Removed!");
+         }else Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeButtonListener: "+ listener.toString() + " is NOT registered");
      }
 
      /**
@@ -103,8 +117,9 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
         @since ARP1.0
      */
      public void removeButtonListeners() {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":removeButtonListeners");
+         listeners.clear();
+         Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeButtonListeners: "+ "ALL ButtonListeners have been removed!");
+
      }
 
 }

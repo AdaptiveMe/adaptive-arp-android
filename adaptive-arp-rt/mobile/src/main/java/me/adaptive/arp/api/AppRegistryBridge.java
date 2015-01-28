@@ -34,7 +34,6 @@ Release:
 
 package me.adaptive.arp.api;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
@@ -129,7 +128,7 @@ public class AppRegistryBridge implements IAppRegistry {
           } else {
                if (logger!=null) logger.log(ILoggingLogLevel.ERROR, this.apiGroup.name(),this.getClass().getSimpleName()+" no delegate for 'getAccelerationBridge'.");
           }
-          return result;          
+          return result;
      }
 
      /**

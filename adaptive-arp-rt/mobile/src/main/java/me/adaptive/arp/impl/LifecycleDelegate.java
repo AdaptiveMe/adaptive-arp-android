@@ -34,6 +34,12 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import android.app.ActivityManager;
+import android.content.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,11 +48,18 @@ import me.adaptive.arp.api.*;
 */
 public class LifecycleDelegate extends BaseApplicationDelegate implements ILifecycle {
 
+
+    public static String APIService = "lifecycle";
+    static LoggingDelegate Logger;
+    public List<ILifecycleListener> listeners = new ArrayList<ILifecycleListener>();
+
      /**
         Default Constructor.
      */
      public LifecycleDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+
      }
 
      /**
@@ -56,8 +69,10 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
         @since ARP1.0
      */
      public void addLifecycleListener(ILifecycleListener listener) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":addLifecycleListener");
+         if (!listeners.contains(listener)){
+             listeners.add(listener);
+             Logger.log(ILoggingLogLevel.DEBUG, APIService, "addLifecycleListener: "+ listener.toString()+" Added!");
+         }else Logger.log(ILoggingLogLevel.WARN, APIService, "addLifecycleListener: "+ listener.toString() + " is already added!");
      }
 
      /**
@@ -67,10 +82,18 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
         @since ARP1.0
      */
      public boolean isBackground() {
-          boolean response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":isBackground");
-          // return response;
+         // check with the first task(task in the foreground)
+         // in the returned list of tasks
+         Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+         ActivityManager activityManager = (ActivityManager) context
+                 .getSystemService(Context.ACTIVITY_SERVICE);
+         List<ActivityManager.RunningTaskInfo> services = activityManager
+                 .getRunningTasks(Integer.MAX_VALUE);
+         if (services.get(0).topActivity.getPackageName().toString()
+                 .equalsIgnoreCase(context.getPackageName().toString())) {
+             return false;
+         }
+         return true;
      }
 
      /**
@@ -80,8 +103,11 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
         @since ARP1.0
      */
      public void removeLifecycleListener(ILifecycleListener listener) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":removeLifecycleListener");
+         if(listeners.contains(listener)){
+             listeners.remove(listener);
+             Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeLifecycleListener"+ listener.toString()+" Removed!");
+         }else Logger.log(ILoggingLogLevel.WARN, APIService, "removeLifecycleListener: "+ listener.toString() + " is NOT registered");
+
      }
 
      /**
@@ -90,8 +116,8 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
         @since ARP1.0
      */
      public void removeLifecycleListeners() {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":removeLifecycleListeners");
+         listeners.clear();
+         Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeLifecycleListeners: ALL LifecycleListener have been removed!");
      }
 
 }

@@ -34,7 +34,20 @@ Release:
 
 package me.adaptive.arp.impl;
 
-import me.adaptive.arp.api.*;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.api.INetworkReachability;
+import me.adaptive.arp.api.INetworkReachabilityCallback;
+import me.adaptive.arp.api.INetworkReachabilityCallbackError;
 
 /**
    Interface for Managing the Network reachability operations
@@ -42,11 +55,19 @@ import me.adaptive.arp.api.*;
 */
 public class NetworkReachabilityDelegate extends BaseCommunicationDelegate implements INetworkReachability {
 
+
+    private static final String HTTP_SCHEME = "http://";
+    private static final String HTTPS_SCHEME = "https://";
+    public static String APIService = "networkReachability";
+    static LoggingDelegate Logger;
+
      /**
         Default Constructor.
      */
      public NetworkReachabilityDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+
      }
 
      /**
@@ -56,9 +77,12 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
         @param callback Callback called at the end.
         @since ARP1.0
      */
-     public void isNetworkReachable(String host, INetworkReachabilityCallback callback) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":isNetworkReachable");
+     public void isNetworkReachable(final String host, final INetworkReachabilityCallback callback) {
+         AppContextDelegate.getExecutorService().submit(new Runnable() {
+             public void run() {
+                 checkHttpConnection(host, callback);
+             }
+            });
      }
 
      /**
@@ -69,10 +93,80 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
         @since ARP1.0
      */
      public void isNetworkServiceReachable(String url, INetworkReachabilityCallback callback) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":isNetworkServiceReachable");
+         //TODO REVIEW
+         isNetworkReachable(url,callback);
      }
 
+    private void checkHttpConnection(String testUrl, INetworkReachabilityCallback cb) {
+        boolean hasScheme = testUrl.contains("://");
+        if (!hasScheme) {
+            testUrl = HTTP_SCHEME + testUrl;
+        }
+
+        ConnectivityManager cm = (ConnectivityManager) AppContextDelegate.getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            try {
+                URL url = new URL(testUrl);   // Change to "http://google.com" for www  test.
+                HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
+                urlc.setConnectTimeout(10 * 1000);          // 10 s.
+                urlc.connect();
+                if (urlc.getResponseCode() == 200) {        // 200 = "OK" code (http connection is fine).
+                    Logger.log(ILoggingLogLevel.DEBUG, APIService, "Connection: Success !");
+                    //return true;
+                    cb.onResult(true);
+                } else {
+                    Logger.log(ILoggingLogLevel.ERROR, APIService, "Connection: Failure ! response code " + urlc.getResponseCode());
+                    cb.onError(INetworkReachabilityCallbackError.NoResponse);
+                    //return false;
+                }
+            } catch (MalformedURLException e) {
+                Logger.log(ILoggingLogLevel.ERROR, APIService, "Connection: Failure ! MalformedURLException");
+                e.printStackTrace();
+                cb.onError(INetworkReachabilityCallbackError.Wrong_Params);
+                //return false;
+            } catch (IOException e) {
+                cb.onError(INetworkReachabilityCallbackError.NotAllowed);
+                Logger.log(ILoggingLogLevel.ERROR, APIService, "Connection: Failure ! IOException");
+                e.printStackTrace();
+            }
+        }
+        Logger.log(ILoggingLogLevel.ERROR, APIService, "Connection: Failure !");
+        //return false;
+
+    }
+
+    private boolean isNetworkAvailable() {
+
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) AppContextDelegate.getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+
+
+    }
+
+    public boolean NetworkAvailable(){
+        ConnectivityManager conMgr = (ConnectivityManager) AppContextDelegate.getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if ( conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
+                || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING ) {
+
+            // notify user you are online
+            //ServiceLocator.getLogger().log(ILogging.LogLevel.DEBUG, APIService, "NETWORK AVAILABLE");
+            Logger.log(ILoggingLogLevel.DEBUG, APIService, "NETWORK AVAILABLE");
+            return true;
+        }
+        else if ( conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
+                || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
+
+            // notify user you are not online
+            //ServiceLocator.getLogger().log(ILogging.LogLevel.DEBUG, APIService, "NETWORK IS NOT AVAILABLE");
+            Logger.log(ILoggingLogLevel.DEBUG, APIService, "NETWORK IS NOT AVAILABLE");
+            return false;
+        }
+        return false;
+    }
 }
 /**
 ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

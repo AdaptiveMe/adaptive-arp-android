@@ -42,11 +42,14 @@ import me.adaptive.arp.api.*;
 */
 public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
 
+
+    public static String APIService = "runtime";
      /**
         Default Constructor.
      */
      public RuntimeDelegate() {
           super();
+
      }
 
      /**
@@ -55,8 +58,7 @@ public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
         @since ARP1.0
      */
      public void dismissApplication() {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":dismissApplication");
+         AppContextDelegate.getMainActivity().finish();
      }
 
      /**

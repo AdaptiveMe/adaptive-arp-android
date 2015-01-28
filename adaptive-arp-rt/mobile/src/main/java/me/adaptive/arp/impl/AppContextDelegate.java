@@ -34,7 +34,16 @@ Release:
 
 package me.adaptive.arp.impl;
 
-import me.adaptive.arp.api.*;
+import android.app.Activity;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import me.adaptive.arp.api.IAppContext;
+import me.adaptive.arp.api.IOSType;
+
+//import me.adaptive.arp.api.IAppContext;
+//import me.adaptive.arp.api.IOSType;
 
 /**
    Interface for context management purposes
@@ -42,6 +51,9 @@ import me.adaptive.arp.api.*;
 */
 public class AppContextDelegate implements IAppContext {
 
+
+    private static Activity mainActivity;
+    private static ExecutorService executor = Executors.newFixedThreadPool(5);
      /**
         Default Constructor.
      */
@@ -49,17 +61,24 @@ public class AppContextDelegate implements IAppContext {
           super();
      }
 
-     /**
+    public AppContextDelegate(Activity activity){
+        super();
+        mainActivity = activity;
+    }
+
+    public static Activity getMainActivity() {
+        return mainActivity;
+    }
+
+
+    /**
         The main application context. This should be cast to the platform specific implementation.
 
         @return Object representing the specific singleton application context provided by the OS.
         @since ARP1.0
      */
      public Object getContext() {
-          Object response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":getContext");
-          // return response;
+         return mainActivity.getApplicationContext();
      }
 
      /**
@@ -69,11 +88,12 @@ public class AppContextDelegate implements IAppContext {
         @since ARP1.0
      */
      public IOSType getContextType() {
-          IOSType response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":getContextType");
-          // return response;
+         return IOSType.Android;
      }
+
+    public static final ExecutorService getExecutorService() {
+        return executor;
+    }
 
 }
 /**
