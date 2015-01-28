@@ -34,6 +34,9 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,11 +45,18 @@ import me.adaptive.arp.api.*;
 */
 public class NetworkStatusDelegate extends BaseCommunicationDelegate implements INetworkStatus {
 
+
+    public static String APIService = "networkStatus";
+    static LoggingDelegate Logger;
+    public List<INetworkStatusListener> listeners = new ArrayList<INetworkStatusListener>();
+
      /**
         Default Constructor.
      */
      public NetworkStatusDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+
      }
 
      /**
@@ -56,8 +66,10 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
         @since ARP1.0
      */
      public void addNetworkStatusListener(INetworkStatusListener listener) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":addNetworkStatusListener");
+         if (!listeners.contains(listener)){
+             listeners.add(listener);
+             Logger.log(ILoggingLogLevel.DEBUG, APIService, "addNetworkStatusListener: "+ listener.toString()+" Added!");
+         }else Logger.log(ILoggingLogLevel.DEBUG, APIService, "addNetworkStatusListener: "+ listener.toString() + " is already added!");
      }
 
      /**
@@ -67,8 +79,10 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
         @since ARP1.0
      */
      public void removeNetworkStatusListener(INetworkStatusListener listener) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":removeNetworkStatusListener");
+         if(listeners.contains(listener)){
+             listeners.remove(listener);
+             Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeNetworkStatusListener"+ listener.toString()+" Removed!");
+         }else Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeNetworkStatusListener: "+ listener.toString() + " is NOT registered");
      }
 
      /**
@@ -77,8 +91,8 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
         @since ARP1.0
      */
      public void removeNetworkStatusListeners() {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":removeNetworkStatusListeners");
+         listeners.clear();
+         Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeNetworkStatusListeners: ALL NetworkStatusListeners have been removed!");
      }
 
 }

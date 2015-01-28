@@ -34,6 +34,9 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import android.content.Intent;
+import android.net.Uri;
+
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,11 +45,15 @@ import me.adaptive.arp.api.*;
 */
 public class TelephonyDelegate extends BaseCommunicationDelegate implements ITelephony {
 
+    public static String APIService = "telephony";
+    static LoggingDelegate Logger;
+
      /**
         Default Constructor.
      */
      public TelephonyDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
      }
 
      /**
@@ -57,10 +64,16 @@ public class TelephonyDelegate extends BaseCommunicationDelegate implements ITel
         @since ARP1.0
      */
      public ITelephonyStatus call(String number) {
-          ITelephonyStatus response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":call");
-          // return response;
+         try {
+            Logger.log(ILoggingLogLevel.DEBUG,"Calling "+number);
+             String uri = "tel:" + number.trim();
+             Intent intent = new Intent(Intent.ACTION_CALL);
+             intent.setData(Uri.parse(uri));
+             AppContextDelegate.getMainActivity().startActivity(intent);
+         } catch (Exception ex) {
+             return ITelephonyStatus.Failed;
+         }
+         return ITelephonyStatus.Dialing;
      }
 
 }

@@ -34,6 +34,10 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.telephony.PhoneNumberUtils;
+
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,11 +46,17 @@ import me.adaptive.arp.api.*;
 */
 public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
 
+
+    public String APIService = "messaging";
+    static LoggingDelegate Logger;
+
      /**
         Default Constructor.
      */
      public MessagingDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+
      }
 
      /**
@@ -57,9 +67,32 @@ public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
         @param callback with the result
         @since ARP1.0
      */
-     public void sendSMS(String number, String text, IMessagingCallback callback) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":sendSMS");
+     public void sendSMS(final String number, final String text, final IMessagingCallback callback) {
+         AppContextDelegate.getExecutorService().submit(new Runnable() {
+             public void run() {
+                 boolean result = false;
+
+                 try {
+
+                     if (PhoneNumberUtils.isWellFormedSmsAddress(number)) {
+                         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                         sendIntent.setData(Uri.parse("sms:" + number));
+                         sendIntent.putExtra("sms_body", text);
+                         AppContextDelegate.getMainActivity().startActivity(sendIntent);
+
+                         result = true;
+                     }
+                 } catch (Exception ex) {
+                     Logger.log(ILoggingLogLevel.ERROR, APIService,
+                             "sendMessageSMS: Error [" + text + "] to phone ["
+                                     + number + "]" + ex.getLocalizedMessage()
+                     );
+                     callback.onError(IMessagingCallbackError.Unknown);
+                 }
+                 callback.onResult(result);
+             }
+
+         });
      }
 
 }

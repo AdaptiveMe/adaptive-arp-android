@@ -34,6 +34,8 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import android.os.Build;
+
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,11 +44,13 @@ import me.adaptive.arp.api.*;
 */
 public class OSDelegate extends BaseSystemDelegate implements IOS {
 
+    public static String APIService = "os";
      /**
         Default Constructor.
      */
      public OSDelegate() {
           super();
+
      }
 
      /**
@@ -56,10 +60,7 @@ public class OSDelegate extends BaseSystemDelegate implements IOS {
         @since ARP1.0
      */
      public OSInfo getOSInfo() {
-          OSInfo response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":getOSInfo");
-          // return response;
+         return new OSInfo(IOSType.Android,Build.VERSION.CODENAME,Build.MANUFACTURER);
      }
 
 }

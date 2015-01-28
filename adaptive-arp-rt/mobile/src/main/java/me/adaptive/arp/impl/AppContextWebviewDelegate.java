@@ -34,6 +34,11 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import android.webkit.WebView;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,12 +47,20 @@ import me.adaptive.arp.api.*;
 */
 public class AppContextWebviewDelegate implements IAppContextWebview {
 
+
+    public String APIService = "contextWebview";
+    static LoggingDelegate Logger;
+
+    WebView mainView = null;
+    List<Object> views = new ArrayList<Object>();
      /**
         Default Constructor.
      */
      public AppContextWebviewDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
      }
+
 
      /**
         Additional views may be added to an application - a separate activity - and if these will make calls to the
@@ -59,8 +72,7 @@ not be added using this method.
         @since ARP1.0
      */
      public void addWebview(Object webView) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":addWebview");
+          views.add(webView);
      }
 
      /**
@@ -69,8 +81,21 @@ not be added using this method.
         @param javaScriptText The javascript expression to execute on the webview.
      */
      public void executeJavaScript(String javaScriptText) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":executeJavaScript");
+         try{
+             if(mainView != null)
+                mainView.loadUrl("javascript:"+javaScriptText);
+         }catch (Exception e){
+             Logger.log(ILoggingLogLevel.ERROR,"Error on executeJavaScript ("+javaScriptText+") Error: "+
+                     e.getLocalizedMessage());
+         }
+        /* for(Object view: views){
+             try{
+                 ((WebView)view).loadUrl("javascript:"+javaScriptText);
+             }catch (Exception e){
+                 Logger.log(ILoggingLogLevel.ERROR,"Error on executeJavaScript ("+javaScriptText+" : "+view.toString()+") Error: "+
+                    e.getLocalizedMessage());
+             }
+         }*/
      }
 
      /**
@@ -80,8 +105,12 @@ not be added using this method.
         @param webViewReference The target webview on which to execute the expression.
      */
      public void executeJavaScript(String javaScriptText, Object webViewReference) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":executeJavaScript");
+         try{
+             ((WebView)webViewReference).loadUrl("javascript:"+javaScriptText);
+         }catch (Exception e){
+             Logger.log(ILoggingLogLevel.ERROR,"Error on executeJavaScript ("+javaScriptText+" : "+webViewReference.toString()+") Error: "+
+                     e.getLocalizedMessage());
+         }
      }
 
      /**
@@ -93,11 +122,12 @@ WebView, WKWebView, etc.
         @since ARP1.0
      */
      public Object getWebviewPrimary() {
-          Object response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":getWebviewPrimary");
-          // return response;
+          return this.mainView;
      }
+
+    public void setWebviewPrimary(Object webView) {
+        this.mainView = (WebView)webView;
+    }
 
      /**
         Returns an array of webviews currently managed by the context - composed of primary and the list of those added.
@@ -107,10 +137,7 @@ This method will always return at least one element; the primary webview.
         @since ARP1.0
      */
      public Object[] getWebviews() {
-          Object[] response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":getWebviews");
-          // return response;
+          return views.toArray();
      }
 
      /**
@@ -121,8 +148,7 @@ ARP functions and release resources. The primary webview can not be removed.
         @since ARP1.0
      */
      public void removeWebview(Object webView) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":removeWebview");
+          if(views.contains(webView)) views.remove(webView);
      }
 
 }

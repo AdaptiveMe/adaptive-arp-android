@@ -34,6 +34,9 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
+import android.content.Intent;
+
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,11 +45,17 @@ import me.adaptive.arp.api.*;
 */
 public class MailDelegate extends BasePIMDelegate implements IMail {
 
+
+    public String APIService = "mail";
+    static LoggingDelegate Logger;
+
      /**
         Default Constructor.
      */
      public MailDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+
      }
 
      /**
@@ -56,9 +65,65 @@ public class MailDelegate extends BasePIMDelegate implements IMail {
         @param callback Result callback of the operation
         @since ARP1.0
      */
-     public void sendEmail(Email data, IMessagingCallback callback) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":sendEmail");
+     public void sendEmail(final Email data, final IMessagingCallback callback) {
+         AppContextDelegate.getExecutorService().submit(new Runnable() {
+             public void run() {
+                 boolean result = false;
+
+                 try {
+                     Intent emailIntent;
+                     boolean hasAttachment = data.getEmailAttachmentData() != null
+                             && data.getEmailAttachmentData().length > 0;
+                     boolean isMultiple = hasAttachment
+                             && data.getEmailAttachmentData().length > 1;
+
+                     if (isMultiple) {
+                         emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                     } else {
+                         emailIntent = new Intent(Intent.ACTION_SEND);
+                     }
+                     emailIntent
+                             .setType(data.getMessageBodyMimeType() != null ? data
+                                     .getMessageBodyMimeType() : "text/html");
+                     emailIntent.putExtra(Intent.EXTRA_SUBJECT, data.getSubject());
+                     emailIntent.putExtra(Intent.EXTRA_TEXT, data.getMessageBody());
+                     emailIntent.putExtra(Intent.EXTRA_EMAIL,
+                             data.getToRecipients());
+                     emailIntent.putExtra(Intent.EXTRA_BCC,
+                             data.getBccRecipients());
+                     emailIntent.putExtra(Intent.EXTRA_CC,
+                             data.getCcRecipients());
+
+            /*if (hasAttachment) {
+                if (isMultiple) {
+                    ArrayList<Uri> uris = new ArrayList<Uri>();
+                    for (AttachmentData att : data.getAttachmentData()) {
+                        File attFile = createFileFromAttachment(att);
+                        if (attFile != null) {
+                            Uri u = Uri.fromFile(attFile);
+                            uris.add(u);
+                        }
+                    }
+                    emailIntent.putParcelableArrayListExtra(
+                            Intent.EXTRA_STREAM, uris);
+                }
+                Uri u = Uri.fromFile(createFileFromAttachment(data
+                        .getAttachmentData()[0]));
+                emailIntent.putExtra(Intent.EXTRA_STREAM, u);
+
+            }*/
+
+                     Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+                     context.startActivity(Intent.createChooser(emailIntent, "Email"));
+                     result = true;
+                 } catch (Exception ex) {
+                     Logger.log(ILoggingLogLevel.ERROR, APIService, "sendEmail: error " + ex.getLocalizedMessage());
+                     callback.onError(IMessagingCallbackError.Unknown);
+                 }
+
+                 callback.onResult(result);
+             }
+         });
      }
 
 }

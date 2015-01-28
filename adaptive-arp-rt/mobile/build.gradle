@@ -24,4 +24,8 @@ dependencies {
     wearApp project(':wear')
     compile 'com.google.android.gms:play-services:+'
     compile 'com.google.code.gson:gson:2.3.1'
+    compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.51.+', ext: 'jar')
+    compile(group: 'com.madgag.spongycastle', name: 'prov', version: '1.51.+', ext: 'jar')
+    compile(group: 'com.madgag.spongycastle', name: 'pkix', version: '1.51.+', ext: 'jar')
+    compile(group: 'com.madgag.spongycastle', name: 'pg', version: '1.51.+', ext: 'jar')
 }

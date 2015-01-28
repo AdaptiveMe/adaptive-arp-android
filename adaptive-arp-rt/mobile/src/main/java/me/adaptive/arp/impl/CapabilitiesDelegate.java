@@ -34,6 +34,12 @@ Release:
 
 package me.adaptive.arp.impl;
 
+import android.app.UiModeManager;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.provider.MediaStore;
 import me.adaptive.arp.api.*;
 
 /**
@@ -42,11 +48,22 @@ import me.adaptive.arp.api.*;
 */
 public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabilities {
 
+
+    public String APIService = "capabilities";
+    private boolean tvDevice;
+
      /**
         Default Constructor.
      */
      public CapabilitiesDelegate() {
-          super();
+         super();
+         UiModeManager uiModeManager = (UiModeManager) AppContextDelegate.getMainActivity().getApplicationContext().getSystemService(AppContextDelegate.getMainActivity().getApplicationContext().UI_MODE_SERVICE);
+         if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
+             tvDevice = true;
+         } else {
+             tvDevice = false;
+         }
+
      }
 
      /**
@@ -57,10 +74,14 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         @since ARP1.0
      */
      public boolean hasButtonSupport(ICapabilitiesButton type) {
-          boolean response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":hasButtonSupport");
-          // return response;
+         switch (type) {
+             case BackButton:
+             case HomeButton:
+             case OptionButton:
+                 return !tvDevice;
+             default:
+                 return false;
+         }
      }
 
      /**
@@ -72,10 +93,54 @@ the device.
         @since ARP1.0
      */
      public boolean hasCommunicationSupport(ICapabilitiesCommunication type) {
-          boolean response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":hasCommunicationSupport");
-          // return response;
+         String capability = null;
+         boolean supported = false;
+         ActivityInfo activityInfo = null;
+         Intent intent = null;
+         PackageManager pm = AppContextDelegate.getMainActivity().getApplicationContext().getPackageManager();
+         //TODO CHECK LIVE CONNECTIVITY?
+         switch (type) {
+             case Calendar:
+                 intent = new Intent(Intent.ACTION_MAIN);
+                 intent.addCategory(Intent.CATEGORY_APP_CALENDAR);
+                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
+                 if (activityInfo.exported) {
+                     supported = true;
+                 }
+                 break;
+             case Contact:
+                 intent = new Intent(Intent.ACTION_MAIN);
+                 intent.addCategory(Intent.CATEGORY_APP_CONTACTS);
+                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
+                 if (activityInfo.exported) {
+                     supported = true;
+                 }
+                 break;
+             case Mail:
+                 intent = new Intent(Intent.ACTION_MAIN);
+                 intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
+                 if (activityInfo.exported) {
+                     supported = true;
+                 }
+                 break;
+             case Messaging:
+                 intent = new Intent(Intent.ACTION_MAIN);
+                 intent.addCategory(Intent.CATEGORY_APP_MESSAGING);
+                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
+                 if (activityInfo.exported) {
+                     supported = true;
+                 }
+                 break;
+             case Telephony:
+                 //TODO CHECK ACTION_DIAL?
+                 capability = PackageManager.FEATURE_TELEPHONY;
+                 break;
+
+         }
+         if (!capability.isEmpty())
+             supported = pm.hasSystemFeature(capability);
+         return supported;
      }
 
      /**
@@ -86,10 +151,15 @@ the device.
         @since ARP1.0
      */
      public boolean hasDataSupport(ICapabilitiesData type) {
-          boolean response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":hasDataSupport");
-          // return response;
+         switch (type) {
+             case Database:
+                 return !tvDevice;
+             case File:
+                 return !tvDevice;
+             case Cloud:
+             default:
+                 return false;
+         }
      }
 
      /**
@@ -101,10 +171,67 @@ device.
         @since ARP1.0
      */
      public boolean hasMediaSupport(ICapabilitiesMedia type) {
-          boolean response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":hasMediaSupport");
-          // return response;
+         String capability = null;
+         boolean supported = false;
+         ActivityInfo activityInfo = null;
+         Intent intent = null;
+         PackageManager pm = AppContextDelegate.getMainActivity().getApplicationContext().getPackageManager();
+         switch (type) {
+             case Audio_Playback:
+                 //Whether has something to handle the request
+                 intent = new Intent(Intent.ACTION_MAIN);
+                 intent.addCategory(Intent.CATEGORY_APP_MUSIC);
+                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
+                 if (activityInfo.exported) {
+                     supported = true;
+                 }
+                 //Can output audio
+                 capability = PackageManager.FEATURE_AUDIO_OUTPUT;
+                 break;
+             case Audio_Recording:
+                 //Whether has something to handle the request
+                 intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
+                 if (activityInfo.exported) {
+                     supported = true;
+                 }
+                 //Can output audio
+                 capability = PackageManager.FEATURE_AUDIO_OUTPUT;
+                 break;
+             case Camera:
+                 //Whether has something to handle the request
+                 intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
+                 if (activityInfo.exported) {
+                     supported = true;
+                 }
+                 //Can output audio
+                 capability = PackageManager.FEATURE_CAMERA_ANY;
+                 break;
+             case Video_Playback:
+                 intent = intent.setAction(Intent.ACTION_VIEW);
+                 //TODO CHECK CRASH URI NULL
+                 intent.setType("video/*");
+                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
+                 if (activityInfo.exported) {
+                     supported = true;
+                 }
+                 break;
+             case Video_Recording:
+                 intent = new Intent();
+                 intent.addCategory(MediaStore.ACTION_VIDEO_CAPTURE);
+                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
+                 if (activityInfo.exported) {
+                     supported = true;
+                 }
+                 capability = PackageManager.FEATURE_CAMERA_ANY;
+                 break;
+             default:
+
+         }
+         if (!capability.isEmpty())
+             supported = pm.hasSystemFeature(capability);
+         return supported;
      }
 
      /**
@@ -115,10 +242,23 @@ device.
         @since ARP1.0
      */
      public boolean hasNetSupport(ICapabilitiesNet type) {
-          boolean response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":hasNetSupport");
-          // return response;
+         //TODO CHECK LIVE? is this is network connected?
+         String capability = null;
+         boolean supported = false;
+         PackageManager pm = AppContextDelegate.getMainActivity().getApplicationContext().getPackageManager();
+         switch (type) {
+             case GPRS:
+             case GSM:
+             case HSDPA:
+             case LTE:
+                 //Assuming min api lvl 21, will return true but it is not true.
+                 return !tvDevice;
+             case WIFI:
+                 capability = PackageManager.FEATURE_WIFI;
+         }
+         if (!capability.isEmpty())
+             supported = pm.hasSystemFeature(capability);
+         return supported;
      }
 
      /**
@@ -130,10 +270,7 @@ device.
         @since ARP1.0
      */
      public boolean hasNotificationSupport(ICapabilitiesNotification type) {
-          boolean response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":hasNotificationSupport");
-          // return response;
+         return !tvDevice;
      }
 
      /**
@@ -145,10 +282,35 @@ device.
         @since ARP1.0
      */
      public boolean hasSensorSupport(ICapabilitiesSensor type) {
-          boolean response;
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":hasSensorSupport");
-          // return response;
+         String capability = null;
+         boolean supported = false;
+         PackageManager pm = AppContextDelegate.getMainActivity().getApplicationContext().getPackageManager();
+         switch (type) {
+             case Accelerometer:
+                 capability = PackageManager.FEATURE_SENSOR_ACCELEROMETER;
+                 break;
+             case AmbientLight:
+                 capability = PackageManager.FEATURE_SENSOR_LIGHT;
+                 break;
+             case Geolocation:
+                 capability = PackageManager.FEATURE_LOCATION_GPS;
+                 break;
+             case Barometer:
+                 capability = PackageManager.FEATURE_SENSOR_BAROMETER;
+                 break;
+             case Gyroscope:
+                 capability = PackageManager.FEATURE_SENSOR_GYROSCOPE;
+                 break;
+             case Magnetometer:
+                 capability = PackageManager.FEATURE_SENSOR_COMPASS;
+                 break;
+             case Proximity:
+                 capability = PackageManager.FEATURE_SENSOR_PROXIMITY;
+                 break;
+         }
+         if (!capability.isEmpty())
+             supported = pm.hasSystemFeature(capability);
+         return supported;
      }
 
 }

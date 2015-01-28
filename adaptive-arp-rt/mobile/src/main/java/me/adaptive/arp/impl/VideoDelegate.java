@@ -34,7 +34,18 @@ Release:
 
 package me.adaptive.arp.impl;
 
-import me.adaptive.arp.api.*;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.webkit.MimeTypeMap;
+
+import java.util.List;
+
+import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.api.IVideo;
 
 /**
    Interface for Managing the Video operations
@@ -42,11 +53,18 @@ import me.adaptive.arp.api.*;
 */
 public class VideoDelegate extends BaseMediaDelegate implements IVideo {
 
+
+    public static String APIService = "media";
+    static LoggingDelegate Logger;
+    private MediaPlayer mp;
+
      /**
         Default Constructor.
      */
      public VideoDelegate() {
           super();
+         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+
      }
 
      /**
@@ -56,9 +74,65 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
         @since ARP1.0
      */
      public void playStream(String url) {
-          // TODO: Not implemented.
-          throw new UnsupportedOperationException(this.getClass().getName()+":playStream");
+         boolean result = false;
+
+         Logger.log(ILoggingLogLevel.DEBUG, APIService, "playStream: url: " + url);
+
+         try {
+             String mimeType = getMimeType(url);
+             if (mimeType.startsWith("video/")) {
+
+                 // start activity
+                 Uri uri = Uri.parse(url);
+                 Intent intent = new Intent();
+                 intent.setAction(Intent.ACTION_VIEW);
+                 intent.setDataAndType(uri, "video/mp4");
+
+                 if (isCallable(intent)) {
+                     AppContextDelegate.getMainActivity().startActivity(intent);
+                 } else {
+                     Logger.log(ILoggingLogLevel.ERROR,APIService, "NOT callable");
+                 }
+             } else {
+                 Uri uri = Uri.parse(url);
+
+                 createMediaPlayer(uri);
+                 mp.prepareAsync();
+                 mp.start();
+
+                 result = true;
+             }
+
+         } catch (Exception ex) {
+             Logger.log(ILoggingLogLevel.ERROR, APIService, "playStream: Error " + ex.getLocalizedMessage());
+         } finally {
+             Logger.log(ILoggingLogLevel.DEBUG, APIService, "playStream: "+ String.valueOf(result));
+         }
      }
+
+    private static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            type = mime.getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+
+    private boolean isCallable(Intent intent) {
+        List<ResolveInfo> list = AppContextDelegate.getMainActivity().getPackageManager().queryIntentActivities(intent,
+                PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+
+    private void createMediaPlayer(Uri uri) {
+        if (uri == null) {
+            mp = new MediaPlayer();
+        } else {
+            mp = MediaPlayer.create(AppContextDelegate.getMainActivity().getApplicationContext(), uri);
+        }
+    }
 
 }
 /**
