@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
         @param number   to send
         @param text     to send
         @param callback with the result
-        @since ARP1.0
+        @since v2.0
      */
      public void sendSMS(String number, String text, IMessagingCallback callback) {
           // TODO: Not implemented.

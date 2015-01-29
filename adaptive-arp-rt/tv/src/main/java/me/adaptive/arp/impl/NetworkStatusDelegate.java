@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -53,7 +53,7 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
         Add the listener for network status changes of the app
 
         @param listener Listener with the result
-        @since ARP1.0
+        @since v2.0
      */
      public void addNetworkStatusListener(INetworkStatusListener listener) {
           // TODO: Not implemented.
@@ -64,7 +64,7 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
         Un-registers an existing listener from receiving network status events.
 
         @param listener Listener with the result
-        @since ARP1.0
+        @since v2.0
      */
      public void removeNetworkStatusListener(INetworkStatusListener listener) {
           // TODO: Not implemented.
@@ -74,7 +74,7 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
      /**
         Removes all existing listeners from receiving network status events.
 
-        @since ARP1.0
+        @since v2.0
      */
      public void removeNetworkStatusListeners() {
           // TODO: Not implemented.

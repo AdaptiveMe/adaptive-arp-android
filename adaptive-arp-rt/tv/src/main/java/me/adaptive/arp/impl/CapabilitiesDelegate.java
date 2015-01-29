@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -50,11 +50,40 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      }
 
      /**
+        Obtains the default orientation of the device/display. If no default orientation is available on
+the platform, this method will return the current orientation. To capture device or display orientation
+changes please use the IDevice and IDisplay functions and listeners API respectively.
+
+        @return The default orientation for the device/display.
+        @since v2.0.5
+     */
+     public ICapabilitiesOrientation getOrientationDefault() {
+          ICapabilitiesOrientation response;
+          // TODO: Not implemented.
+          throw new UnsupportedOperationException(this.getClass().getName()+":getOrientationDefault");
+          // return response;
+     }
+
+     /**
+        Provides the device/display orientations supported by the platform. A platform will usually
+support at least one orientation. This is usually PortaitUp.
+
+        @return The orientations supported by the device/display of the platform.
+        @since v2.0.5
+     */
+     public ICapabilitiesOrientation[] getOrientationsSupported() {
+          ICapabilitiesOrientation[] response;
+          // TODO: Not implemented.
+          throw new UnsupportedOperationException(this.getClass().getName()+":getOrientationsSupported");
+          // return response;
+     }
+
+     /**
         Determines whether a specific hardware button is supported for interaction.
 
         @param type Type of feature to check.
         @return true is supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean hasButtonSupport(ICapabilitiesButton type) {
           boolean response;
@@ -69,7 +98,7 @@ the device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean hasCommunicationSupport(ICapabilitiesCommunication type) {
           boolean response;
@@ -83,7 +112,7 @@ the device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean hasDataSupport(ICapabilitiesData type) {
           boolean response;
@@ -98,7 +127,7 @@ device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean hasMediaSupport(ICapabilitiesMedia type) {
           boolean response;
@@ -112,7 +141,7 @@ device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean hasNetSupport(ICapabilitiesNet type) {
           boolean response;
@@ -127,7 +156,7 @@ device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean hasNotificationSupport(ICapabilitiesNotification type) {
           boolean response;
@@ -137,12 +166,26 @@ device.
      }
 
      /**
+        Determines whether the device/display supports a given orientation.
+
+        @param orientation Orientation type.
+        @return True if the given orientation is supported, false otherwise.
+        @since v2.0.5
+     */
+     public boolean hasOrientationSupport(ICapabilitiesOrientation orientation) {
+          boolean response;
+          // TODO: Not implemented.
+          throw new UnsupportedOperationException(this.getClass().getName()+":hasOrientationSupport");
+          // return response;
+     }
+
+     /**
         Determines whether a specific Sensor capability is supported by the
 device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean hasSensorSupport(ICapabilitiesSensor type) {
           boolean response;

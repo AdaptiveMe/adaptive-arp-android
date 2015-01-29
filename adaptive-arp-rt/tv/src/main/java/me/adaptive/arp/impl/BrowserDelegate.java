@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -54,7 +54,7 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
 
         @param url Url to open
         @return The result of the operation
-        @since ARP1.0
+        @since v2.0
      */
      public boolean openExtenalBrowser(String url) {
           boolean response;
@@ -70,7 +70,7 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
         @param title          Title of the Navigation bar
         @param backButtonText Title of the Back button bar
         @return The result of the operation
-        @since ARP1.0
+        @since v2.0
      */
      public boolean openInternalBrowser(String url, String title, String backButtonText) {
           boolean response;
@@ -86,7 +86,7 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
         @param title          Title of the Navigation bar
         @param backButtonText Title of the Back button bar
         @return The result of the operation
-        @since ARP1.0
+        @since v2.0
      */
      public boolean openInternalBrowserModal(String url, String title, String backButtonText) {
           boolean response;

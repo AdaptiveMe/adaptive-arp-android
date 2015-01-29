@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -53,7 +53,7 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
         Play url video stream
 
         @param url of the video
-        @since ARP1.0
+        @since v2.0
      */
      public void playStream(String url) {
           // TODO: Not implemented.

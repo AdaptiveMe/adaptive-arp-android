@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         @param keys             Array with the key names to delete.
         @param publicAccessName The name of the shared internal storage object (if needed).
         @param callback         callback to be executed upon function result.
-        @since ARP 1.0
+        @since v2.0
      */
      public void deleteSecureKeyValuePairs(String[] keys, String publicAccessName, ISecurityResultCallback callback) {
           // TODO: Not implemented.
@@ -68,7 +68,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         @param keys             Array with the key names to retrieve.
         @param publicAccessName The name of the shared internal storage object (if needed).
         @param callback         callback to be executed upon function result.
-        @since ARP 1.0
+        @since v2.0
      */
      public void getSecureKeyValuePairs(String[] keys, String publicAccessName, ISecurityResultCallback callback) {
           // TODO: Not implemented.
@@ -79,7 +79,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         Returns if the device has been modified in anyhow
 
         @return true if the device has been modified; false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      public boolean isDeviceModified() {
           boolean response;
@@ -94,7 +94,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         @param keyValues        Array containing the items to store on the device internal memory.
         @param publicAccessName The name of the shared internal storage object (if needed).
         @param callback         callback to be executed upon function result.
-        @since ARP 1.0
+        @since v2.0
      */
      public void setSecureKeyValuePairs(SecureKeyPair[] keyValues, String publicAccessName, ISecurityResultCallback callback) {
           // TODO: Not implemented.

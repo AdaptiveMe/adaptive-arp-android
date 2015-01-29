@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -54,7 +54,7 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
 
         @param host     domain name or ip address of host.
         @param callback Callback called at the end.
-        @since ARP1.0
+        @since v2.0
      */
      public void isNetworkReachable(String host, INetworkReachabilityCallback callback) {
           // TODO: Not implemented.
@@ -66,7 +66,7 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
 
         @param url      to look for
         @param callback Callback called at the end
-        @since ARP1.0
+        @since v2.0
      */
      public void isNetworkServiceReachable(String url, INetworkReachabilityCallback callback) {
           // TODO: Not implemented.

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -54,7 +54,7 @@ public class TelephonyDelegate extends BaseCommunicationDelegate implements ITel
 
         @param number to call
         @return Status of the call
-        @since ARP1.0
+        @since v2.0
      */
      public ITelephonyStatus call(String number) {
           ITelephonyStatus response;

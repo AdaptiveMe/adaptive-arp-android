@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -53,7 +53,7 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
         Register a new listener that will receive acceleration events.
 
         @param listener to be registered.
-        @since ARP1.0
+        @since v2.0
      */
      public void addAccelerationListener(IAccelerationListener listener) {
           // TODO: Not implemented.
@@ -64,7 +64,7 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
         De-registers an existing listener from receiving acceleration events.
 
         @param listener to be registered.
-        @since ARP1.0
+        @since v2.0
      */
      public void removeAccelerationListener(IAccelerationListener listener) {
           // TODO: Not implemented.
@@ -74,7 +74,7 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
      /**
         Removed all existing listeners from receiving acceleration events.
 
-        @since ARP1.0
+        @since v2.0
      */
      public void removeAccelerationListeners() {
           // TODO: Not implemented.

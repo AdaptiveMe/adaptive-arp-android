@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -53,7 +53,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         Returns the default locale of the application defined in the configuration file
 
         @return Default Locale of the application
-        @since ARP1.0
+        @since v2.0
      */
      public Locale getDefaultLocale() {
           Locale response;
@@ -66,7 +66,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         List of supported locales for the application defined in the configuration file
 
         @return List of locales
-        @since ARP1.0
+        @since v2.0
      */
      public Locale[] getLocaleSupportedDescriptors() {
           Locale[] response;
@@ -81,7 +81,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         @param key    to match text
         @param locale The locale object to get localized message, or the locale desciptor ("language" or "language-country" two-letters ISO codes.
         @return Localized text.
-        @since ARP1.0
+        @since v2.0
      */
      public String getResourceLiteral(String key, Locale locale) {
           String response;
@@ -95,7 +95,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
 
         @param locale The locale object to get localized message, or the locale desciptor ("language" or "language-country" two-letters ISO codes.
         @return Localized texts in the form of an object.
-        @since ARP1.0
+        @since v2.0
      */
      public KeyPair[] getResourceLiterals(Locale locale) {
           KeyPair[] response;

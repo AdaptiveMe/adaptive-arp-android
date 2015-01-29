@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -54,7 +54,7 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
 
         @param descriptor File descriptor of file or folder used for operation.
         @return True if the folder/file is readable, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean canRead(FileDescriptor descriptor) {
           boolean response;
@@ -68,7 +68,7 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
 
         @param descriptor File descriptor of file or folder used for operation.
         @return True if the folder/file is writable, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean canWrite(FileDescriptor descriptor) {
           boolean response;
@@ -82,7 +82,7 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
 
         @param descriptor File descriptor of file or folder used for operation.
         @param callback   Result of the operation.
-        @since ARP1.0
+        @since v2.0
      */
      public void create(FileDescriptor descriptor, IFileResultCallback callback) {
           // TODO: Not implemented.
@@ -96,7 +96,7 @@ deleted if the cascade parameter is set to true.
         @param descriptor File descriptor of file or folder used for operation.
         @param cascade    Whether to delete sub-files and sub-folders.
         @return True if files (and sub-files and folders) whether deleted.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean delete(FileDescriptor descriptor, boolean cascade) {
           boolean response;
@@ -110,7 +110,7 @@ deleted if the cascade parameter is set to true.
 
         @param descriptor File descriptor of file or folder used for operation.
         @return True if the file exists in the filesystem, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean exists(FileDescriptor descriptor) {
           boolean response;
@@ -124,7 +124,7 @@ deleted if the cascade parameter is set to true.
 
         @param descriptor File descriptor of file or folder used for operation.
         @param callback   Result of the operation.
-        @since ARP1.0
+        @since v2.0
      */
      public void getContent(FileDescriptor descriptor, IFileDataLoadResultCallback callback) {
           // TODO: Not implemented.
@@ -136,7 +136,7 @@ deleted if the cascade parameter is set to true.
 
         @param descriptor File descriptor of file or folder used for operation.
         @return Storage Type file
-        @since ARP1.0
+        @since v2.0
      */
      public IFileSystemStorageType getFileStorageType(FileDescriptor descriptor) {
           IFileSystemStorageType response;
@@ -150,7 +150,7 @@ deleted if the cascade parameter is set to true.
 
         @param descriptor File descriptor of file or folder used for operation.
         @return Returns the file type of the file
-        @since ARP1.0
+        @since v2.0
      */
      public IFileSystemType getFileType(FileDescriptor descriptor) {
           IFileSystemType response;
@@ -164,7 +164,7 @@ deleted if the cascade parameter is set to true.
 
         @param descriptor File descriptor of file or folder used for operation.
         @return Security Level of the file
-        @since ARP1.0
+        @since v2.0
      */
      public IFileSystemSecurity getSecurityType(FileDescriptor descriptor) {
           IFileSystemSecurity response;
@@ -178,7 +178,7 @@ deleted if the cascade parameter is set to true.
 
         @param descriptor File descriptor of file or folder used for operation.
         @return true if this is a path to a folder/directory, false if this is a path to a file.
-        @since ARP1.0
+        @since v2.0
      */
      public boolean isDirectory(FileDescriptor descriptor) {
           boolean response;
@@ -193,7 +193,7 @@ any results.
 
         @param descriptor File descriptor of file or folder used for operation.
         @param callback   Result of operation.
-        @since ARP1.0
+        @since v2.0
      */
      public void listFiles(FileDescriptor descriptor, IFileListResultCallback callback) {
           // TODO: Not implemented.
@@ -207,7 +207,7 @@ is a file, it will not yield any results.
         @param descriptor File descriptor of file or folder used for operation.
         @param regex      Filter (eg. *.jpg, *.png, Fil*) name string.
         @param callback   Result of operation.
-        @since ARP1.0
+        @since v2.0
      */
      public void listFilesForRegex(FileDescriptor descriptor, String regex, IFileListResultCallback callback) {
           // TODO: Not implemented.
@@ -220,7 +220,7 @@ is a file, it will not yield any results.
         @param descriptor File descriptor of file or folder used for operation.
         @param recursive  Whether to create all parent path elements.
         @return True if the path was created, false otherwise (or it exists already).
-        @since ARP1.0
+        @since v2.0
      */
      public boolean mkDir(FileDescriptor descriptor, boolean recursive) {
           boolean response;
@@ -238,7 +238,7 @@ new destination file.
         @param createPath  True to create the path if it does not already exist.
         @param callback    Result of the operation.
         @param overwrite   True to create the path if it does not already exist.
-        @since ARP1.0
+        @since v2.0
      */
      public void move(FileDescriptor source, FileDescriptor destination, boolean createPath, boolean overwrite, IFileResultCallback callback) {
           // TODO: Not implemented.
@@ -251,7 +251,7 @@ new destination file.
         @param descriptor File descriptor of file or folder used for operation.
         @param content    Binary content to store in the file.
         @param callback   Result of the operation.
-        @since ARP1.0
+        @since v2.0
      */
      public void setContent(FileDescriptor descriptor, byte[] content, IFileDataStoreResultCallback callback) {
           // TODO: Not implemented.

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -53,7 +53,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
         Add the listener for the lifecycle of the app
 
         @param listener Lifecycle listener
-        @since ARP1.0
+        @since v2.0
      */
      public void addLifecycleListener(ILifecycleListener listener) {
           // TODO: Not implemented.
@@ -64,7 +64,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
         Whether the application is in background or not
 
         @return true if the application is in background;false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      public boolean isBackground() {
           boolean response;
@@ -77,7 +77,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
         Un-registers an existing listener from receiving lifecycle events.
 
         @param listener Lifecycle listener
-        @since ARP1.0
+        @since v2.0
      */
      public void removeLifecycleListener(ILifecycleListener listener) {
           // TODO: Not implemented.
@@ -87,7 +87,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
      /**
         Removes all existing listeners from receiving lifecycle events.
 
-        @since ARP1.0
+        @since v2.0
      */
      public void removeLifecycleListeners() {
           // TODO: Not implemented.
