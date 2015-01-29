@@ -1,106 +1,109 @@
 /**
---| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
+ --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
 
-(C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
+ (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
-License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
--cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
-permissions and limitations under the License.
+ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+ License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
+ -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
+ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
+ permissions and limitations under the License.
 
-Original author:
+ Original author:
 
-    * Carlos Lozano Diez
-            <http://github.com/carloslozano>
-            <http://twitter.com/adaptivecoder>
-            <mailto:carlos@adaptive.me>
+ * Carlos Lozano Diez
+ <http://github.com/carloslozano>
+ <http://twitter.com/adaptivecoder>
+ <mailto:carlos@adaptive.me>
 
-Contributors:
+ Contributors:
 
-    * Ferran Vila Conesa
-             <http://github.com/fnva>
-             <http://twitter.com/ferran_vila>
-             <mailto:ferran.vila.conesa@gmail.com>
+ * Ferran Vila Conesa
+ <http://github.com/fnva>
+ <http://twitter.com/ferran_vila>
+ <mailto:ferran.vila.conesa@gmail.com>
 
-    * See source code files for contributors.
+ * See source code files for contributors.
 
-Release:
+ Release:
 
-    * @version v2.0.3
+ * @version v2.0.3
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
-*/
+ */
 
 package me.adaptive.arp.impl;
 
 import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
-import me.adaptive.arp.api.*;
+import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.ILogging;
+import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
-   Interface for Managing the Logging operations
-   Auto-generated implementation of ILogging specification.
-*/
+ * Interface for Managing the Logging operations
+ * Auto-generated implementation of ILogging specification.
+ */
 public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
 
     public static String APIService = "logging";
-    final boolean isDebuggable =  ( 0 != ( AppContextDelegate.getMainActivity().getApplicationContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE ) );
-     /**
-        Default Constructor.
+    final boolean isDebuggable = (0 != (AppContextDelegate.getMainActivity().getApplicationContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+
+    /**
+     * Default Constructor.
      */
-     public LoggingDelegate() {
-          super();
-         AppRegistryBridge.getInstance().getLoggingBridge().setDelegate(this);
-     }
+    public LoggingDelegate() {
+        super();
+        AppRegistryBridge.getInstance().getLoggingBridge().setDelegate(this);
+    }
 
-     /**
-        Logs the given message, with the given log level if specified, to the standard platform/environment.
-
-        @param level   Log level
-        @param message Message to be logged
-        @since ARP1.0
+    /**
+     * Logs the given message, with the given log level if specified, to the standard platform/environment.
+     *
+     * @param level   Log level
+     * @param message Message to be logged
+     * @since ARP1.0
      */
-     public void log(ILoggingLogLevel level, String message) {
-         if (isDebuggable && level == ILoggingLogLevel.DEBUG) {
-             Log.d(APIService, message);
-         }
-         if (isDebuggable && level == ILoggingLogLevel.ERROR) {
-             Log.e(APIService, message);
-         }
-         if (isDebuggable && level == ILoggingLogLevel.INFO) {
-             Log.i(APIService, message);
-         }
-         if (isDebuggable && level == ILoggingLogLevel.WARN) {
-             Log.w(APIService, message);
-         }
-     }
+    public void log(ILoggingLogLevel level, String message) {
+        if (isDebuggable && level == ILoggingLogLevel.DEBUG) {
+            Log.d(APIService, message);
+        }
+        if (isDebuggable && level == ILoggingLogLevel.ERROR) {
+            Log.e(APIService, message);
+        }
+        if (isDebuggable && level == ILoggingLogLevel.INFO) {
+            Log.i(APIService, message);
+        }
+        if (isDebuggable && level == ILoggingLogLevel.WARN) {
+            Log.w(APIService, message);
+        }
+    }
 
-     /**
-        Logs the given message, with the given log level if specified, to the standard platform/environment.
-
-        @param level    Log level
-        @param category Category/tag name to identify/filter the log.
-        @param message  Message to be logged
-        @since ARP1.0
+    /**
+     * Logs the given message, with the given log level if specified, to the standard platform/environment.
+     *
+     * @param level    Log level
+     * @param category Category/tag name to identify/filter the log.
+     * @param message  Message to be logged
+     * @since ARP1.0
      */
-     public void log(ILoggingLogLevel level, String category, String message) {
-         if (isDebuggable && level == ILoggingLogLevel.DEBUG) {
-             Log.d("Adaptive: "+category, message);
-         }
-         if (isDebuggable && level == ILoggingLogLevel.ERROR) {
-             Log.e("Adaptive: "+category, message);
-         }
-         if (isDebuggable && level == ILoggingLogLevel.INFO) {
-             Log.i("Adaptive: "+category, message);
-         }
-         if (isDebuggable && level == ILoggingLogLevel.WARN) {
-             Log.w("Adaptive: "+category, message);
-         }
-     }
+    public void log(ILoggingLogLevel level, String category, String message) {
+        if (isDebuggable && level == ILoggingLogLevel.DEBUG) {
+            Log.d("Adaptive: " + category, message);
+        }
+        if (isDebuggable && level == ILoggingLogLevel.ERROR) {
+            Log.e("Adaptive: " + category, message);
+        }
+        if (isDebuggable && level == ILoggingLogLevel.INFO) {
+            Log.i("Adaptive: " + category, message);
+        }
+        if (isDebuggable && level == ILoggingLogLevel.WARN) {
+            Log.w("Adaptive: " + category, message);
+        }
+    }
 
 }
 /**
-------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
-*/
+ ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+ */

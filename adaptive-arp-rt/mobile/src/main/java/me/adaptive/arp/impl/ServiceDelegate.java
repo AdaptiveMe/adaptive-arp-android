@@ -1,36 +1,36 @@
 /**
---| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
+ --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
 
-(C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
+ (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
-License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
--cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
-permissions and limitations under the License.
+ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+ License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
+ -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
+ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
+ permissions and limitations under the License.
 
-Original author:
+ Original author:
 
-    * Carlos Lozano Diez
-            <http://github.com/carloslozano>
-            <http://twitter.com/adaptivecoder>
-            <mailto:carlos@adaptive.me>
+ * Carlos Lozano Diez
+ <http://github.com/carloslozano>
+ <http://twitter.com/adaptivecoder>
+ <mailto:carlos@adaptive.me>
 
-Contributors:
+ Contributors:
 
-    * Ferran Vila Conesa
-             <http://github.com/fnva>
-             <http://twitter.com/ferran_vila>
-             <mailto:ferran.vila.conesa@gmail.com>
+ * Ferran Vila Conesa
+ <http://github.com/fnva>
+ <http://twitter.com/ferran_vila>
+ <mailto:ferran.vila.conesa@gmail.com>
 
-    * See source code files for contributors.
+ * See source code files for contributors.
 
-Release:
+ Release:
 
-    * @version v2.0.3
+ * @version v2.0.3
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
-*/
+ */
 
 package me.adaptive.arp.impl;
 
@@ -39,13 +39,11 @@ import android.os.AsyncTask;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.HttpVersion;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -126,7 +124,6 @@ import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IService;
 import me.adaptive.arp.api.IServiceMethod;
-import me.adaptive.arp.api.IServiceProtocolVersion;
 import me.adaptive.arp.api.IServiceResultCallback;
 import me.adaptive.arp.api.IServiceResultCallbackError;
 import me.adaptive.arp.api.IServiceType;
@@ -135,15 +132,15 @@ import me.adaptive.arp.api.ServiceEndpoint;
 import me.adaptive.arp.api.ServiceRequest;
 import me.adaptive.arp.api.ServiceResponse;
 import me.adaptive.arp.api.ServiceSession;
+import me.adaptive.arp.api.ServiceSessionCookie;
+import me.adaptive.arp.api.ServiceToken;
 
 /**
-   Interface for Managing the Services operations
-   Auto-generated implementation of IService specification.
-*/
+ * Interface for Managing the Services operations
+ * Auto-generated implementation of IService specification.
+ */
 public class ServiceDelegate extends BaseCommunicationDelegate implements IService {
 
-
-    public static String APIService = "service";
 
     private static final String DEFAULT_SERVICE_TYPE = "XMLRPC_JSON";
     private static final String DEFAULT_SERVICE_METHOD = "POST";
@@ -158,18 +155,17 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     private static final String PROXY_ATTRIBUTE = "proxy";
     private static final String SCHEME_ATTRIBUTE = "scheme";
     private static final String SERVICE_ATTRIBUTE = "name";
-
-
     // private static final String HTTP_SCHEME = "http";
     private static final String HTTPS_SCHEME = "https";
-    protected HashMap<String, String[]> FINGERPRINT;
+    public static String APIService = "service";
     protected static Map<IServiceType, String> contentTypes = new HashMap<IServiceType, String>();
+    static LoggingDelegate Logger;
 
+
+    private static CookieStore cookieStore;
     private static DefaultHttpClient httpClient = new DefaultHttpClient();
     private static DefaultHttpClient httpSSLClient = null;
-
-    private static final org.apache.http.client.CookieStore cookieStore = httpClient.getCookieStore();
-
+    // TODO - Fingerprints to go into the services config file.
     private static String _VALIDATECERTIFICATES = "$ValidateCertificates$";
     private static String _VALIDATEFINGERPRINTS = "$ValidateFingerprints$";
     private static int DEFAULT_READWRITE_TIMEOUT = 15000; // 15 seconds timeout establishing connection
@@ -177,135 +173,143 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     // reading response parameters
     private static int DEFAULT_BUFFER_READ_SIZE = 4096;    // 4 KB
     private static int MAX_BINARY_SIZE = 8 * 1024 * 1024;  // 8 MB
+    protected HashMap<String, String[]> FINGERPRINT;
     private boolean addedGzipHttpResponseInterceptor = false;
-
     private List<Service> services = new ArrayList<Service>();
-    static LoggingDelegate Logger;
+
+    // TODO - Revise - maybe it's better to instance this when it's really needed -> Lazy Instance.
+    static {
+        // TODO - Enums have been removed or renamed and include only the most common options.
+        /**
+         contentTypes.put(IServiceType.ServiceTypeXmlRpcJson, "application/json");
+         contentTypes.put(IServiceType.ServiceTypeXmlRpcXml, "text/xml");
+         contentTypes.put(IServiceType.ServiceTypeRestJson, "application/json");
+         contentTypes.put(IServiceType.ServiceTypeRestXml, "text/xml");
+         contentTypes.put(IServiceType.ServiceTypeSoapJson, "application/json");
+         contentTypes.put(IServiceType.ServiceTypeSoapXml, "text/xml");
+         contentTypes.put(IServiceType.ServiceTypeAmfSerialization, "");
+         contentTypes.put(IServiceType.ServiceTypeRemotingSerialization, "");
+         contentTypes.put(IServiceType.ServiceTypeOctetBinary, "application/octet-stream");
+         contentTypes.put(IServiceType.ServiceTypeGwtRpc, "text/x-gwt-rpc; charset=utf-8");
+         */
+        contentTypes.put(IServiceType.OctetBinary, "application/octet-stream");
+        contentTypes.put(IServiceType.RestJson, "application/json; charset=utf-8");
+        contentTypes.put(IServiceType.RestXml, "application/xml; charset=utf-8");
+        contentTypes.put(IServiceType.SoapXml, "application/soap+xml; charset=utf-8");
+        contentTypes.put(IServiceType.Unknown, "application/octet-stream");
+
+        cookieStore = httpClient.getCookieStore();
+    }
 
     /**
-     Register delegate with the Application Registry.
+     * Default Constructor.
      */
-    static {
-        contentTypes.put(IServiceType.ServiceTypeXmlRpcJson, "application/json");
-        contentTypes.put(IServiceType.ServiceTypeXmlRpcXml, "text/xml");
-        contentTypes.put(IServiceType.ServiceTypeRestJson, "application/json");
-        contentTypes.put(IServiceType.ServiceTypeRestXml, "text/xml");
-        contentTypes.put(IServiceType.ServiceTypeSoapJson, "application/json");
-        contentTypes.put(IServiceType.ServiceTypeSoapXml, "text/xml");
-        contentTypes.put(IServiceType.ServiceTypeAmfSerialization, "");
-        contentTypes.put(IServiceType.ServiceTypeRemotingSerialization, "");
-        contentTypes.put(IServiceType.ServiceTypeOctetBinary, "application/octet-stream");
-        contentTypes.put(IServiceType.ServiceTypeGwtRpc, "text/x-gwt-rpc; charset=utf-8");
-    }
-     /**
-        Default Constructor.
-     */
-     public ServiceDelegate() {
-          super();
-         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+    public ServiceDelegate() {
+        super();
+        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
 
-    }
-
-     /**
-        Get a reference to a registered service by name.
-
-        @param serviceName Name of service.
-        @return A service, if registered, or null of the service does not exist.
-        @since ARP1.0
-     */
-     public Service getService(String serviceName) {
-         Service response = null;
-         for (Service service : services) {
-             if (service.getName().equals(serviceName))
-                 response = service;
-         }
-         return response;
-     }
-
-     /**
-        Request async a service for an Url
-
-        @param serviceRequest Service Request to invoke
-        @param service        Service to call
-        @param callback       Callback to execute with the result
-        @since ARP1.0
-     */
-     public void invokeService(ServiceRequest serviceRequest, Service service, IServiceResultCallback callback) {
-         ServiceTask asyncTask = new ServiceTask();
-         asyncTask.executeOnExecutor(AppContextDelegate.getExecutorService(), new Object[]{serviceRequest, service, callback});
-     }
-
-     /**
-        Check whether a service by the given service is already registered.
-
-        @param service Service to check
-        @return True if the service is registered, false otherwise.
-        @since ARP1.0
-     */
-     public boolean isRegistered(Service service) {
-         return services.contains(service);
-     }
-
-     /**
-        Check whether a service by the given name is registered.
-
-        @param serviceName Name of service.
-        @return True if the service is registered, false otherwise.
-        @since ARP1.0
-     */
-     public boolean isRegistered(String serviceName) {
-         for (Service service : services) {
-             if (service.getName().equals(serviceName))
-                 return true;
-         }
-         return false;
-     }
-
-     /**
-        Register a new service
-
-        @param service to register
-        @since ARP1.0
-     */
-     public void registerService(Service service) {
-         if (!services.contains(service)) {
-             services.add(service);
-             Logger.log(ILoggingLogLevel.DEBUG, APIService, "registerService: "+ service.toString()+" Added!");
-         }else Logger.log(ILoggingLogLevel.WARN, APIService, "registerService: "+ service.toString() + " is already added!");
-
-     }
-
-     /**
-        Unregister a service
-
-        @param service to unregister
-        @since ARP1.0
-     */
-     public void unregisterService(Service service) {
-         if (services.contains(service)) {
-             services.remove(service);
-             Logger.log(ILoggingLogLevel.DEBUG, APIService, "unregisterService"+ service.toString()+" Removed!");
-         }else Logger.log(ILoggingLogLevel.WARN, APIService, "unregisterService: "+ service.toString() + " is NOT registered");
-     }
-
-     /**
-        Unregister all services.
-
-        @since ARP1.0
-     */
-     public void unregisterServices() {
-         services.clear();
-         Logger.log(ILoggingLogLevel.DEBUG, APIService, "unregisterServices: ALL Services have been removed!");
-     }
-
-
-
-    public boolean validateCertificates() {
-        return Boolean.parseBoolean(ServiceDelegate._VALIDATECERTIFICATES);
     }
 
     public static boolean validateFingerprints() {
         return Boolean.parseBoolean(ServiceDelegate._VALIDATEFINGERPRINTS);
+    }
+
+    /**
+     * Get a reference to a registered service by name.
+     *
+     * @param serviceName Name of service.
+     * @return A service, if registered, or null of the service does not exist.
+     * @since ARP1.0
+     */
+    public Service getService(String serviceName) {
+        Service response = null;
+        for (Service service : services) {
+            if (service.getName().equals(serviceName))
+                response = service;
+        }
+        return response;
+    }
+
+    /**
+     * Request async a service for an Url
+     *
+     * @param serviceRequest Service Request to invoke
+     * @param service        Service to call
+     * @param callback       Callback to execute with the result
+     * @since ARP1.0
+     */
+    public void invokeService(ServiceRequest serviceRequest, Service service, IServiceResultCallback callback) {
+        ServiceTask asyncTask = new ServiceTask();
+        asyncTask.executeOnExecutor(AppContextDelegate.getExecutorService(), new Object[]{serviceRequest, service, callback});
+    }
+
+    /**
+     * Check whether a service by the given service is already registered.
+     *
+     * @param service Service to check
+     * @return True if the service is registered, false otherwise.
+     * @since ARP1.0
+     */
+    public boolean isRegistered(Service service) {
+        return services.contains(service);
+    }
+
+    /**
+     * Check whether a service by the given name is registered.
+     *
+     * @param serviceName Name of service.
+     * @return True if the service is registered, false otherwise.
+     * @since ARP1.0
+     */
+    public boolean isRegistered(String serviceName) {
+        for (Service service : services) {
+            if (service.getName().equals(serviceName))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Register a new service
+     *
+     * @param service to register
+     * @since ARP1.0
+     */
+    public void registerService(Service service) {
+        if (!services.contains(service)) {
+            services.add(service);
+            Logger.log(ILoggingLogLevel.DEBUG, APIService, "registerService: " + service.toString() + " Added!");
+        } else
+            Logger.log(ILoggingLogLevel.WARN, APIService, "registerService: " + service.toString() + " is already added!");
+
+    }
+
+    /**
+     * Unregister a service
+     *
+     * @param service to unregister
+     * @since ARP1.0
+     */
+    public void unregisterService(Service service) {
+        if (services.contains(service)) {
+            services.remove(service);
+            Logger.log(ILoggingLogLevel.DEBUG, APIService, "unregisterService" + service.toString() + " Removed!");
+        } else
+            Logger.log(ILoggingLogLevel.WARN, APIService, "unregisterService: " + service.toString() + " is NOT registered");
+    }
+
+    /**
+     * Unregister all services.
+     *
+     * @since ARP1.0
+     */
+    public void unregisterServices() {
+        services.clear();
+        Logger.log(ILoggingLogLevel.DEBUG, APIService, "unregisterServices: ALL Services have been removed!");
+    }
+
+    public boolean validateCertificates() {
+        return Boolean.parseBoolean(ServiceDelegate._VALIDATECERTIFICATES);
     }
 
     /*public Map getFingerprints(){
@@ -326,6 +330,9 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     }*/
 
     private String formatRequestUriString(ServiceRequest request, ServiceEndpoint endpoint, String ServiceMethod) {
+
+        // TODO - Revise following new v2.0.6 API - requests are created by the service and pre-populated with default parameters, headers and applicable cookies.
+        /*
         String requestUriString = endpoint.getHost() + ":"
                 + endpoint.getPort() + endpoint.getPath();
         if (endpoint.getPort() == 0) {
@@ -344,6 +351,8 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         Logger.log(ILoggingLogLevel.DEBUG, APIService, "Request method: " + ServiceMethod);
 
         return requestUriString;
+        */
+        return null;
     }
 
     private boolean applySecurityValidations(String requestUriString) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, KeyManagementException, UnrecoverableKeyException {
@@ -371,15 +380,20 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         // preserving the cookies between requests
         httpClient.setCookieStore(cookieStore);
 
+        // TODO - Protocols are now configured in the services configuration file. This no longer lives in the request. Revise.
+        /*
         if (request.getProtocolVersion() == IServiceProtocolVersion.HttpProtocolVersion11) {
             httpClient.getParams().setParameter("http.protocol.version", HttpVersion.HTTP_1_1);
         } else {
             httpClient.getParams().setParameter("http.protocol.version", HttpVersion.HTTP_1_0);  // not chunked requests
         }
+        */
 
         httpClient.getParams().setIntParameter("http.connection.timeout", DEFAULT_READWRITE_TIMEOUT);
         httpClient.getParams().setIntParameter("http.socket.timeout", DEFAULT_RESPONSE_TIMEOUT);
 
+        // TODO - Proxies have been removed from the endpoint configuration.
+        /*
         if (endpoint.getProxy() != null
                 && !endpoint.getProxy().equals("")
                 && !endpoint.getProxy().equals("null")) {
@@ -389,6 +403,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
             httpClient.getParams().setParameter(
                     ConnRoutePNames.DEFAULT_PROXY, proxyHost);
         }
+        */
 
         // [MOBPLAT-200] : allow gzip, deflate decompression modes
         if (!addedGzipHttpResponseInterceptor) {
@@ -407,7 +422,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         /*************
          * adding content as entity, for request methods != GET
          *************/
-        if (!ServiceMethod.equalsIgnoreCase(IServiceMethod.Get.toString())) {
+        if (!ServiceMethod.equalsIgnoreCase(IServiceMethod.GET.toString())) {
             if (request.getContent() != null
                     && request.getContent().length() > 0) {
                 httpRequest.setEntity(new StringEntity(
@@ -418,7 +433,8 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         /*************
          * CONTENT TYPE
          *************/
-        String contentType = contentTypes.get(service.getType()).toString();
+        // TODO - revise using the new service token and servicerequest factory creation introduced in v2.0.6
+        String contentType = null; //contentTypes.get(service.getType()).toString();
         if (request.getContentType() != null) {
             contentType = request.getContentType();
 
@@ -431,8 +447,8 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         if (request.getServiceHeaders() != null
                 && request.getServiceHeaders().length > 0) {
             for (me.adaptive.arp.api.ServiceHeader header : request.getServiceHeaders()) {
-                httpRequest.setHeader(header.getName(),
-                        header.getData());
+                httpRequest.setHeader(header.getKeyName(),
+                        header.getKeyData());
             }
         }
 
@@ -443,9 +459,9 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
                 && request.getServiceSession().getCookies() != null
                 && request.getServiceSession().getCookies().length > 0) {
             StringBuffer buffer = new StringBuffer();
-            me.adaptive.arp.api.ServiceCookie[] cookies = request.getServiceSession().getCookies();
+            ServiceSessionCookie[] cookies = request.getServiceSession().getCookies();
             for (int i = 0; i < cookies.length; i++) {
-                me.adaptive.arp.api.ServiceCookie cookie = cookies[i];
+                ServiceSessionCookie cookie = cookies[i];
                 buffer.append(cookie.getCookieName());
                 buffer.append("=");
                 buffer.append(cookie.getCookieValue());
@@ -556,11 +572,11 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         Logger.log(ILoggingLogLevel.DEBUG, APIService, "reading cookies.. ");
         if (cookieStore.getCookies().size() > 0) {
 
-            me.adaptive.arp.api.ServiceCookie[] cookies = new me.adaptive.arp.api.ServiceCookie[cookieStore.getCookies()
+            ServiceSessionCookie[] cookies = new ServiceSessionCookie[cookieStore.getCookies()
                     .size()];
             for (int i = 0; i < cookieStore.getCookies().size(); i++) {
                 Cookie cookie = cookieStore.getCookies().get(i);
-                me.adaptive.arp.api.ServiceCookie Cookie = new me.adaptive.arp.api.ServiceCookie();
+                ServiceSessionCookie Cookie = new ServiceSessionCookie();
                 Cookie.setCookieName(cookie.getName());
                 Cookie.setCookieValue(cookie.getValue());
                 cookies[i] = Cookie;
@@ -578,8 +594,8 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
             Logger.log(ILoggingLogLevel.DEBUG, APIService, "Found Cache-Control header on response: " + cacheControlHeader + ", using it on internal response...");
 
             me.adaptive.arp.api.ServiceHeader cacheHeader = new me.adaptive.arp.api.ServiceHeader();
-            cacheHeader.setName("Cache-Control");
-            cacheHeader.setData(cacheControlHeader);
+            cacheHeader.setKeyName("Cache-Control");
+            cacheHeader.setKeyData(cacheControlHeader);
 
             List<me.adaptive.arp.api.ServiceHeader> headers = new ArrayList<me.adaptive.arp.api.ServiceHeader>();
             if (response.getServiceHeaders() != null) {
@@ -593,7 +609,9 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         responseStream.close();
 
         Logger.log(ILoggingLogLevel.DEBUG, APIService, "checking binary service type... ");
-        if (IServiceType.ServiceTypeOctetBinary.equals(service.getType())) {
+        // TODO - revise using the new service token and servicerequest factory creation introduced in v2.0.6
+        /*
+        if (IServiceType.OctetBinary.equals(service.getType())) {
             if (responseMimeTypeOverride != null && !responseMimeTypeOverride.equals(contentTypes.get(service.getType()))) {
                 response.setContentType(responseMimeTypeOverride);
             } else {
@@ -607,14 +625,18 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
             response.setContent(new String(resultBinary));
 
         }
-
+        */
         Logger.log(ILoggingLogLevel.DEBUG, APIService, "END reading response.. ");
         return response;
     }
 
 
+    /**
+     * @deprecated
+     */
     public ServiceResponse invokeService(ServiceRequest request, Service service) {
-
+        // TODO - revise using the new service token and servicerequest factory creation introduced in v2.0.6
+        /*
         ServiceEndpoint endpoint = service.getServiceEndpoint();
         ServiceResponse response = new ServiceResponse();
 
@@ -681,7 +703,10 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         }
 
         Logger.log(ILoggingLogLevel.DEBUG, APIService, "invoke service finished");
+
         return response;
+        */
+        return null;
     }
 
 
@@ -800,6 +825,81 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
 
         Logger.log(ILoggingLogLevel.DEBUG, APIService, "httpSSLClient stored for next HTTPS access");
 
+    }
+
+    /**
+     * Create a service request for the given ServiceToken. This method creates the request, populating
+     * existing headers and cookies for the same service. The request is populated with all the defaults
+     * for the service being invoked and requires only the request body to be set. Headers and cookies may be
+     * manipulated as needed by the application before submitting the ServiceRequest via invokeService.
+     *
+     * @param serviceToken ServiceToken to be used for the creation of the request.
+     * @return ServiceRequest with pre-populated headers, cookies and defaults for the service.
+     * @since v2.0.6
+     */
+    @Override
+    public ServiceRequest getServiceRequest(ServiceToken serviceToken) {
+        // TODO: Not implemented.
+        throw new UnsupportedOperationException(this.getClass().getName() + ":getServiceRequest");
+    }
+
+    /**
+     * Obtains a ServiceToken for the given parameters to be used for the creation of requests.
+     *
+     * @param serviceName  Service name.
+     * @param endpointName Endpoint name.
+     * @param functionName Function name.
+     * @param method       Method type.
+     * @return ServiceToken to create a service request or null if the given parameter combination is not
+     * configured in the platform's XML service definition file.
+     * @since v2.0.6
+     */
+    @Override
+    public ServiceToken getServiceToken(String serviceName, String endpointName, String functionName, IServiceMethod method) {
+        // TODO: Not implemented.
+        throw new UnsupportedOperationException(this.getClass().getName() + ":getServiceToken");
+    }
+
+    /**
+     * Returns all the possible service tokens configured in the platform's XML service definition file.
+     *
+     * @return Array of service tokens configured.
+     * @since v2.0.6
+     */
+    @Override
+    public ServiceToken[] getServicesRegistered() {
+        // TODO: Not implemented.
+        throw new UnsupportedOperationException(this.getClass().getName() + ":getServicesRegistered");
+    }
+
+    /**
+     * Executes the given ServiceRequest and provides responses to the given callback handler.
+     *
+     * @param serviceRequest ServiceRequest with the request body.
+     * @param callback       IServiceResultCallback to handle the ServiceResponse.
+     * @since v2.0.6
+     */
+    @Override
+    public void invokeService(ServiceRequest serviceRequest, IServiceResultCallback callback) {
+        // TODO: Not implemented.
+        throw new UnsupportedOperationException(this.getClass().getName() + ":invokeService");
+    }
+
+    /**
+     * Checks whether a specific service, endpoint, function and method type is configured in the platform's
+     * XML service definition file.
+     *
+     * @param serviceName  Service name.
+     * @param endpointName Endpoint name.
+     * @param functionName Function name.
+     * @param method       Method type.
+     * @return Returns true if the service is configured, false otherwise.
+     * @since v2.0.6
+     */
+    @Override
+    public boolean isServiceRegistered(String serviceName, String endpointName, String functionName, IServiceMethod method) {
+        // TODO: Not implemented.
+        throw new UnsupportedOperationException(this.getClass().getName() + ":isServiceRegistered");
     }
 
     public static class ValidatingSSLSocketFactory extends SSLSocketFactory {
@@ -1209,8 +1309,8 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
                                 return false;
                             }
                         }
-						/*
-						//ROOT TOKEN READ
+                        /*
+                        //ROOT TOKEN READ
 						List<String> rootAuth = null;
 						boolean bLookForRoots = false;
 						if(!_VALIDROOTAUTHORITIES.isEmpty() ){
@@ -1279,7 +1379,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
                 }
 
 	            /* NOT TO USE
-	             * Reason: Takes too much time depending the CRL file. 1Mb Crl file download in 15 secs
+                 * Reason: Takes too much time depending the CRL file. 1Mb Crl file download in 15 secs
 
 				private boolean verifyCertificateCRLs(X509Certificate cert){
 	            	boolean bContinueValidating = true;
@@ -1558,5 +1658,5 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
 
 }
 /**
-------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
-*/
+ ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+ */

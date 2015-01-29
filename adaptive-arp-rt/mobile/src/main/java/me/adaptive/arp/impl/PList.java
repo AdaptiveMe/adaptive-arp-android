@@ -57,16 +57,16 @@ public class PList {
         map.put(key, value);
     }
 
-    public void setValues(Map<String, String> values) {
-        map.putAll(values);
-    }
-
     public String getValue(String key) {
         return map.get(key);
     }
 
     public Map<String, String> getValues() {
         return map;
+    }
+
+    public void setValues(Map<String, String> values) {
+        map.putAll(values);
     }
 
     @Override

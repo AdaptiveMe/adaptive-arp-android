@@ -1,36 +1,36 @@
 /**
---| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
+ --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
 
-(C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
+ (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
-License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
--cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
-permissions and limitations under the License.
+ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+ License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
+ -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
+ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
+ permissions and limitations under the License.
 
-Original author:
+ Original author:
 
-    * Carlos Lozano Diez
-            <http://github.com/carloslozano>
-            <http://twitter.com/adaptivecoder>
-            <mailto:carlos@adaptive.me>
+ * Carlos Lozano Diez
+ <http://github.com/carloslozano>
+ <http://twitter.com/adaptivecoder>
+ <mailto:carlos@adaptive.me>
 
-Contributors:
+ Contributors:
 
-    * Ferran Vila Conesa
-             <http://github.com/fnva>
-             <http://twitter.com/ferran_vila>
-             <mailto:ferran.vila.conesa@gmail.com>
+ * Ferran Vila Conesa
+ <http://github.com/fnva>
+ <http://twitter.com/ferran_vila>
+ <mailto:ferran.vila.conesa@gmail.com>
 
-    * See source code files for contributors.
+ * See source code files for contributors.
 
-Release:
+ Release:
 
-    * @version v2.0.3
+ * @version v2.0.3
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
-*/
+ */
 
 package me.adaptive.arp.impl;
 
@@ -44,71 +44,24 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.adaptive.arp.api.*;
+import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.Geolocation;
+import me.adaptive.arp.api.IGeolocation;
+import me.adaptive.arp.api.IGeolocationListener;
+import me.adaptive.arp.api.IGeolocationListenerWarning;
+import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
-   Interface for Managing the Geolocation operations
-   Auto-generated implementation of IGeolocation specification.
-*/
+ * Interface for Managing the Geolocation operations
+ * Auto-generated implementation of IGeolocation specification.
+ */
 public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocation {
 
 
+    private static final long UPDATE_INTERVAL = 5 * 1000;
     public static String APIService = "networkStatus";
     static LoggingDelegate Logger;
     public List<IGeolocationListener> listeners = new ArrayList<IGeolocationListener>();
-
-    private static final long UPDATE_INTERVAL = 5 * 1000;
-
-    private LocationManager locationManager;
-    private boolean searching = false;
-     /**
-        Default Constructor.
-     */
-     public GeolocationDelegate() {
-          super();
-         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-
-     }
-
-     /**
-        Register a new listener that will receive geolocation events.
-
-        @param listener to be registered.
-        @since ARP1.0
-     */
-     public void addGeolocationListener(IGeolocationListener listener) {
-         if (!listeners.contains(listener)){
-             listeners.add(listener);
-             Logger.log(ILoggingLogLevel.DEBUG, APIService, "addGeolocationListener: "+ listener.toString()+" Added!");
-             if(!searching) startUpdatingLocation();
-         }else Logger.log(ILoggingLogLevel.WARN, APIService, "addGeolocationListener: "+ listener.toString() + " is already added!");
-     }
-
-     /**
-        De-registers an existing listener from receiving geolocation events.
-
-        @param listener to be registered.
-        @since ARP1.0
-     */
-     public void removeGeolocationListener(IGeolocationListener listener) {
-         if(listeners.contains(listener)){
-             listeners.remove(listener);
-             Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeGeolocationListener"+ listener.toString()+" Removed!");
-         }else Logger.log(ILoggingLogLevel.WARN, APIService, "removeGeolocationListener: "+ listener.toString() + " is NOT registered");
-         if(listeners.isEmpty()) stopUpdatingLocation();
-     }
-
-     /**
-        Removed all existing listeners from receiving geolocation events.
-
-        @since ARP1.0
-     */
-     public void removeGeolocationListeners() {
-         listeners.clear();
-         stopUpdatingLocation();
-         Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeGeolocationListeners: ALL GeolocationListeners have been removed!");
-     }
-
     /**
      * Define a listener that responds to location updates
      */
@@ -118,9 +71,11 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
             makeUseOfNewLocation(location);
         }
 
-        public void onStatusChanged(String provider, int status, Bundle extras) {}
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
 
-        public void onProviderEnabled(String provider) {}
+        public void onProviderEnabled(String provider) {
+        }
 
         public void onProviderDisabled(String provider) {
             Criteria criteria = new Criteria();
@@ -132,22 +87,74 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
             provider = locationManager.getBestProvider(criteria, true);
             Location location = locationManager.getLastKnownLocation(provider);
             Geolocation geo = toARP(location);
-            if(!listeners.isEmpty()){
-                for(IGeolocationListener geoListener: listeners){
+            if (!listeners.isEmpty()) {
+                for (IGeolocationListener geoListener : listeners) {
                     geoListener.onWarning(geo, IGeolocationListenerWarning.StaleData);
                 }
             }
         }
     };
+    private LocationManager locationManager;
+    private boolean searching = false;
 
-    private Geolocation toARP(Location location){
-        return new Geolocation(location.getLatitude(),location.getLongitude(),location.getAltitude(),location.getAccuracy(),location.getAccuracy(),System.currentTimeMillis());
+    /**
+     * Default Constructor.
+     */
+    public GeolocationDelegate() {
+        super();
+        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+
+    }
+
+    /**
+     * Register a new listener that will receive geolocation events.
+     *
+     * @param listener to be registered.
+     * @since ARP1.0
+     */
+    public void addGeolocationListener(IGeolocationListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+            Logger.log(ILoggingLogLevel.DEBUG, APIService, "addGeolocationListener: " + listener.toString() + " Added!");
+            if (!searching) startUpdatingLocation();
+        } else
+            Logger.log(ILoggingLogLevel.WARN, APIService, "addGeolocationListener: " + listener.toString() + " is already added!");
+    }
+
+    /**
+     * De-registers an existing listener from receiving geolocation events.
+     *
+     * @param listener to be registered.
+     * @since ARP1.0
+     */
+    public void removeGeolocationListener(IGeolocationListener listener) {
+        if (listeners.contains(listener)) {
+            listeners.remove(listener);
+            Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeGeolocationListener" + listener.toString() + " Removed!");
+        } else
+            Logger.log(ILoggingLogLevel.WARN, APIService, "removeGeolocationListener: " + listener.toString() + " is NOT registered");
+        if (listeners.isEmpty()) stopUpdatingLocation();
+    }
+
+    /**
+     * Removed all existing listeners from receiving geolocation events.
+     *
+     * @since ARP1.0
+     */
+    public void removeGeolocationListeners() {
+        listeners.clear();
+        stopUpdatingLocation();
+        Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeGeolocationListeners: ALL GeolocationListeners have been removed!");
+    }
+
+    private Geolocation toARP(Location location) {
+        return new Geolocation(location.getLatitude(), location.getLongitude(), location.getAltitude(), location.getAccuracy(), location.getAccuracy(), System.currentTimeMillis());
     }
 
     private void makeUseOfNewLocation(Location location) {
-        if(!listeners.isEmpty()){
+        if (!listeners.isEmpty()) {
             Geolocation geo = toARP(location);
-            for(IGeolocationListener geoListener: listeners){
+            for (IGeolocationListener geoListener : listeners) {
                 geoListener.onResult(geo);
             }
         }
@@ -193,7 +200,7 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
         }
 
 		/* DO NOT STORE ANY LAST KNOWN LOCATION.
-		 * OTHER PLATFORMS DO NOT HAVE THIS DATA AVAILABLE.
+         * OTHER PLATFORMS DO NOT HAVE THIS DATA AVAILABLE.
 		 * SAME BEHAVOUR SHOULD BE PRESERVED ACROSS PLATFORMS.
 		 *
 		Location lastGps = locationManager
@@ -235,5 +242,5 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
 
 }
 /**
-------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
-*/
+ ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+ */

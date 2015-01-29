@@ -1,36 +1,36 @@
 /**
---| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
+ --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
 
-(C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
+ (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
-License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
--cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
-permissions and limitations under the License.
+ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+ License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
+ -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
+ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
+ permissions and limitations under the License.
 
-Original author:
+ Original author:
 
-    * Carlos Lozano Diez
-            <http://github.com/carloslozano>
-            <http://twitter.com/adaptivecoder>
-            <mailto:carlos@adaptive.me>
+ * Carlos Lozano Diez
+ <http://github.com/carloslozano>
+ <http://twitter.com/adaptivecoder>
+ <mailto:carlos@adaptive.me>
 
-Contributors:
+ Contributors:
 
-    * Ferran Vila Conesa
-             <http://github.com/fnva>
-             <http://twitter.com/ferran_vila>
-             <mailto:ferran.vila.conesa@gmail.com>
+ * Ferran Vila Conesa
+ <http://github.com/fnva>
+ <http://twitter.com/ferran_vila>
+ <mailto:ferran.vila.conesa@gmail.com>
 
-    * See source code files for contributors.
+ * See source code files for contributors.
 
-Release:
+ Release:
 
-    * @version v2.0.3
+ * @version v2.0.3
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
-*/
+ */
 
 package me.adaptive.arp.impl;
 
@@ -50,9 +50,9 @@ import me.adaptive.arp.api.INetworkReachabilityCallback;
 import me.adaptive.arp.api.INetworkReachabilityCallbackError;
 
 /**
-   Interface for Managing the Network reachability operations
-   Auto-generated implementation of INetworkReachability specification.
-*/
+ * Interface for Managing the Network reachability operations
+ * Auto-generated implementation of INetworkReachability specification.
+ */
 public class NetworkReachabilityDelegate extends BaseCommunicationDelegate implements INetworkReachability {
 
 
@@ -61,41 +61,41 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
     public static String APIService = "networkReachability";
     static LoggingDelegate Logger;
 
-     /**
-        Default Constructor.
+    /**
+     * Default Constructor.
      */
-     public NetworkReachabilityDelegate() {
-          super();
-         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+    public NetworkReachabilityDelegate() {
+        super();
+        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
 
-     }
+    }
 
-     /**
-        Whether there is connectivity to a host, via domain name or ip address, or not.
-
-        @param host     domain name or ip address of host.
-        @param callback Callback called at the end.
-        @since ARP1.0
+    /**
+     * Whether there is connectivity to a host, via domain name or ip address, or not.
+     *
+     * @param host     domain name or ip address of host.
+     * @param callback Callback called at the end.
+     * @since ARP1.0
      */
-     public void isNetworkReachable(final String host, final INetworkReachabilityCallback callback) {
-         AppContextDelegate.getExecutorService().submit(new Runnable() {
-             public void run() {
-                 checkHttpConnection(host, callback);
-             }
-            });
-     }
+    public void isNetworkReachable(final String host, final INetworkReachabilityCallback callback) {
+        AppContextDelegate.getExecutorService().submit(new Runnable() {
+            public void run() {
+                checkHttpConnection(host, callback);
+            }
+        });
+    }
 
-     /**
-        Whether there is connectivity to an url of a service or not.
-
-        @param url      to look for
-        @param callback Callback called at the end
-        @since ARP1.0
+    /**
+     * Whether there is connectivity to an url of a service or not.
+     *
+     * @param url      to look for
+     * @param callback Callback called at the end
+     * @since ARP1.0
      */
-     public void isNetworkServiceReachable(String url, INetworkReachabilityCallback callback) {
-         //TODO REVIEW
-         isNetworkReachable(url,callback);
-     }
+    public void isNetworkServiceReachable(String url, INetworkReachabilityCallback callback) {
+        //TODO REVIEW
+        isNetworkReachable(url, callback);
+    }
 
     private void checkHttpConnection(String testUrl, INetworkReachabilityCallback cb) {
         boolean hasScheme = testUrl.contains("://");
@@ -146,18 +146,17 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
 
     }
 
-    public boolean NetworkAvailable(){
+    public boolean NetworkAvailable() {
         ConnectivityManager conMgr = (ConnectivityManager) AppContextDelegate.getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        if ( conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
-                || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING ) {
+        if (conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
+                || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING) {
 
             // notify user you are online
             //ServiceLocator.getLogger().log(ILogging.LogLevel.DEBUG, APIService, "NETWORK AVAILABLE");
             Logger.log(ILoggingLogLevel.DEBUG, APIService, "NETWORK AVAILABLE");
             return true;
-        }
-        else if ( conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
+        } else if (conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
                 || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
 
             // notify user you are not online
@@ -169,5 +168,5 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
     }
 }
 /**
-------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
-*/
+ ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+ */

@@ -31,6 +31,9 @@
 package me.adaptive.arp.impl;
 
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,9 +42,6 @@ import java.util.Map;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILoggingLogLevel;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 
 public class PListParser {
@@ -101,7 +101,7 @@ public class PListParser {
             }
         } catch (Exception ex) {
             plist = null;
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "Parse Error: "+ ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.ERROR, APIService, "Parse Error: " + ex.getLocalizedMessage());
         }
 
 

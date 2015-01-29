@@ -1,36 +1,36 @@
 /**
---| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
+ --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
 
-(C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
+ (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
-License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
--cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
-permissions and limitations under the License.
+ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+ License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
+ -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
+ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
+ permissions and limitations under the License.
 
-Original author:
+ Original author:
 
-    * Carlos Lozano Diez
-            <http://github.com/carloslozano>
-            <http://twitter.com/adaptivecoder>
-            <mailto:carlos@adaptive.me>
+ * Carlos Lozano Diez
+ <http://github.com/carloslozano>
+ <http://twitter.com/adaptivecoder>
+ <mailto:carlos@adaptive.me>
 
-Contributors:
+ Contributors:
 
-    * Ferran Vila Conesa
-             <http://github.com/fnva>
-             <http://twitter.com/ferran_vila>
-             <mailto:ferran.vila.conesa@gmail.com>
+ * Ferran Vila Conesa
+ <http://github.com/fnva>
+ <http://twitter.com/ferran_vila>
+ <mailto:ferran.vila.conesa@gmail.com>
 
-    * See source code files for contributors.
+ * See source code files for contributors.
 
-Release:
+ Release:
 
-    * @version v2.0.3
+ * @version v2.0.3
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
-*/
+ */
 
 package me.adaptive.arp.impl;
 
@@ -54,14 +54,14 @@ import me.adaptive.arp.api.IAccelerationListener;
 import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
-   Interface defining methods about the acceleration sensor
-   Auto-generated implementation of IAcceleration specification.
-*/
+ * Interface defining methods about the acceleration sensor
+ * Auto-generated implementation of IAcceleration specification.
+ */
 public class AccelerationDelegate extends BaseSensorDelegate implements IAcceleration {
 
 
-    public String APIService = "accelerometer";
     static LoggingDelegate Logger;
+    public String APIService = "accelerometer";
     private List<IAccelerationListener> listeners = new ArrayList<IAccelerationListener>();
 
     private SensorManager mSensorManager;
@@ -72,61 +72,6 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
     private float[] orientation = new float[3];
     private float[] rotation = new float[9];
     private float[] linear_acceleration = new float[3];
-    private boolean searching = false;
-     /**
-        Default Constructor.
-     */
-     public AccelerationDelegate() {
-         super();
-
-         Logger = ((LoggingDelegate)AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-         mSensorManager = (SensorManager) AppContextDelegate.getMainActivity()
-                 .getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
-         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-     }
-
-     /**
-        Register a new listener that will receive acceleration events.
-
-        @param listener to be registered.
-        @since ARP1.0
-     */
-     public void addAccelerationListener(IAccelerationListener listener) {
-         if (!listeners.contains(listener)){
-             listeners.add(listener);
-             Logger.log(ILoggingLogLevel.DEBUG, APIService, "addAccelerationListener: "+ listener.toString()+" Added!");
-         }else Logger.log(ILoggingLogLevel.WARN, APIService, "addAccelerationListener: "+ listener.toString() + " is already added!");
-         if(!listeners.isEmpty()){
-             mSensorManager.registerListener(sensorListener, mSensor,
-                     SensorManager.SENSOR_DELAY_NORMAL);
-         }
-     }
-
-     /**
-        De-registers an existing listener from receiving acceleration events.
-
-        @param listener to be registered.
-        @since ARP1.0
-     */
-     public void removeAccelerationListener(IAccelerationListener listener) {
-         if(listeners.contains(listener)){
-             listeners.remove(listener);
-             Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeAccelerationListener"+ listener.toString()+" Removed!");
-         }else Logger.log(ILoggingLogLevel.WARN, APIService, "removeAccelerationListener: "+ listener.toString() + " is NOT registered");
-         if(listeners.isEmpty()) mSensorManager.unregisterListener(sensorListener);
-     }
-
-     /**
-        Removed all existing listeners from receiving acceleration events.
-
-        @since ARP1.0
-     */
-     public void removeAccelerationListeners() {
-         listeners.clear();
-         Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeAccelerationListeners: ALL AccelerationListeners have been removed!");
-         mSensorManager.unregisterListener(sensorListener);
-     }
-
     /**
      * listen to sensor (ACCELEROMETER, MAGNETIC FIELD) changes
      */
@@ -148,10 +93,10 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
                 // updating the orientation array
                 SensorManager.getOrientation(rotation, orientation);
 
-                Acceleration acc = new Acceleration(linear_acceleration[0],linear_acceleration[1],linear_acceleration[2], new Date().getTime());
+                Acceleration acc = new Acceleration(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], new Date().getTime());
 
-                if(!listeners.isEmpty()){
-                    for(IAccelerationListener accListener: listeners){
+                if (!listeners.isEmpty()) {
+                    for (IAccelerationListener accListener : listeners) {
                         accListener.onResult(acc);
                     }
                 }
@@ -173,6 +118,63 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
             // has nothing to do
         }
     };
+    private boolean searching = false;
+
+    /**
+     * Default Constructor.
+     */
+    public AccelerationDelegate() {
+        super();
+
+        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+        mSensorManager = (SensorManager) AppContextDelegate.getMainActivity()
+                .getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    /**
+     * Register a new listener that will receive acceleration events.
+     *
+     * @param listener to be registered.
+     * @since ARP1.0
+     */
+    public void addAccelerationListener(IAccelerationListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+            Logger.log(ILoggingLogLevel.DEBUG, APIService, "addAccelerationListener: " + listener.toString() + " Added!");
+        } else
+            Logger.log(ILoggingLogLevel.WARN, APIService, "addAccelerationListener: " + listener.toString() + " is already added!");
+        if (!listeners.isEmpty()) {
+            mSensorManager.registerListener(sensorListener, mSensor,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    /**
+     * De-registers an existing listener from receiving acceleration events.
+     *
+     * @param listener to be registered.
+     * @since ARP1.0
+     */
+    public void removeAccelerationListener(IAccelerationListener listener) {
+        if (listeners.contains(listener)) {
+            listeners.remove(listener);
+            Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeAccelerationListener" + listener.toString() + " Removed!");
+        } else
+            Logger.log(ILoggingLogLevel.WARN, APIService, "removeAccelerationListener: " + listener.toString() + " is NOT registered");
+        if (listeners.isEmpty()) mSensorManager.unregisterListener(sensorListener);
+    }
+
+    /**
+     * Removed all existing listeners from receiving acceleration events.
+     *
+     * @since ARP1.0
+     */
+    public void removeAccelerationListeners() {
+        listeners.clear();
+        Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeAccelerationListeners: ALL AccelerationListeners have been removed!");
+        mSensorManager.unregisterListener(sensorListener);
+    }
 
     private void setBright(float value) {
 
@@ -211,5 +213,5 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
     }
 }
 /**
-------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
-*/
+ ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+ */
