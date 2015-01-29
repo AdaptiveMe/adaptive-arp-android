@@ -1,290 +1,290 @@
 /**
- --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
+--| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
 
- (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
+(C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
 
- Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
- License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
- -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
- WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
- permissions and limitations under the License.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
+-cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
+permissions and limitations under the License.
 
- Original author:
+Original author:
 
- * Carlos Lozano Diez
- <http://github.com/carloslozano>
- <http://twitter.com/adaptivecoder>
- <mailto:carlos@adaptive.me>
+    * Carlos Lozano Diez
+            <http://github.com/carloslozano>
+            <http://twitter.com/adaptivecoder>
+            <mailto:carlos@adaptive.me>
 
- Contributors:
+Contributors:
 
- * Ferran Vila Conesa
- <http://github.com/fnva>
- <http://twitter.com/ferran_vila>
- <mailto:ferran.vila.conesa@gmail.com>
+    * Ferran Vila Conesa
+             <http://github.com/fnva>
+             <http://twitter.com/ferran_vila>
+             <mailto:ferran.vila.conesa@gmail.com>
 
- * See source code files for contributors.
+    * See source code files for contributors.
 
- Release:
+Release:
 
- * @version v2.0.8
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
- */
+*/
 
 package me.adaptive.arp.api;
 
 /**
- * Structure representing the cookieValue of a http cookie.
- *
- * @author Aryslan
- * @version 1.0
- * @since v2.0
- */
+   Structure representing the cookieValue of a http cookie.
+
+   @author Aryslan
+   @since v2.0
+   @version 1.0
+*/
 public class ServiceSessionCookie extends APIBean {
 
-    /**
-     * Name ot the cookie.
+     /**
+        Name ot the cookie.
      */
-    private String cookieName;
-    /**
-     * Value of the ServiceCookie.
+     private String cookieName;
+     /**
+        Value of the ServiceCookie.
      */
-    private String cookieValue;
-    /**
-     * ServiceCookie creation timestamp in milliseconds.
+     private String cookieValue;
+     /**
+        ServiceCookie creation timestamp in milliseconds.
      */
-    private long creation;
-    /**
-     * Domain for which the cookie is valid.
+     private long creation;
+     /**
+        Domain for which the cookie is valid.
      */
-    private String domain;
-    /**
-     * ServiceCookie expiry in milliseconds or -1 for session only.
+     private String domain;
+     /**
+        ServiceCookie expiry in milliseconds or -1 for session only.
      */
-    private long expiry;
-    /**
-     * URI path for which the cookie is valid.
+     private long expiry;
+     /**
+        URI path for which the cookie is valid.
      */
-    private String path;
-    /**
-     * Scheme of the domain - http/https - for which the cookie is valid.
+     private String path;
+     /**
+        Scheme of the domain - http/https - for which the cookie is valid.
      */
-    private String scheme;
-    /**
-     * ServiceCookie is secure (https only).
+     private String scheme;
+     /**
+        ServiceCookie is secure (https only).
      */
-    private boolean secure;
+     private boolean secure;
 
-    /**
-     * Default constructor.
-     *
-     * @since v2.0
-     */
-    public ServiceSessionCookie() {
-    }
+     /**
+        Default constructor.
 
-    /**
-     * Constructor used by the implementation
-     *
-     * @param cookieName  Name of the cookie
-     * @param cookieValue Value of the cookie
-     * @since v2.0
+        @since v2.0
      */
-    public ServiceSessionCookie(String cookieName, String cookieValue) {
-        super();
-        this.cookieName = cookieName;
-        this.cookieValue = cookieValue;
-    }
+     public ServiceSessionCookie() {
+     }
 
-    /**
-     * Contructor with fields
-     *
-     * @param cookieName  Name of the cookie
-     * @param cookieValue Value of the cookie
-     * @param domain      Domain of the cookie
-     * @param path        Path of the cookie
-     * @param scheme      Scheme of the cookie
-     * @param secure      Privacy of the cookie
-     * @param expiry      Expiration date of the cookie
-     * @param creation    Creation date of the cookie
-     * @since v2.0
-     */
-    public ServiceSessionCookie(String cookieName, String cookieValue, String domain, String path, String scheme, boolean secure, long expiry, long creation) {
-        super();
-        this.cookieName = cookieName;
-        this.cookieValue = cookieValue;
-        this.domain = domain;
-        this.path = path;
-        this.scheme = scheme;
-        this.secure = secure;
-        this.expiry = expiry;
-        this.creation = creation;
-    }
+     /**
+        Constructor used by the implementation
 
-    /**
-     * Returns the cookie cookieName
-     *
-     * @return cookieName Name of the cookie
-     * @since v2.0
+        @param cookieName  Name of the cookie
+        @param cookieValue Value of the cookie
+        @since v2.0
      */
-    public String getCookieName() {
-        return this.cookieName;
-    }
+     public ServiceSessionCookie(String cookieName, String cookieValue) {
+          super();
+          this.cookieName = cookieName;
+          this.cookieValue = cookieValue;
+     }
 
-    /**
-     * Set the cookie cookieName
-     *
-     * @param cookieName Name of the cookie
-     * @since v2.0
-     */
-    public void setCookieName(String cookieName) {
-        this.cookieName = cookieName;
-    }
+     /**
+        Contructor with fields
 
-    /**
-     * Returns the cookie cookieValue
-     *
-     * @return Value of the cookie
-     * @since v2.0
+        @param cookieName  Name of the cookie
+        @param cookieValue Value of the cookie
+        @param domain      Domain of the cookie
+        @param path        Path of the cookie
+        @param scheme      Scheme of the cookie
+        @param secure      Privacy of the cookie
+        @param expiry      Expiration date of the cookie
+        @param creation    Creation date of the cookie
+        @since v2.0
      */
-    public String getCookieValue() {
-        return this.cookieValue;
-    }
+     public ServiceSessionCookie(String cookieName, String cookieValue, String domain, String path, String scheme, boolean secure, long expiry, long creation) {
+          super();
+          this.cookieName = cookieName;
+          this.cookieValue = cookieValue;
+          this.domain = domain;
+          this.path = path;
+          this.scheme = scheme;
+          this.secure = secure;
+          this.expiry = expiry;
+          this.creation = creation;
+     }
 
-    /**
-     * Set the cookie cookieValue
-     *
-     * @param cookieValue Value of the cookie
-     * @since v2.0
-     */
-    public void setCookieValue(String cookieValue) {
-        this.cookieValue = cookieValue;
-    }
+     /**
+        Returns the cookie cookieName
 
-    /**
-     * Returns the creation date
-     *
-     * @return Creation date of the cookie
-     * @since v2.0
+        @return cookieName Name of the cookie
+        @since v2.0
      */
-    public long getCreation() {
-        return this.creation;
-    }
+     public String getCookieName() {
+          return this.cookieName;
+     }
 
-    /**
-     * Sets the creation date
-     *
-     * @param creation Creation date of the cookie
-     * @since v2.0
-     */
-    public void setCreation(long creation) {
-        this.creation = creation;
-    }
+     /**
+        Set the cookie cookieName
 
-    /**
-     * Returns the domain
-     *
-     * @return domain
-     * @since v2.0
+        @param cookieName Name of the cookie
+        @since v2.0
      */
-    public String getDomain() {
-        return this.domain;
-    }
+     public void setCookieName(String cookieName) {
+          this.cookieName = cookieName;
+     }
 
-    /**
-     * Set the domain
-     *
-     * @param domain Domain of the cookie
-     * @since v2.0
-     */
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
+     /**
+        Returns the cookie cookieValue
 
-    /**
-     * Returns the expiration date in milis
-     *
-     * @return expiry
-     * @since v2.0
+        @return Value of the cookie
+        @since v2.0
      */
-    public long getExpiry() {
-        return this.expiry;
-    }
+     public String getCookieValue() {
+          return this.cookieValue;
+     }
 
-    /**
-     * Set the expiration date in milis
-     *
-     * @param expiry Expiration date of the cookie
-     * @since v2.0
-     */
-    public void setExpiry(long expiry) {
-        this.expiry = expiry;
-    }
+     /**
+        Set the cookie cookieValue
 
-    /**
-     * Returns the path
-     *
-     * @return path
-     * @since v2.0
+        @param cookieValue Value of the cookie
+        @since v2.0
      */
-    public String getPath() {
-        return this.path;
-    }
+     public void setCookieValue(String cookieValue) {
+          this.cookieValue = cookieValue;
+     }
 
-    /**
-     * Set the path
-     *
-     * @param path Path of the cookie
-     * @since v2.0
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
+     /**
+        Returns the creation date
 
-    /**
-     * Returns the scheme
-     *
-     * @return scheme
-     * @since v2.0
+        @return Creation date of the cookie
+        @since v2.0
      */
-    public String getScheme() {
-        return this.scheme;
-    }
+     public long getCreation() {
+          return this.creation;
+     }
 
-    /**
-     * Set the scheme
-     *
-     * @param scheme Scheme of the cookie
-     * @since v2.0
-     */
-    public void setScheme(String scheme) {
-        this.scheme = scheme;
-    }
+     /**
+        Sets the creation date
 
-    /**
-     * Returns whether the cookie is secure or not
-     *
-     * @return true if the cookie is secure; false otherwise
-     * @since v2.0
+        @param creation Creation date of the cookie
+        @since v2.0
      */
-    public boolean getSecure() {
-        return this.secure;
-    }
+     public void setCreation(long creation) {
+          this.creation = creation;
+     }
 
-    /**
-     * Set whether the cookie is secure or not
-     *
-     * @param secure Privacy of the cookie
-     * @since v2.0
+     /**
+        Returns the domain
+
+        @return domain
+        @since v2.0
      */
-    public void setSecure(boolean secure) {
-        this.secure = secure;
-    }
+     public String getDomain() {
+          return this.domain;
+     }
+
+     /**
+        Set the domain
+
+        @param domain Domain of the cookie
+        @since v2.0
+     */
+     public void setDomain(String domain) {
+          this.domain = domain;
+     }
+
+     /**
+        Returns the expiration date in milis
+
+        @return expiry
+        @since v2.0
+     */
+     public long getExpiry() {
+          return this.expiry;
+     }
+
+     /**
+        Set the expiration date in milis
+
+        @param expiry Expiration date of the cookie
+        @since v2.0
+     */
+     public void setExpiry(long expiry) {
+          this.expiry = expiry;
+     }
+
+     /**
+        Returns the path
+
+        @return path
+        @since v2.0
+     */
+     public String getPath() {
+          return this.path;
+     }
+
+     /**
+        Set the path
+
+        @param path Path of the cookie
+        @since v2.0
+     */
+     public void setPath(String path) {
+          this.path = path;
+     }
+
+     /**
+        Returns the scheme
+
+        @return scheme
+        @since v2.0
+     */
+     public String getScheme() {
+          return this.scheme;
+     }
+
+     /**
+        Set the scheme
+
+        @param scheme Scheme of the cookie
+        @since v2.0
+     */
+     public void setScheme(String scheme) {
+          this.scheme = scheme;
+     }
+
+     /**
+        Returns whether the cookie is secure or not
+
+        @return true if the cookie is secure; false otherwise
+        @since v2.0
+     */
+     public boolean getSecure() {
+          return this.secure;
+     }
+
+     /**
+        Set whether the cookie is secure or not
+
+        @param secure Privacy of the cookie
+        @since v2.0
+     */
+     public void setSecure(boolean secure) {
+          this.secure = secure;
+     }
 
 
 }
 
 /**
- ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
- */
+------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+*/

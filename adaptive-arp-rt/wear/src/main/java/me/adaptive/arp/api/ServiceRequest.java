@@ -1,325 +1,325 @@
 /**
- --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
+--| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
 
- (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
+(C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
 
- Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
- License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
- -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
- WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
- permissions and limitations under the License.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
+-cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
+permissions and limitations under the License.
 
- Original author:
+Original author:
 
- * Carlos Lozano Diez
- <http://github.com/carloslozano>
- <http://twitter.com/adaptivecoder>
- <mailto:carlos@adaptive.me>
+    * Carlos Lozano Diez
+            <http://github.com/carloslozano>
+            <http://twitter.com/adaptivecoder>
+            <mailto:carlos@adaptive.me>
 
- Contributors:
+Contributors:
 
- * Ferran Vila Conesa
- <http://github.com/fnva>
- <http://twitter.com/ferran_vila>
- <mailto:ferran.vila.conesa@gmail.com>
+    * Ferran Vila Conesa
+             <http://github.com/fnva>
+             <http://twitter.com/ferran_vila>
+             <mailto:ferran.vila.conesa@gmail.com>
 
- * See source code files for contributors.
+    * See source code files for contributors.
 
- Release:
+Release:
 
- * @version v2.0.8
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
- */
+*/
 
 package me.adaptive.arp.api;
 
 /**
- * Represents a local or remote service request.
- *
- * @author Aryslan
- * @version 1.0
- * @since v2.0
- */
+   Represents a local or remote service request.
+
+   @author Aryslan
+   @since v2.0
+   @version 1.0
+*/
 public class ServiceRequest extends APIBean {
 
-    /**
-     * Body parameters to be included in the body of the request to a service. These may be applied
-     * during GET/POST operations. No body parameters are included if this array is null or length zero.
+     /**
+        Body parameters to be included in the body of the request to a service. These may be applied
+during GET/POST operations. No body parameters are included if this array is null or length zero.
      */
-    private ServiceRequestParameter[] bodyParameters;
-    /**
-     * Request data content (plain text). This should be populated by the application. The content should be
-     * in some well-known web format - in specific, binaries submitted should be encoded to base64 and the content
-     * type should be set respectively by the application.
+     private ServiceRequestParameter[] bodyParameters;
+     /**
+        Request data content (plain text). This should be populated by the application. The content should be
+in some well-known web format - in specific, binaries submitted should be encoded to base64 and the content
+type should be set respectively by the application.
      */
-    private String content;
-    /**
-     * Encoding of the content - by default assumed to be UTF8. This may be populated by the application, the platform
-     * populates this field with defaults for the service.
+     private String content;
+     /**
+        Encoding of the content - by default assumed to be UTF8. This may be populated by the application, the platform
+populates this field with defaults for the service.
      */
-    private String contentEncoding;
-    /**
-     * The length in bytes of the content. This may be populated by the application, the platform
-     * calculates this length automatically if a specific contentLength is not specified.
+     private String contentEncoding;
+     /**
+        The length in bytes of the content. This may be populated by the application, the platform
+calculates this length automatically if a specific contentLength is not specified.
      */
-    private int contentLength;
-    /**
-     * The request content type (MIME TYPE). This may be populated by the application, the platform
-     * populates this field with defaults for the service.
+     private int contentLength;
+     /**
+        The request content type (MIME TYPE). This may be populated by the application, the platform
+populates this field with defaults for the service.
      */
-    private String contentType;
-    /**
-     * Query string parameters to be appended to the service URL when making the request. These may be applied
-     * during GET/POST operations. No query parameters are appended if this array is null or length zero.
+     private String contentType;
+     /**
+        Query string parameters to be appended to the service URL when making the request. These may be applied
+during GET/POST operations. No query parameters are appended if this array is null or length zero.
      */
-    private ServiceRequestParameter[] queryParameters;
-    /**
-     * The serviceHeaders array (name,value pairs) to be included in the request. This may be populated by the
-     * application, the platform populates this field with defaults for the service and the previous headers.
-     * In specific, the platform maintains request and response state automatically.
+     private ServiceRequestParameter[] queryParameters;
+     /**
+        The serviceHeaders array (name,value pairs) to be included in the request. This may be populated by the
+application, the platform populates this field with defaults for the service and the previous headers.
+In specific, the platform maintains request and response state automatically.
      */
-    private ServiceHeader[] serviceHeaders;
-    /**
-     * Session attributes and cookies. This may be populated by the application, the platform populates
-     * this field with defaults for the service and the previous state information. In specific, the platform
-     * maintains request and response state automatically.
+     private ServiceHeader[] serviceHeaders;
+     /**
+        Session attributes and cookies. This may be populated by the application, the platform populates
+this field with defaults for the service and the previous state information. In specific, the platform
+maintains request and response state automatically.
      */
-    private ServiceSession serviceSession;
-    /**
-     * Token used for the creation of the request with the destination service, endpoint, function and method
-     * identifiers. This should not be manipulated by the application directly.
+     private ServiceSession serviceSession;
+     /**
+        Token used for the creation of the request with the destination service, endpoint, function and method
+identifiers. This should not be manipulated by the application directly.
      */
-    private ServiceToken serviceToken;
-    /**
-     * This attribute allows for the default user-agent string to be overridden by the application.
+     private ServiceToken serviceToken;
+     /**
+        This attribute allows for the default user-agent string to be overridden by the application.
      */
-    private String userAgent;
+     private String userAgent;
 
-    /**
-     * Default constructor.
-     *
-     * @since v2.0
-     */
-    public ServiceRequest() {
-    }
+     /**
+        Default constructor.
 
-    /**
-     * Convenience constructor.
-     *
-     * @param content      Content payload.
-     * @param serviceToken ServiceToken for the request.
-     * @since v2.0.6
+        @since v2.0
      */
-    public ServiceRequest(String content, ServiceToken serviceToken) {
-        super();
-        this.content = content;
-        this.serviceToken = serviceToken;
-    }
+     public ServiceRequest() {
+     }
 
-    /**
-     * Gets the body parameters of the request.
-     *
-     * @return ServiceRequestParameter array or null if none are specified.
-     * @since v2.0.6
-     */
-    public ServiceRequestParameter[] getBodyParameters() {
-        return this.bodyParameters;
-    }
+     /**
+        Convenience constructor.
 
-    /**
-     * Sets the body parameters of the request.
-     *
-     * @param bodyParameters ServiceRequestParameter array or null if none are specified.
-     * @since v2.0.6
+        @param content      Content payload.
+        @param serviceToken ServiceToken for the request.
+        @since v2.0.6
      */
-    public void setBodyParameters(ServiceRequestParameter[] bodyParameters) {
-        this.bodyParameters = bodyParameters;
-    }
+     public ServiceRequest(String content, ServiceToken serviceToken) {
+          super();
+          this.content = content;
+          this.serviceToken = serviceToken;
+     }
 
-    /**
-     * Returns the content
-     *
-     * @return content
-     * @since v2.0
-     */
-    public String getContent() {
-        return this.content;
-    }
+     /**
+        Gets the body parameters of the request.
 
-    /**
-     * Set the content
-     *
-     * @param content Request/Response data content (plain text)
-     * @since v2.0
+        @return ServiceRequestParameter array or null if none are specified.
+        @since v2.0.6
      */
-    public void setContent(String content) {
-        this.content = content;
-    }
+     public ServiceRequestParameter[] getBodyParameters() {
+          return this.bodyParameters;
+     }
 
-    /**
-     * Returns the content encoding
-     *
-     * @return contentEncoding
-     * @since v2.0
-     */
-    public String getContentEncoding() {
-        return this.contentEncoding;
-    }
+     /**
+        Sets the body parameters of the request.
 
-    /**
-     * Set the content encoding
-     *
-     * @param contentEncoding Encoding of the binary payload - by default assumed to be UTF8.
-     * @since v2.0
+        @param bodyParameters ServiceRequestParameter array or null if none are specified.
+        @since v2.0.6
      */
-    public void setContentEncoding(String contentEncoding) {
-        this.contentEncoding = contentEncoding;
-    }
+     public void setBodyParameters(ServiceRequestParameter[] bodyParameters) {
+          this.bodyParameters = bodyParameters;
+     }
 
-    /**
-     * Returns the content length
-     *
-     * @return contentLength
-     * @since v2.0
-     */
-    public int getContentLength() {
-        return this.contentLength;
-    }
+     /**
+        Returns the content
 
-    /**
-     * Set the content length
-     *
-     * @param contentLength The length in bytes for the Content field.
-     * @since v2.0
+        @return content
+        @since v2.0
      */
-    public void setContentLength(int contentLength) {
-        this.contentLength = contentLength;
-    }
+     public String getContent() {
+          return this.content;
+     }
 
-    /**
-     * Returns the content type
-     *
-     * @return contentType
-     * @since v2.0
-     */
-    public String getContentType() {
-        return this.contentType;
-    }
+     /**
+        Set the content
 
-    /**
-     * Set the content type
-     *
-     * @param contentType The request/response content type (MIME TYPE).
-     * @since v2.0
+        @param content Request/Response data content (plain text)
+        @since v2.0
      */
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
+     public void setContent(String content) {
+          this.content = content;
+     }
 
-    /**
-     * Gets the query parameters of the request.
-     *
-     * @return ServiceRequestParameter array or null if none are specified.
-     * @since v2.0.6
-     */
-    public ServiceRequestParameter[] getQueryParameters() {
-        return this.queryParameters;
-    }
+     /**
+        Returns the content encoding
 
-    /**
-     * Sets the query parameters of the request.
-     *
-     * @param queryParameters ServiceRequestParameter array or null if none are specified.
-     * @since v2.0.6
+        @return contentEncoding
+        @since v2.0
      */
-    public void setQueryParameters(ServiceRequestParameter[] queryParameters) {
-        this.queryParameters = queryParameters;
-    }
+     public String getContentEncoding() {
+          return this.contentEncoding;
+     }
 
-    /**
-     * Returns the array of ServiceHeader
-     *
-     * @return serviceHeaders
-     * @since v2.0
-     */
-    public ServiceHeader[] getServiceHeaders() {
-        return this.serviceHeaders;
-    }
+     /**
+        Set the content encoding
 
-    /**
-     * Set the array of ServiceHeader
-     *
-     * @param serviceHeaders The serviceHeaders array (name,value pairs) to be included on the I/O service request.
-     * @since v2.0
+        @param contentEncoding Encoding of the binary payload - by default assumed to be UTF8.
+        @since v2.0
      */
-    public void setServiceHeaders(ServiceHeader[] serviceHeaders) {
-        this.serviceHeaders = serviceHeaders;
-    }
+     public void setContentEncoding(String contentEncoding) {
+          this.contentEncoding = contentEncoding;
+     }
 
-    /**
-     * Getter for service session
-     *
-     * @return The element service session
-     * @since v2.0
-     */
-    public ServiceSession getServiceSession() {
-        return this.serviceSession;
-    }
+     /**
+        Returns the content length
 
-    /**
-     * Setter for service session
-     *
-     * @param serviceSession The element service session
-     * @since v2.0
+        @return contentLength
+        @since v2.0
      */
-    public void setServiceSession(ServiceSession serviceSession) {
-        this.serviceSession = serviceSession;
-    }
+     public int getContentLength() {
+          return this.contentLength;
+     }
 
-    /**
-     * Gets the ServiceToken of the request.
-     *
-     * @return ServiceToken.
-     * @since v2.0.6
-     */
-    public ServiceToken getServiceToken() {
-        return this.serviceToken;
-    }
+     /**
+        Set the content length
 
-    /**
-     * Sets the ServiceToken of the request.
-     *
-     * @param serviceToken ServiceToken to be used for the invocation.
-     * @since v2.0.6
+        @param contentLength The length in bytes for the Content field.
+        @since v2.0
      */
-    public void setServiceToken(ServiceToken serviceToken) {
-        this.serviceToken = serviceToken;
-    }
+     public void setContentLength(int contentLength) {
+          this.contentLength = contentLength;
+     }
 
-    /**
-     * Gets the overridden user-agent string.
-     *
-     * @return User-agent string.
-     * @since v2.0.6
-     */
-    public String getUserAgent() {
-        return this.userAgent;
-    }
+     /**
+        Returns the content type
 
-    /**
-     * Sets the user-agent to override the default user-agent string.
-     *
-     * @param userAgent User-agent string.
-     * @since v2.0.6
+        @return contentType
+        @since v2.0
      */
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
+     public String getContentType() {
+          return this.contentType;
+     }
+
+     /**
+        Set the content type
+
+        @param contentType The request/response content type (MIME TYPE).
+        @since v2.0
+     */
+     public void setContentType(String contentType) {
+          this.contentType = contentType;
+     }
+
+     /**
+        Gets the query parameters of the request.
+
+        @return ServiceRequestParameter array or null if none are specified.
+        @since v2.0.6
+     */
+     public ServiceRequestParameter[] getQueryParameters() {
+          return this.queryParameters;
+     }
+
+     /**
+        Sets the query parameters of the request.
+
+        @param queryParameters ServiceRequestParameter array or null if none are specified.
+        @since v2.0.6
+     */
+     public void setQueryParameters(ServiceRequestParameter[] queryParameters) {
+          this.queryParameters = queryParameters;
+     }
+
+     /**
+        Returns the array of ServiceHeader
+
+        @return serviceHeaders
+        @since v2.0
+     */
+     public ServiceHeader[] getServiceHeaders() {
+          return this.serviceHeaders;
+     }
+
+     /**
+        Set the array of ServiceHeader
+
+        @param serviceHeaders The serviceHeaders array (name,value pairs) to be included on the I/O service request.
+        @since v2.0
+     */
+     public void setServiceHeaders(ServiceHeader[] serviceHeaders) {
+          this.serviceHeaders = serviceHeaders;
+     }
+
+     /**
+        Getter for service session
+
+        @return The element service session
+        @since v2.0
+     */
+     public ServiceSession getServiceSession() {
+          return this.serviceSession;
+     }
+
+     /**
+        Setter for service session
+
+        @param serviceSession The element service session
+        @since v2.0
+     */
+     public void setServiceSession(ServiceSession serviceSession) {
+          this.serviceSession = serviceSession;
+     }
+
+     /**
+        Gets the ServiceToken of the request.
+
+        @return ServiceToken.
+        @since v2.0.6
+     */
+     public ServiceToken getServiceToken() {
+          return this.serviceToken;
+     }
+
+     /**
+        Sets the ServiceToken of the request.
+
+        @param serviceToken ServiceToken to be used for the invocation.
+        @since v2.0.6
+     */
+     public void setServiceToken(ServiceToken serviceToken) {
+          this.serviceToken = serviceToken;
+     }
+
+     /**
+        Gets the overridden user-agent string.
+
+        @return User-agent string.
+        @since v2.0.6
+     */
+     public String getUserAgent() {
+          return this.userAgent;
+     }
+
+     /**
+        Sets the user-agent to override the default user-agent string.
+
+        @param userAgent User-agent string.
+        @since v2.0.6
+     */
+     public void setUserAgent(String userAgent) {
+          this.userAgent = userAgent;
+     }
 
 
 }
 
 /**
- ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
- */
+------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+*/

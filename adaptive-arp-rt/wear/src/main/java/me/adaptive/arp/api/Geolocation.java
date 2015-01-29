@@ -1,236 +1,236 @@
 /**
- --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
+--| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
 
- (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
+(C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
 
- Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
- License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
- -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
- WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
- permissions and limitations under the License.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
+-cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
+permissions and limitations under the License.
 
- Original author:
+Original author:
 
- * Carlos Lozano Diez
- <http://github.com/carloslozano>
- <http://twitter.com/adaptivecoder>
- <mailto:carlos@adaptive.me>
+    * Carlos Lozano Diez
+            <http://github.com/carloslozano>
+            <http://twitter.com/adaptivecoder>
+            <mailto:carlos@adaptive.me>
 
- Contributors:
+Contributors:
 
- * Ferran Vila Conesa
- <http://github.com/fnva>
- <http://twitter.com/ferran_vila>
- <mailto:ferran.vila.conesa@gmail.com>
+    * Ferran Vila Conesa
+             <http://github.com/fnva>
+             <http://twitter.com/ferran_vila>
+             <mailto:ferran.vila.conesa@gmail.com>
 
- * See source code files for contributors.
+    * See source code files for contributors.
 
- Release:
+Release:
 
- * @version v2.0.8
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
- */
+*/
 
 package me.adaptive.arp.api;
 
 /**
- * Structure representing the data a single geolocation reading.
- *
- * @author Francisco Javier Martin Bueno
- * @version 1.0
- * @since v2.0
- */
+   Structure representing the data a single geolocation reading.
+
+   @author Francisco Javier Martin Bueno
+   @since v2.0
+   @version 1.0
+*/
 public class Geolocation extends APIBean {
 
-    /**
-     * The current device altitude (or Z coordinate). Measured in meters.
+     /**
+        The current device altitude (or Z coordinate). Measured in meters.
      */
-    private double altitude;
-    /**
-     * The Y coordinate (or latitude). Measured in degrees.
+     private double altitude;
+     /**
+        The Y coordinate (or latitude). Measured in degrees.
      */
-    private double latitude;
-    /**
-     * The X coordinate (or longitude). Measured in degrees.
+     private double latitude;
+     /**
+        The X coordinate (or longitude). Measured in degrees.
      */
-    private double longitude;
-    /**
-     * Timestamp of the geolocation reading.
+     private double longitude;
+     /**
+        Timestamp of the geolocation reading.
      */
-    private long timestamp;
-    /**
-     * Dilution of precision on the X measurement. Measured in meters.
+     private long timestamp;
+     /**
+        Dilution of precision on the X measurement. Measured in meters.
      */
-    private float xDoP;
-    /**
-     * Dilution of precision on the Y measurement. Measured in meters.
+     private float xDoP;
+     /**
+        Dilution of precision on the Y measurement. Measured in meters.
      */
-    private float yDoP;
+     private float yDoP;
 
-    /**
-     * Default constructor
-     *
-     * @since v2.0
-     */
-    public Geolocation() {
-    }
+     /**
+        Default constructor
 
-    /**
-     * Constructor with parameters
-     *
-     * @param latitude  Latitude of the measurement
-     * @param longitude Longitude of the measurement
-     * @param altitude  Altitude of the measurement
-     * @param xDoP      Dilution of precision on the X measurement
-     * @param yDoP      Dilution of precision on the Y measurement
-     * @param timestamp Timestamp of the measurement
-     * @since v2.0
+        @since v2.0
      */
-    public Geolocation(double latitude, double longitude, double altitude, float xDoP, float yDoP, long timestamp) {
-        super();
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.altitude = altitude;
-        this.xDoP = xDoP;
-        this.yDoP = yDoP;
-        this.timestamp = timestamp;
-    }
+     public Geolocation() {
+     }
 
-    /**
-     * Constructor with parameters
-     *
-     * @param latitude  Latitude of the measurement
-     * @param longitude Longitude of the measurement
-     * @param timestamp Timestamp of the measurement
-     * @since v2.0
-     */
-    public Geolocation(double latitude, double longitude, long timestamp) {
-        super();
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.timestamp = timestamp;
-    }
+     /**
+        Constructor with parameters
 
-    /**
-     * Returns altitude in meters
-     *
-     * @return Altitude of the measurement
-     * @since v2.0
+        @param latitude  Latitude of the measurement
+        @param longitude Longitude of the measurement
+        @param altitude  Altitude of the measurement
+        @param xDoP      Dilution of precision on the X measurement
+        @param yDoP      Dilution of precision on the Y measurement
+        @param timestamp Timestamp of the measurement
+        @since v2.0
      */
-    public double getAltitude() {
-        return this.altitude;
-    }
+     public Geolocation(double latitude, double longitude, double altitude, float xDoP, float yDoP, long timestamp) {
+          super();
+          this.latitude = latitude;
+          this.longitude = longitude;
+          this.altitude = altitude;
+          this.xDoP = xDoP;
+          this.yDoP = yDoP;
+          this.timestamp = timestamp;
+     }
 
-    /**
-     * Set altitude in meters
-     *
-     * @param altitude Altitude of the measurement
-     * @since v2.0
-     */
-    public void setAltitude(double altitude) {
-        this.altitude = altitude;
-    }
+     /**
+        Constructor with parameters
 
-    /**
-     * Returns the latitude in degrees
-     *
-     * @return Latitude of the measurement
-     * @since v2.0
+        @param latitude  Latitude of the measurement
+        @param longitude Longitude of the measurement
+        @param timestamp Timestamp of the measurement
+        @since v2.0
      */
-    public double getLatitude() {
-        return this.latitude;
-    }
+     public Geolocation(double latitude, double longitude, long timestamp) {
+          super();
+          this.latitude = latitude;
+          this.longitude = longitude;
+          this.timestamp = timestamp;
+     }
 
-    /**
-     * Set the latitude in degrees
-     *
-     * @param latitude Latitude of the measurement
-     * @since v2.0
-     */
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
+     /**
+        Returns altitude in meters
 
-    /**
-     * Returns the longitude in degrees
-     *
-     * @return Longitude of the measurement
-     * @since v2.0
+        @return Altitude of the measurement
+        @since v2.0
      */
-    public double getLongitude() {
-        return this.longitude;
-    }
+     public double getAltitude() {
+          return this.altitude;
+     }
 
-    /**
-     * Returns the latitude in degrees
-     *
-     * @param longitude Longitude of the measurement
-     * @since v2.0
-     */
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
+     /**
+        Set altitude in meters
 
-    /**
-     * Timestamp Getter
-     *
-     * @return Timestamp
-     * @since v2.0
+        @param altitude Altitude of the measurement
+        @since v2.0
      */
-    public long getTimestamp() {
-        return this.timestamp;
-    }
+     public void setAltitude(double altitude) {
+          this.altitude = altitude;
+     }
 
-    /**
-     * Timestamp Setter
-     *
-     * @param timestamp Timestamp
-     * @since v2.0
-     */
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
+     /**
+        Returns the latitude in degrees
 
-    /**
-     * Gets Dilution of precision on the X measurement. Measured in meters.
-     *
-     * @return xDoP Dilution of precision on the X measurement. Measured in meters.
+        @return Latitude of the measurement
+        @since v2.0
      */
-    public float getXDoP() {
-        return this.xDoP;
-    }
+     public double getLatitude() {
+          return this.latitude;
+     }
 
-    /**
-     * Sets Dilution of precision on the X measurement. Measured in meters.
-     *
-     * @param xDoP Dilution of precision on the X measurement. Measured in meters.
-     */
-    public void setXDoP(float xDoP) {
-        this.xDoP = xDoP;
-    }
+     /**
+        Set the latitude in degrees
 
-    /**
-     * Gets Dilution of precision on the Y measurement. Measured in meters.
-     *
-     * @return yDoP Dilution of precision on the Y measurement. Measured in meters.
+        @param latitude Latitude of the measurement
+        @since v2.0
      */
-    public float getYDoP() {
-        return this.yDoP;
-    }
+     public void setLatitude(double latitude) {
+          this.latitude = latitude;
+     }
 
-    /**
-     * Sets Dilution of precision on the Y measurement. Measured in meters.
-     *
-     * @param yDoP Dilution of precision on the Y measurement. Measured in meters.
+     /**
+        Returns the longitude in degrees
+
+        @return Longitude of the measurement
+        @since v2.0
      */
-    public void setYDoP(float yDoP) {
-        this.yDoP = yDoP;
-    }
+     public double getLongitude() {
+          return this.longitude;
+     }
+
+     /**
+        Returns the latitude in degrees
+
+        @param longitude Longitude of the measurement
+        @since v2.0
+     */
+     public void setLongitude(double longitude) {
+          this.longitude = longitude;
+     }
+
+     /**
+        Timestamp Getter
+
+        @return Timestamp
+        @since v2.0
+     */
+     public long getTimestamp() {
+          return this.timestamp;
+     }
+
+     /**
+        Timestamp Setter
+
+        @param timestamp Timestamp
+        @since v2.0
+     */
+     public void setTimestamp(long timestamp) {
+          this.timestamp = timestamp;
+     }
+
+     /**
+        Gets Dilution of precision on the X measurement. Measured in meters.
+
+        @return xDoP Dilution of precision on the X measurement. Measured in meters.
+     */
+     public float getXDoP() {
+          return this.xDoP;
+     }
+
+     /**
+        Sets Dilution of precision on the X measurement. Measured in meters.
+
+        @param xDoP Dilution of precision on the X measurement. Measured in meters.
+     */
+     public void setXDoP(float xDoP) {
+          this.xDoP = xDoP;
+     }
+
+     /**
+        Gets Dilution of precision on the Y measurement. Measured in meters.
+
+        @return yDoP Dilution of precision on the Y measurement. Measured in meters.
+     */
+     public float getYDoP() {
+          return this.yDoP;
+     }
+
+     /**
+        Sets Dilution of precision on the Y measurement. Measured in meters.
+
+        @param yDoP Dilution of precision on the Y measurement. Measured in meters.
+     */
+     public void setYDoP(float yDoP) {
+          this.yDoP = yDoP;
+     }
 
 
 }
 
 /**
- ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
- */
+------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+*/
