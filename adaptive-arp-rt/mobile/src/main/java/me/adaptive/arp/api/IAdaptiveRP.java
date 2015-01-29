@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Master interface for all the Groups and Types of Interfaces os the Project
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IAdaptiveRP {
@@ -46,7 +46,7 @@ public interface IAdaptiveRP {
         Method that returns the API group of the implementation
 
         @return API Group name.
-        @since ARP1.0
+        @since v2.0
      */
      IAdaptiveRPGroup getAPIGroup();
 
@@ -54,7 +54,7 @@ public interface IAdaptiveRP {
         Method that returns the API version of the implementation.
 
         @return API Version string.
-        @since ARP1.0
+        @since v2.0
      */
      String getAPIVersion();
 

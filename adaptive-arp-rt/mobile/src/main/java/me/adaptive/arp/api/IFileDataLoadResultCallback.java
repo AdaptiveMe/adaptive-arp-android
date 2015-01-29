@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the File loading callback responses
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IFileDataLoadResultCallback extends IBaseCallback {
@@ -46,7 +46,7 @@ public interface IFileDataLoadResultCallback extends IBaseCallback {
         Error processing data retrieval/storage operation.
 
         @param error Error condition encountered.
-        @since ARP1.0
+        @since v2.0
      */
      void onError(IFileDataLoadResultCallbackError error);
 
@@ -54,7 +54,7 @@ public interface IFileDataLoadResultCallback extends IBaseCallback {
         Result of data retrieval operation.
 
         @param data Data loaded.
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(byte[] data);
 
@@ -63,7 +63,7 @@ public interface IFileDataLoadResultCallback extends IBaseCallback {
 
         @param data    File being loaded.
         @param warning Warning condition encountered.
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(byte[] data, IFileDataLoadResultCallbackWarning warning);
 

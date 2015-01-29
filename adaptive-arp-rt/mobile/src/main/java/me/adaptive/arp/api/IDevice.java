@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Device operations
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IDevice extends IBaseSystem {
@@ -46,15 +46,23 @@ public interface IDevice extends IBaseSystem {
         Register a new listener that will receive button events.
 
         @param listener to be registered.
-        @since ARP1.0
+        @since v2.0
      */
      void addButtonListener(IButtonListener listener);
+
+     /**
+        Add a listener to start receiving device orientation change events.
+
+        @param listener Listener to add to receive orientation change events.
+        @since v2.0.5
+     */
+     void addDeviceOrientationListener(IDeviceOrientationListener listener);
 
      /**
         Returns the device information for the current device executing the runtime.
 
         @return DeviceInfo for the current device.
-        @since ARP1.0
+        @since v2.0
      */
      DeviceInfo getDeviceInfo();
 
@@ -62,24 +70,48 @@ public interface IDevice extends IBaseSystem {
         Gets the current Locale for the device.
 
         @return The current Locale information.
-        @since ARP1.0
+        @since v2.0
      */
      Locale getLocaleCurrent();
+
+     /**
+        Returns the current orientation of the device. Please note that this may be different from the orientation
+of the display. For display orientation, use the IDisplay APIs.
+
+        @return The current orientation of the device.
+        @since v2.0.5
+     */
+     ICapabilitiesOrientation getOrientationCurrent();
 
      /**
         De-registers an existing listener from receiving button events.
 
         @param listener to be removed.
-        @since ARP1.0
+        @since v2.0
      */
      void removeButtonListener(IButtonListener listener);
 
      /**
         Removed all existing listeners from receiving button events.
 
-        @since ARP1.0
+        @since v2.0
      */
      void removeButtonListeners();
+
+     /**
+        Remove a listener to stop receiving device orientation change events.
+
+        @param listener Listener to remove from receiving orientation change events.
+        @since v2.0.5
+     */
+     void removeDeviceOrientationListener(IDeviceOrientationListener listener);
+
+     /**
+        Remove all listeners receiving device orientation events.
+
+        @since v2.0.5
+     */
+     void removeDeviceOrientationListeners();
 
 }
 

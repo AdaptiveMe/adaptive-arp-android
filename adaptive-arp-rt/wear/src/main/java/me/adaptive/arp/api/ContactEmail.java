@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing the email data elements of a contact.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class ContactEmail extends APIBean {
@@ -59,7 +59,7 @@ public class ContactEmail extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public ContactEmail() {
      }
@@ -70,7 +70,7 @@ public class ContactEmail extends APIBean {
         @param type    Type of the email
         @param primary Is email primary
         @param email   Email of the contact
-        @since ARP1.0
+        @since v2.0
      */
      public ContactEmail(ContactEmailType type, boolean primary, String email) {
           super();
@@ -83,7 +83,7 @@ public class ContactEmail extends APIBean {
         Returns the type of the email
 
         @return EmailType
-        @since ARP1.0
+        @since v2.0
      */
      public ContactEmailType getType() {
           return this.type;
@@ -93,7 +93,7 @@ public class ContactEmail extends APIBean {
         Set the type of the email
 
         @param type Type of the email
-        @since ARP1.0
+        @since v2.0
      */
      public void setType(ContactEmailType type) {
           this.type = type;
@@ -103,7 +103,7 @@ public class ContactEmail extends APIBean {
         Returns the email of the Contact
 
         @return email
-        @since ARP1.0
+        @since v2.0
      */
      public String getEmail() {
           return this.email;
@@ -113,7 +113,7 @@ public class ContactEmail extends APIBean {
         Set the email of the Contact
 
         @param email Email of the contact
-        @since ARP1.0
+        @since v2.0
      */
      public void setEmail(String email) {
           this.email = email;
@@ -123,7 +123,7 @@ public class ContactEmail extends APIBean {
         Returns if the email is primary
 
         @return true if the email is primary; false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      public boolean getPrimary() {
           return this.primary;
@@ -133,7 +133,7 @@ public class ContactEmail extends APIBean {
         Set if the email
 
         @param primary true if the email is primary; false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      public void setPrimary(boolean primary) {
           this.primary = primary;

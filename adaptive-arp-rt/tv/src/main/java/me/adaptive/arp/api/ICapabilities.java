@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,16 +38,35 @@ package me.adaptive.arp.api;
    Interface for testing the Capabilities operations
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface ICapabilities extends IBaseSystem {
+     /**
+        Obtains the default orientation of the device/display. If no default orientation is available on
+the platform, this method will return the current orientation. To capture device or display orientation
+changes please use the IDevice and IDisplay functions and listeners API respectively.
+
+        @return The default orientation for the device/display.
+        @since v2.0.5
+     */
+     ICapabilitiesOrientation getOrientationDefault();
+
+     /**
+        Provides the device/display orientations supported by the platform. A platform will usually
+support at least one orientation. This is usually PortaitUp.
+
+        @return The orientations supported by the device/display of the platform.
+        @since v2.0.5
+     */
+     ICapabilitiesOrientation[] getOrientationsSupported();
+
      /**
         Determines whether a specific hardware button is supported for interaction.
 
         @param type Type of feature to check.
         @return true is supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      boolean hasButtonSupport(ICapabilitiesButton type);
 
@@ -57,7 +76,7 @@ the device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      boolean hasCommunicationSupport(ICapabilitiesCommunication type);
 
@@ -66,7 +85,7 @@ the device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      boolean hasDataSupport(ICapabilitiesData type);
 
@@ -76,7 +95,7 @@ device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      boolean hasMediaSupport(ICapabilitiesMedia type);
 
@@ -85,7 +104,7 @@ device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      boolean hasNetSupport(ICapabilitiesNet type);
 
@@ -95,9 +114,18 @@ device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      boolean hasNotificationSupport(ICapabilitiesNotification type);
+
+     /**
+        Determines whether the device/display supports a given orientation.
+
+        @param orientation Orientation type.
+        @return True if the given orientation is supported, false otherwise.
+        @since v2.0.5
+     */
+     boolean hasOrientationSupport(ICapabilitiesOrientation orientation);
 
      /**
         Determines whether a specific Sensor capability is supported by the
@@ -105,7 +133,7 @@ device.
 
         @param type Type of feature to check.
         @return true if supported, false otherwise.
-        @since ARP1.0
+        @since v2.0
      */
      boolean hasSensorSupport(ICapabilitiesSensor type);
 

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing the address data elements of a contact.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class ContactAddress extends APIBean {
@@ -55,7 +55,7 @@ public class ContactAddress extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public ContactAddress() {
      }
@@ -65,7 +65,7 @@ public class ContactAddress extends APIBean {
 
         @param address Address data.
         @param type    Address type.
-        @since ARP1.0
+        @since v2.0
      */
      public ContactAddress(String address, ContactAddressType type) {
           super();
@@ -77,7 +77,7 @@ public class ContactAddress extends APIBean {
         Returns the type of the address
 
         @return AddressType Address type.
-        @since ARP1.0
+        @since v2.0
      */
      public ContactAddressType getType() {
           return this.type;
@@ -87,7 +87,7 @@ public class ContactAddress extends APIBean {
         Set the address type
 
         @param type Address type.
-        @since ARP1.0
+        @since v2.0
      */
      public void setType(ContactAddressType type) {
           this.type = type;
@@ -97,7 +97,7 @@ public class ContactAddress extends APIBean {
         Returns the Contact address
 
         @return address Address data.
-        @since ARP1.0
+        @since v2.0
      */
      public String getAddress() {
           return this.address;
@@ -107,7 +107,7 @@ public class ContactAddress extends APIBean {
         Set the address of the Contact
 
         @param address Address data.
-        @since ARP1.0
+        @since v2.0
      */
      public void setAddress(String address) {
           this.address = address;

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the button  operations
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IButtonListener extends IBaseListener {
@@ -46,7 +46,7 @@ public interface IButtonListener extends IBaseListener {
         No data received
 
         @param error occurred
-        @since ARP1.0
+        @since v2.0
      */
      void onError(IButtonListenerError error);
 
@@ -54,7 +54,7 @@ public interface IButtonListener extends IBaseListener {
         Called on button pressed
 
         @param button pressed
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(Button button);
 
@@ -63,7 +63,7 @@ public interface IButtonListener extends IBaseListener {
 
         @param button  pressed
         @param warning happened
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(Button button, IButtonListenerWarning warning);
 

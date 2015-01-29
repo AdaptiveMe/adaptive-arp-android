@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Represents a data table composed of databaseColumns and databaseRows.
 
    @author Ferran Vila Conesa
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class DatabaseTable extends APIBean {
@@ -67,7 +67,7 @@ public class DatabaseTable extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public DatabaseTable() {
      }
@@ -76,7 +76,7 @@ public class DatabaseTable extends APIBean {
         Constructor by default
 
         @param name The name of the table
-        @since ARP1.0
+        @since v2.0
      */
      public DatabaseTable(String name) {
           super();
@@ -91,7 +91,7 @@ public class DatabaseTable extends APIBean {
         @param rowCount        The number of databaseRows
         @param databaseColumns The databaseColumns of the table
         @param databaseRows    The databaseRows of the table
-        @since ARP1.0
+        @since v2.0
      */
      public DatabaseTable(String name, int columnCount, int rowCount, DatabaseColumn[] databaseColumns, DatabaseRow[] databaseRows) {
           super();
@@ -106,7 +106,7 @@ public class DatabaseTable extends APIBean {
         Get the number of databaseColumns
 
         @return The number of databaseColumns
-        @since ARP1.0
+        @since v2.0
      */
      public int getColumnCount() {
           return this.columnCount;
@@ -116,7 +116,7 @@ public class DatabaseTable extends APIBean {
         Sets the number of databaseColumns
 
         @param columnCount The number of databaseColumns
-        @since ARP1.0
+        @since v2.0
      */
      public void setColumnCount(int columnCount) {
           this.columnCount = columnCount;
@@ -126,7 +126,7 @@ public class DatabaseTable extends APIBean {
         Get the databaseColumns
 
         @return The databaseColumns
-        @since ARP1.0
+        @since v2.0
      */
      public DatabaseColumn[] getDatabaseColumns() {
           return this.databaseColumns;
@@ -136,7 +136,7 @@ public class DatabaseTable extends APIBean {
         Sets the databaseColumns of the table
 
         @param databaseColumns The databaseColumns of the table
-        @since ARP1.0
+        @since v2.0
      */
      public void setDatabaseColumns(DatabaseColumn[] databaseColumns) {
           this.databaseColumns = databaseColumns;
@@ -146,7 +146,7 @@ public class DatabaseTable extends APIBean {
         Get the databaseRows of the table
 
         @return The databaseRows of the table
-        @since ARP1.0
+        @since v2.0
      */
      public DatabaseRow[] getDatabaseRows() {
           return this.databaseRows;
@@ -156,7 +156,7 @@ public class DatabaseTable extends APIBean {
         Sets the databaseRows of the table
 
         @param databaseRows The databaseRows of the table
-        @since ARP1.0
+        @since v2.0
      */
      public void setDatabaseRows(DatabaseRow[] databaseRows) {
           this.databaseRows = databaseRows;
@@ -166,7 +166,7 @@ public class DatabaseTable extends APIBean {
         Returns the name of the table
 
         @return The name of the table
-        @since ARP1.0
+        @since v2.0
      */
      public String getName() {
           return this.name;
@@ -176,7 +176,7 @@ public class DatabaseTable extends APIBean {
         Sets the name of the table
 
         @param name The name of the table
-        @since ARP1.0
+        @since v2.0
      */
      public void setName(String name) {
           this.name = name;
@@ -186,7 +186,7 @@ public class DatabaseTable extends APIBean {
         Get the number of databaseRows
 
         @return The number of databaseRows
-        @since ARP1.0
+        @since v2.0
      */
      public int getRowCount() {
           return this.rowCount;
@@ -196,7 +196,7 @@ public class DatabaseTable extends APIBean {
         Sets the number of databaseRows
 
         @param rowCount The number of databaseRows
-        @since ARP1.0
+        @since v2.0
      */
      public void setRowCount(int rowCount) {
           this.rowCount = rowCount;

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing a database reference.
 
    @author Ferran Vila Conesa
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class Database extends APIBean {
@@ -55,7 +55,7 @@ public class Database extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public Database() {
      }
@@ -64,7 +64,7 @@ public class Database extends APIBean {
         Default constructor. The compress param is setted to false.
 
         @param name Name of the table.
-        @since ARP1.0
+        @since v2.0
      */
      public Database(String name) {
           super();
@@ -76,7 +76,7 @@ public class Database extends APIBean {
 
         @param name     Name of the DatabaseTable.
         @param compress Compression enabled.
-        @since ARP1.0
+        @since v2.0
      */
      public Database(String name, boolean compress) {
           super();
@@ -88,7 +88,7 @@ public class Database extends APIBean {
         Returns if the table is compressed
 
         @return Compression enabled
-        @since ARP1.0
+        @since v2.0
      */
      public boolean getCompress() {
           return this.compress;
@@ -98,7 +98,7 @@ public class Database extends APIBean {
         Sets if the table is compressed or not.
 
         @param compress Compression enabled
-        @since ARP1.0
+        @since v2.0
      */
      public void setCompress(boolean compress) {
           this.compress = compress;
@@ -108,7 +108,7 @@ public class Database extends APIBean {
         Returns the name.
 
         @return The name of the table.
-        @since ARP1.0
+        @since v2.0
      */
      public String getName() {
           return this.name;
@@ -118,7 +118,7 @@ public class Database extends APIBean {
         Sets the name of the table.
 
         @param name The name of the table.
-        @since ARP1.0
+        @since v2.0
      */
      public void setName(String name) {
           this.name = name;

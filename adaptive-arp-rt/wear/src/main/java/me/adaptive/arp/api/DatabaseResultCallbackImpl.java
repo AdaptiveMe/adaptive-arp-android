@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class DatabaseResultCallbackImpl extends BaseCallbackImpl implements IDat
         Result callback for error responses
 
         @param error Returned error
-        @since ARP1.0
+        @since v2.0
      */
      public void onError(IDatabaseResultCallbackError error) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleDatabaseResultCallbackError( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(error) +") )");
@@ -65,7 +65,7 @@ public class DatabaseResultCallbackImpl extends BaseCallbackImpl implements IDat
         Result callback for correct responses
 
         @param database Returns the database
-        @since ARP1.0
+        @since v2.0
      */
      public void onResult(Database database) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleDatabaseResultCallbackResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(database) +") )");
@@ -76,7 +76,7 @@ public class DatabaseResultCallbackImpl extends BaseCallbackImpl implements IDat
 
         @param database Returns the database
         @param warning  Returned Warning
-        @since ARP1.0
+        @since v2.0
      */
      public void onWarning(Database database, IDatabaseResultCallbackWarning warning) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleDatabaseResultCallbackWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(database) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");

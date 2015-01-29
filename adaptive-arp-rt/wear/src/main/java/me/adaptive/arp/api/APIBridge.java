@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -47,6 +47,7 @@ public interface APIBridge {
 
         @param request APIRequest object containing method name and parameters.
         @return Object with JSON response or a zero length string is the response is asynchronous.
+        @since v2.0
      */
      APIResponse invoke(APIRequest request);
 

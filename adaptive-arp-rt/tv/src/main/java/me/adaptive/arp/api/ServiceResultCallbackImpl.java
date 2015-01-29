@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class ServiceResultCallbackImpl extends BaseCallbackImpl implements IServ
         This method is called on Error
 
         @param error returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      public void onError(IServiceResultCallbackError error) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleServiceResultCallbackError( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(error) +") )");
@@ -65,7 +65,7 @@ public class ServiceResultCallbackImpl extends BaseCallbackImpl implements IServ
         This method is called on Result
 
         @param response data
-        @since ARP1.0
+        @since v2.0
      */
      public void onResult(ServiceResponse response) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleServiceResultCallbackResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(response) +") )");
@@ -76,7 +76,7 @@ public class ServiceResultCallbackImpl extends BaseCallbackImpl implements IServ
 
         @param response data
         @param warning  returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      public void onWarning(ServiceResponse response, IServiceResultCallbackWarning warning) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleServiceResultCallbackWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(response) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");

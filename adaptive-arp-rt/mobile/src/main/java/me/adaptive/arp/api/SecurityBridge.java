@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -78,7 +78,7 @@ public class SecurityBridge extends BaseSecurityBridge implements ISecurity, API
         @param keys             Array with the key names to delete.
         @param publicAccessName The name of the shared internal storage object (if needed).
         @param callback         callback to be executed upon function result.
-        @since ARP 1.0
+        @since v2.0
      */
      public void deleteSecureKeyValuePairs(String[] keys, String publicAccessName, ISecurityResultCallback callback) {
           // Start logging elapsed time.
@@ -102,7 +102,7 @@ public class SecurityBridge extends BaseSecurityBridge implements ISecurity, API
         @param keys             Array with the key names to retrieve.
         @param publicAccessName The name of the shared internal storage object (if needed).
         @param callback         callback to be executed upon function result.
-        @since ARP 1.0
+        @since v2.0
      */
      public void getSecureKeyValuePairs(String[] keys, String publicAccessName, ISecurityResultCallback callback) {
           // Start logging elapsed time.
@@ -124,7 +124,7 @@ public class SecurityBridge extends BaseSecurityBridge implements ISecurity, API
         Returns if the device has been modified in anyhow
 
         @return true if the device has been modified; false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      public boolean isDeviceModified() {
           // Start logging elapsed time.
@@ -149,7 +149,7 @@ public class SecurityBridge extends BaseSecurityBridge implements ISecurity, API
         @param keyValues        Array containing the items to store on the device internal memory.
         @param publicAccessName The name of the shared internal storage object (if needed).
         @param callback         callback to be executed upon function result.
-        @since ARP 1.0
+        @since v2.0
      */
      public void setSecureKeyValuePairs(SecureKeyPair[] keyValues, String publicAccessName, ISecurityResultCallback callback) {
           // Start logging elapsed time.
@@ -204,7 +204,7 @@ public class SecurityBridge extends BaseSecurityBridge implements ISecurity, API
                default:
                     // 404 - response null.
                     responseCode = 404;
-                    responseMessage = "SecurityBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.3.";
+                    responseMessage = "SecurityBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.8.";
           }
           response.setResponse(responseJSON);
           response.setStatusCode(responseCode);

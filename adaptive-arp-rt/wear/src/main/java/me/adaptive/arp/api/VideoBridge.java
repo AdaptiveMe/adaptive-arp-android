@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -76,7 +76,7 @@ public class VideoBridge extends BaseMediaBridge implements IVideo, APIBridge {
         Play url video stream
 
         @param url of the video
-        @since ARP1.0
+        @since v2.0
      */
      public void playStream(String url) {
           // Start logging elapsed time.
@@ -113,7 +113,7 @@ public class VideoBridge extends BaseMediaBridge implements IVideo, APIBridge {
                default:
                     // 404 - response null.
                     responseCode = 404;
-                    responseMessage = "VideoBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.3.";
+                    responseMessage = "VideoBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.8.";
           }
           response.setResponse(responseJSON);
           response.setStatusCode(responseCode);

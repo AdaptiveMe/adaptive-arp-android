@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class NetworkReachabilityCallbackImpl extends BaseCallbackImpl implements
         No data received - error condition, not authorized .
 
         @param error Error value
-        @since ARP1.0
+        @since v2.0
      */
      public void onError(INetworkReachabilityCallbackError error) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleNetworkReachabilityCallbackError( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(error) +") )");
@@ -65,7 +65,7 @@ public class NetworkReachabilityCallbackImpl extends BaseCallbackImpl implements
         Correct data received.
 
         @param reachable Indicates if the host is reachable
-        @since ARP1.0
+        @since v2.0
      */
      public void onResult(boolean reachable) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleNetworkReachabilityCallbackResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(reachable) +") )");
@@ -76,7 +76,7 @@ public class NetworkReachabilityCallbackImpl extends BaseCallbackImpl implements
 
         @param reachable Indicates if the host is reachable
         @param warning   Warning value
-        @since ARP1.0
+        @since v2.0
      */
      public void onWarning(boolean reachable, INetworkReachabilityCallbackWarning warning) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleNetworkReachabilityCallbackWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(reachable) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");

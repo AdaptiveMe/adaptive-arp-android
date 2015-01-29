@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing the data elements of an email addressee.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class EmailAddress extends APIBean {
@@ -51,7 +51,7 @@ public class EmailAddress extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public EmailAddress() {
      }
@@ -60,7 +60,7 @@ public class EmailAddress extends APIBean {
         Constructor used by implementation
 
         @param address of the Email
-        @since ARP1.0
+        @since v2.0
      */
      public EmailAddress(String address) {
           super();
@@ -71,7 +71,7 @@ public class EmailAddress extends APIBean {
         Returns the email address
 
         @return address of the Email
-        @since ARP1.0
+        @since v2.0
      */
      public String getAddress() {
           return this.address;
@@ -81,7 +81,7 @@ public class EmailAddress extends APIBean {
         Set the Email address
 
         @param address of the Email
-        @since ARP1.0
+        @since v2.0
      */
      public void setAddress(String address) {
           this.address = address;

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Network status listener events
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface INetworkStatusListener extends IBaseListener {
@@ -46,7 +46,7 @@ public interface INetworkStatusListener extends IBaseListener {
         No data received - error condition, not authorized or hardware not available.
 
         @param error Type of error encountered during reading.
-        @since ARP1.0
+        @since v2.0
      */
      void onError(INetworkStatusListenerError error);
 
@@ -54,7 +54,7 @@ public interface INetworkStatusListener extends IBaseListener {
         Called when network connection changes somehow.
 
         @param network Change to this network.
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(ICapabilitiesNet network);
 
@@ -63,7 +63,7 @@ public interface INetworkStatusListener extends IBaseListener {
 
         @param network Change to this network.
         @param warning Type of warning encountered during reading.
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(ICapabilitiesNet network, INetworkStatusListenerWarning warning);
 

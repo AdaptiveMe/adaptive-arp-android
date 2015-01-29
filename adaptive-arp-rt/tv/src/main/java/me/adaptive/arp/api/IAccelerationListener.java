@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface defines the response methods of the acceleration operations
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IAccelerationListener extends IBaseListener {
@@ -47,7 +47,7 @@ public interface IAccelerationListener extends IBaseListener {
 listener and subsequently, the listener will be deactivated and removed from the internal list of listeners.
 
         @param error Error fired
-        @since ARP1.0
+        @since v2.0
      */
      void onError(IAccelerationListenerError error);
 
@@ -55,7 +55,7 @@ listener and subsequently, the listener will be deactivated and removed from the
         Correct data received.
 
         @param acceleration Acceleration received
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(Acceleration acceleration);
 
@@ -64,7 +64,7 @@ listener and subsequently, the listener will be deactivated and removed from the
 
         @param acceleration Acceleration received
         @param warning      Warning fired
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(Acceleration acceleration, IAccelerationListenerWarning warning);
 

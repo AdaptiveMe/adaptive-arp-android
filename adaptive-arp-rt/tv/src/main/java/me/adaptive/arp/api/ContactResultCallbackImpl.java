@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class ContactResultCallbackImpl extends BaseCallbackImpl implements ICont
         This method is called on Error
 
         @param error returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      public void onError(IContactResultCallbackError error) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleContactResultCallbackError( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(error) +") )");
@@ -65,7 +65,7 @@ public class ContactResultCallbackImpl extends BaseCallbackImpl implements ICont
         This method is called on Result
 
         @param contacts returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      public void onResult(Contact[] contacts) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleContactResultCallbackResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(contacts) +") )");
@@ -76,7 +76,7 @@ public class ContactResultCallbackImpl extends BaseCallbackImpl implements ICont
 
         @param contacts returned by the platform
         @param warning  returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      public void onWarning(Contact[] contacts, IContactResultCallbackWarning warning) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleContactResultCallbackWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(contacts) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");

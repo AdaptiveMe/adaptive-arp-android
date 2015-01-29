@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Lifecycle listeners
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface ILifecycle extends IBaseApplication {
@@ -46,7 +46,7 @@ public interface ILifecycle extends IBaseApplication {
         Add the listener for the lifecycle of the app
 
         @param listener Lifecycle listener
-        @since ARP1.0
+        @since v2.0
      */
      void addLifecycleListener(ILifecycleListener listener);
 
@@ -54,7 +54,7 @@ public interface ILifecycle extends IBaseApplication {
         Whether the application is in background or not
 
         @return true if the application is in background;false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      boolean isBackground();
 
@@ -62,14 +62,14 @@ public interface ILifecycle extends IBaseApplication {
         Un-registers an existing listener from receiving lifecycle events.
 
         @param listener Lifecycle listener
-        @since ARP1.0
+        @since v2.0
      */
      void removeLifecycleListener(ILifecycleListener listener);
 
      /**
         Removes all existing listeners from receiving lifecycle events.
 
-        @since ARP1.0
+        @since v2.0
      */
      void removeLifecycleListeners();
 

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,16 +38,16 @@ package me.adaptive.arp.api;
    Represents a specific application life-cycle stage.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class Lifecycle extends APIBean {
 
      /**
         Represent the state of the app
-<p/>
+<p>
 Possible lifecycle States:
-<p/>
+<p>
 1. Starting    - Before starting.
 2. Started     - Start concluded.
 3. Running     - Accepts user interaction - running in foreground.
@@ -62,7 +62,7 @@ Possible lifecycle States:
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public Lifecycle() {
      }
@@ -71,7 +71,7 @@ Possible lifecycle States:
         Constructor used by the implementation
 
         @param state of the app
-        @since ARP1.0
+        @since v2.0
      */
      public Lifecycle(LifecycleState state) {
           super();
@@ -82,7 +82,7 @@ Possible lifecycle States:
         Returns the state of the application
 
         @return state of the app
-        @since ARP1.0
+        @since v2.0
      */
      public LifecycleState getState() {
           return this.state;
@@ -92,7 +92,7 @@ Possible lifecycle States:
         Set the State of the application
 
         @param state of the app
-        @since ARP1.0
+        @since v2.0
      */
      public void setState(LifecycleState state) {
           this.state = state;

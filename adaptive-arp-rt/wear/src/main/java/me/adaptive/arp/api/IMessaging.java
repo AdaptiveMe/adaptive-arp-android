@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Messaging operations
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IMessaging extends IBasePIM {
@@ -48,7 +48,7 @@ public interface IMessaging extends IBasePIM {
         @param number   to send
         @param text     to send
         @param callback with the result
-        @since ARP1.0
+        @since v2.0
      */
      void sendSMS(String number, String text, IMessagingCallback callback);
 

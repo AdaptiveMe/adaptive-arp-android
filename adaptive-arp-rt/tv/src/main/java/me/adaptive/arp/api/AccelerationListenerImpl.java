@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -56,7 +56,7 @@ public class AccelerationListenerImpl extends BaseListenerImpl implements IAccel
 listener and subsequently, the listener will be deactivated and removed from the internal list of listeners.
 
         @param error Error fired
-        @since ARP1.0
+        @since v2.0
      */
      public void onError(IAccelerationListenerError error) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleAccelerationListenerError( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(error) +") )");
@@ -66,7 +66,7 @@ listener and subsequently, the listener will be deactivated and removed from the
         Correct data received.
 
         @param acceleration Acceleration received
-        @since ARP1.0
+        @since v2.0
      */
      public void onResult(Acceleration acceleration) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleAccelerationListenerResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(acceleration) +") )");
@@ -77,7 +77,7 @@ listener and subsequently, the listener will be deactivated and removed from the
 
         @param acceleration Acceleration received
         @param warning      Warning fired
-        @since ARP1.0
+        @since v2.0
      */
      public void onWarning(Acceleration acceleration, IAccelerationListenerWarning warning) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleAccelerationListenerWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(acceleration) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");

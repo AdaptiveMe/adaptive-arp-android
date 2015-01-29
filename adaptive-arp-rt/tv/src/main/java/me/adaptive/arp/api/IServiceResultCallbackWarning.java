@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -39,8 +39,8 @@ package me.adaptive.arp.api;
 */
 public enum IServiceResultCallbackWarning {
 
+     CertificateUntrusted,
      NotSecure,
-     NotTrusted,
      Redirected,
      Wrong_Params,
      Unknown;

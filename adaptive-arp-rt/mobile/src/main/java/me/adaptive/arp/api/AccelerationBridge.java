@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -76,7 +76,7 @@ public class AccelerationBridge extends BaseSensorBridge implements IAcceleratio
         Register a new listener that will receive acceleration events.
 
         @param listener to be registered.
-        @since ARP1.0
+        @since v2.0
      */
      public void addAccelerationListener(IAccelerationListener listener) {
           // Start logging elapsed time.
@@ -98,7 +98,7 @@ public class AccelerationBridge extends BaseSensorBridge implements IAcceleratio
         De-registers an existing listener from receiving acceleration events.
 
         @param listener to be registered.
-        @since ARP1.0
+        @since v2.0
      */
      public void removeAccelerationListener(IAccelerationListener listener) {
           // Start logging elapsed time.
@@ -119,7 +119,7 @@ public class AccelerationBridge extends BaseSensorBridge implements IAcceleratio
      /**
         Removed all existing listeners from receiving acceleration events.
 
-        @since ARP1.0
+        @since v2.0
      */
      public void removeAccelerationListeners() {
           // Start logging elapsed time.
@@ -163,7 +163,7 @@ public class AccelerationBridge extends BaseSensorBridge implements IAcceleratio
                default:
                     // 404 - response null.
                     responseCode = 404;
-                    responseMessage = "AccelerationBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.3.";
+                    responseMessage = "AccelerationBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.8.";
           }
           response.setResponse(responseJSON);
           response.setStatusCode(responseCode);

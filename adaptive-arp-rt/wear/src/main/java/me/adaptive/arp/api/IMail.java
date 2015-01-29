@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Mail operations
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IMail extends IBasePIM {
@@ -47,7 +47,7 @@ public interface IMail extends IBasePIM {
 
         @param data     Payload of the email
         @param callback Result callback of the operation
-        @since ARP1.0
+        @since v2.0
      */
      void sendEmail(Email data, IMessagingCallback callback);
 

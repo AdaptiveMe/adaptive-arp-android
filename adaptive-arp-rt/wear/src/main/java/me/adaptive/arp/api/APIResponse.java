@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing a JSON response to the HTML5 layer.
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class APIResponse {
@@ -59,7 +59,7 @@ public class APIResponse {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public APIResponse() {
      }
@@ -69,7 +69,7 @@ public class APIResponse {
 
         @param response   String representing the JavaScript value or JSON object representation of the response.
         @param statusCode Status code of the response (200 = OK, others are warning or error conditions).
-        @since ARP1.0
+        @since v2.0
      */
      public APIResponse(String response, int statusCode) {
           this();
@@ -95,7 +95,7 @@ public class APIResponse {
         Response getter
 
         @return String representing the JavaScript value or JSON object representation of the response.
-        @since ARP1.0
+        @since v2.0
      */
      public String getResponse() {
           return this.response;

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Cloud operations
 
    @author Ferran Vila Conesa
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IDatabaseResultCallback extends IBaseCallback {
@@ -46,7 +46,7 @@ public interface IDatabaseResultCallback extends IBaseCallback {
         Result callback for error responses
 
         @param error Returned error
-        @since ARP1.0
+        @since v2.0
      */
      void onError(IDatabaseResultCallbackError error);
 
@@ -54,7 +54,7 @@ public interface IDatabaseResultCallback extends IBaseCallback {
         Result callback for correct responses
 
         @param database Returns the database
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(Database database);
 
@@ -63,7 +63,7 @@ public interface IDatabaseResultCallback extends IBaseCallback {
 
         @param database Returns the database
         @param warning  Returned Warning
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(Database database, IDatabaseResultCallbackWarning warning);
 

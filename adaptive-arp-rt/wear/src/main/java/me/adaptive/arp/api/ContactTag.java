@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing the assigned tags data elements of a contact.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class ContactTag extends APIBean {
@@ -55,7 +55,7 @@ public class ContactTag extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public ContactTag() {
      }
@@ -65,7 +65,7 @@ public class ContactTag extends APIBean {
 
         @param tagValue Value of the tag
         @param tagName  Name of the tag
-        @since ARP1.0
+        @since v2.0
      */
      public ContactTag(String tagName, String tagValue) {
           super();
@@ -77,7 +77,7 @@ public class ContactTag extends APIBean {
         Returns the tagName of the Tag
 
         @return tagName
-        @since ARP1.0
+        @since v2.0
      */
      public String getTagName() {
           return this.tagName;
@@ -87,7 +87,7 @@ public class ContactTag extends APIBean {
         Set the tagName of the Tag
 
         @param tagName Name of the tag
-        @since ARP1.0
+        @since v2.0
      */
      public void setTagName(String tagName) {
           this.tagName = tagName;
@@ -97,7 +97,7 @@ public class ContactTag extends APIBean {
         Returns the tagValue of the Tag
 
         @return tagValue
-        @since ARP1.0
+        @since v2.0
      */
      public String getTagValue() {
           return this.tagValue;
@@ -107,7 +107,7 @@ public class ContactTag extends APIBean {
         Set the tagValue of the Tag
 
         @param tagValue Value of the tag
-        @since ARP1.0
+        @since v2.0
      */
      public void setTagValue(String tagValue) {
           this.tagValue = tagValue;

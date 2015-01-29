@@ -27,13 +27,14 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
 
 package me.adaptive.arp.api;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
@@ -128,7 +129,7 @@ public class AppRegistryBridge implements IAppRegistry {
           } else {
                if (logger!=null) logger.log(ILoggingLogLevel.ERROR, this.apiGroup.name(),this.getClass().getSimpleName()+" no delegate for 'getAccelerationBridge'.");
           }
-          return result;
+          return result;          
      }
 
      /**
@@ -1668,7 +1669,7 @@ public class AppRegistryBridge implements IAppRegistry {
         Method that returns the API version of the implementation.
 
         @return API Version string.
-        @since ARP1.0
+        @since v2.0
      */
      public String getAPIVersion() {
           // Start logging elapsed time.
@@ -1691,7 +1692,7 @@ public class AppRegistryBridge implements IAppRegistry {
         Returns a reference to the Platform Context
 
         @return Reference to the platform context
-        @since ARP1.0
+        @since v2.0
      */
      public AppContextBridge getPlatformContext() {
           // Start logging elapsed time.
@@ -1714,7 +1715,7 @@ public class AppRegistryBridge implements IAppRegistry {
         Returns a reference to the Webview platform context
 
         @return Reference to the Webview Context
-        @since ARP1.0
+        @since v2.0
      */
      public AppContextWebviewBridge getPlatformContextWeb() {
           // Start logging elapsed time.

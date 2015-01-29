@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Security result callback
 
    @author Aryslan
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface ISecurityResultCallback extends IBaseCallback {
@@ -46,7 +46,7 @@ public interface ISecurityResultCallback extends IBaseCallback {
         No data received - error condition, not authorized .
 
         @param error Error values
-        @since ARP1.0
+        @since v2.0
      */
      void onError(ISecurityResultCallbackError error);
 
@@ -54,7 +54,7 @@ public interface ISecurityResultCallback extends IBaseCallback {
         Correct data received.
 
         @param keyValues key and values
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(SecureKeyPair[] keyValues);
 
@@ -63,7 +63,7 @@ public interface ISecurityResultCallback extends IBaseCallback {
 
         @param keyValues key and values
         @param warning   Warning values
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(SecureKeyPair[] keyValues, ISecurityResultCallbackWarning warning);
 

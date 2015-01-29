@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Represents the basic information about the operating system.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class OSInfo extends APIBean {
@@ -59,7 +59,7 @@ public class OSInfo extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public OSInfo() {
      }
@@ -70,7 +70,7 @@ public class OSInfo extends APIBean {
         @param name    of the OS.
         @param version of the OS.
         @param vendor  of the OS.
-        @since ARP1.0
+        @since v2.0
      */
      public OSInfo(IOSType name, String version, String vendor) {
           super();
@@ -83,7 +83,7 @@ public class OSInfo extends APIBean {
         Returns the name of the operating system.
 
         @return OS name.
-        @since ARP1.0
+        @since v2.0
      */
      public IOSType getName() {
           return this.name;
@@ -102,7 +102,7 @@ public class OSInfo extends APIBean {
         Returns the vendor of the operating system.
 
         @return OS vendor.
-        @since ARP1.0
+        @since v2.0
      */
      public String getVendor() {
           return this.vendor;
@@ -121,7 +121,7 @@ public class OSInfo extends APIBean {
         Returns the version of the operating system.
 
         @return OS version.
-        @since ARP1.0
+        @since v2.0
      */
      public String getVersion() {
           return this.version;

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Geolocation operations
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IGeolocation extends IBaseSensor {
@@ -46,7 +46,7 @@ public interface IGeolocation extends IBaseSensor {
         Register a new listener that will receive geolocation events.
 
         @param listener to be registered.
-        @since ARP1.0
+        @since v2.0
      */
      void addGeolocationListener(IGeolocationListener listener);
 
@@ -54,14 +54,14 @@ public interface IGeolocation extends IBaseSensor {
         De-registers an existing listener from receiving geolocation events.
 
         @param listener to be registered.
-        @since ARP1.0
+        @since v2.0
      */
      void removeGeolocationListener(IGeolocationListener listener);
 
      /**
         Removed all existing listeners from receiving geolocation events.
 
-        @since ARP1.0
+        @since v2.0
      */
      void removeGeolocationListeners();
 

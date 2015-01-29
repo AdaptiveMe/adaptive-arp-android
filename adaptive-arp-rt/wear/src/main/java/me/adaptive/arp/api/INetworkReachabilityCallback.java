@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Network reachability callback result
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface INetworkReachabilityCallback extends IBaseCallback {
@@ -46,7 +46,7 @@ public interface INetworkReachabilityCallback extends IBaseCallback {
         No data received - error condition, not authorized .
 
         @param error Error value
-        @since ARP1.0
+        @since v2.0
      */
      void onError(INetworkReachabilityCallbackError error);
 
@@ -54,7 +54,7 @@ public interface INetworkReachabilityCallback extends IBaseCallback {
         Correct data received.
 
         @param reachable Indicates if the host is reachable
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(boolean reachable);
 
@@ -63,7 +63,7 @@ public interface INetworkReachabilityCallback extends IBaseCallback {
 
         @param reachable Indicates if the host is reachable
         @param warning   Warning value
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(boolean reachable, INetworkReachabilityCallbackWarning warning);
 

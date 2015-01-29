@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing the social data elements of a contact.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class ContactSocial extends APIBean {
@@ -55,7 +55,7 @@ public class ContactSocial extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public ContactSocial() {
      }
@@ -65,7 +65,7 @@ public class ContactSocial extends APIBean {
 
         @param socialNetwork of the profile
         @param profileUrl    of the user
-        @since ARP1.0
+        @since v2.0
      */
      public ContactSocial(ContactSocialNetwork socialNetwork, String profileUrl) {
           super();
@@ -77,7 +77,7 @@ public class ContactSocial extends APIBean {
         Returns the social network
 
         @return socialNetwork
-        @since ARP1.0
+        @since v2.0
      */
      public ContactSocialNetwork getSocialNetwork() {
           return this.socialNetwork;
@@ -87,7 +87,7 @@ public class ContactSocial extends APIBean {
         Set the social network
 
         @param socialNetwork of the profile
-        @since ARP1.0
+        @since v2.0
      */
      public void setSocialNetwork(ContactSocialNetwork socialNetwork) {
           this.socialNetwork = socialNetwork;
@@ -97,7 +97,7 @@ public class ContactSocial extends APIBean {
         Returns the profile url of the user
 
         @return profileUrl
-        @since ARP1.0
+        @since v2.0
      */
      public String getProfileUrl() {
           return this.profileUrl;
@@ -107,7 +107,7 @@ public class ContactSocial extends APIBean {
         Set the profile url of the iser
 
         @param profileUrl of the user
-        @since ARP1.0
+        @since v2.0
      */
      public void setProfileUrl(String profileUrl) {
           this.profileUrl = profileUrl;

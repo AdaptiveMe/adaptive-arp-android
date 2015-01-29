@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Network reachability operations
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface INetworkReachability extends IBaseCommunication {
@@ -47,7 +47,7 @@ public interface INetworkReachability extends IBaseCommunication {
 
         @param host     domain name or ip address of host.
         @param callback Callback called at the end.
-        @since ARP1.0
+        @since v2.0
      */
      void isNetworkReachable(String host, INetworkReachabilityCallback callback);
 
@@ -56,7 +56,7 @@ public interface INetworkReachability extends IBaseCommunication {
 
         @param url      to look for
         @param callback Callback called at the end
-        @since ARP1.0
+        @since v2.0
      */
      void isNetworkServiceReachable(String url, INetworkReachabilityCallback callback);
 

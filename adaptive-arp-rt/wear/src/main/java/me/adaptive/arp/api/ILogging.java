@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Logging operations
 
    @author Ferran Vila Conesa
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface ILogging extends IBaseUtil {
@@ -48,7 +48,7 @@ public interface ILogging extends IBaseUtil {
         @param level    Log level
         @param category Category/tag name to identify/filter the log.
         @param message  Message to be logged
-        @since ARP1.0
+        @since v2.0
      */
      void log(ILoggingLogLevel level, String category, String message);
 
@@ -57,7 +57,7 @@ public interface ILogging extends IBaseUtil {
 
         @param level   Log level
         @param message Message to be logged
-        @since ARP1.0
+        @since v2.0
      */
      void log(ILoggingLogLevel level, String message);
 

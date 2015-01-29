@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class FileDataStoreResultCallbackImpl extends BaseCallbackImpl implements
         Error processing data retrieval/storage operation.
 
         @param error Error condition encountered.
-        @since ARP1.0
+        @since v2.0
      */
      public void onError(IFileDataStoreResultCallbackError error) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleFileDataStoreResultCallbackError( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(error) +") )");
@@ -65,7 +65,7 @@ public class FileDataStoreResultCallbackImpl extends BaseCallbackImpl implements
         Result of data storage operation.
 
         @param file File reference to stored data.
-        @since ARP1.0
+        @since v2.0
      */
      public void onResult(FileDescriptor file) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleFileDataStoreResultCallbackResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(file) +") )");
@@ -76,7 +76,7 @@ public class FileDataStoreResultCallbackImpl extends BaseCallbackImpl implements
 
         @param file    File being loaded/stored.
         @param warning Warning condition encountered.
-        @since ARP1.0
+        @since v2.0
      */
      public void onWarning(FileDescriptor file, IFileDataStoreResultCallbackWarning warning) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleFileDataStoreResultCallbackWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(file) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");

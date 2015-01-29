@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing the phone data elements of a contact.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class ContactPhone extends APIBean {
@@ -55,7 +55,7 @@ public class ContactPhone extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public ContactPhone() {
      }
@@ -65,7 +65,7 @@ public class ContactPhone extends APIBean {
 
         @param phone     Phone number
         @param phoneType Type of Phone number
-        @since ARP1.0
+        @since v2.0
      */
      public ContactPhone(String phone, ContactPhoneType phoneType) {
           super();
@@ -77,7 +77,7 @@ public class ContactPhone extends APIBean {
         Returns the phone phoneType
 
         @return phoneType
-        @since ARP1.0
+        @since v2.0
      */
      public ContactPhoneType getPhoneType() {
           return this.phoneType;
@@ -87,7 +87,7 @@ public class ContactPhone extends APIBean {
         Set the phoneType of the phone number
 
         @param phoneType Type of Phone number
-        @since ARP1.0
+        @since v2.0
      */
      public void setPhoneType(ContactPhoneType phoneType) {
           this.phoneType = phoneType;
@@ -97,7 +97,7 @@ public class ContactPhone extends APIBean {
         Returns the phone number
 
         @return phone number
-        @since ARP1.0
+        @since v2.0
      */
      public String getPhone() {
           return this.phone;
@@ -107,7 +107,7 @@ public class ContactPhone extends APIBean {
         Set the phone number
 
         @param phone number
-        @since ARP1.0
+        @since v2.0
      */
      public void setPhone(String phone) {
           this.phone = phone;

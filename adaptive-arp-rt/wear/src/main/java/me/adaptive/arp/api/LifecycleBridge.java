@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -76,7 +76,7 @@ public class LifecycleBridge extends BaseApplicationBridge implements ILifecycle
         Add the listener for the lifecycle of the app
 
         @param listener Lifecycle listener
-        @since ARP1.0
+        @since v2.0
      */
      public void addLifecycleListener(ILifecycleListener listener) {
           // Start logging elapsed time.
@@ -98,7 +98,7 @@ public class LifecycleBridge extends BaseApplicationBridge implements ILifecycle
         Whether the application is in background or not
 
         @return true if the application is in background;false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      public boolean isBackground() {
           // Start logging elapsed time.
@@ -121,7 +121,7 @@ public class LifecycleBridge extends BaseApplicationBridge implements ILifecycle
         Un-registers an existing listener from receiving lifecycle events.
 
         @param listener Lifecycle listener
-        @since ARP1.0
+        @since v2.0
      */
      public void removeLifecycleListener(ILifecycleListener listener) {
           // Start logging elapsed time.
@@ -142,7 +142,7 @@ public class LifecycleBridge extends BaseApplicationBridge implements ILifecycle
      /**
         Removes all existing listeners from receiving lifecycle events.
 
-        @since ARP1.0
+        @since v2.0
      */
      public void removeLifecycleListeners() {
           // Start logging elapsed time.
@@ -190,7 +190,7 @@ public class LifecycleBridge extends BaseApplicationBridge implements ILifecycle
                default:
                     // 404 - response null.
                     responseCode = 404;
-                    responseMessage = "LifecycleBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.3.";
+                    responseMessage = "LifecycleBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.8.";
           }
           response.setResponse(responseJSON);
           response.setStatusCode(responseCode);

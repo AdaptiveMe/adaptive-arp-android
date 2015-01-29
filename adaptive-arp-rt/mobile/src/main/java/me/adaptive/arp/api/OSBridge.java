@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -76,7 +76,7 @@ public class OSBridge extends BaseSystemBridge implements IOS, APIBridge {
         Returns the OSInfo for the current operating system.
 
         @return OSInfo with name, version and vendor of the OS.
-        @since ARP1.0
+        @since v2.0
      */
      public OSInfo getOSInfo() {
           // Start logging elapsed time.
@@ -116,7 +116,7 @@ public class OSBridge extends BaseSystemBridge implements IOS, APIBridge {
                default:
                     // 404 - response null.
                     responseCode = 404;
-                    responseMessage = "OSBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.3.";
+                    responseMessage = "OSBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.8.";
           }
           response.setResponse(responseJSON);
           response.setStatusCode(responseCode);

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,14 +38,14 @@ package me.adaptive.arp.api;
    Interface for Managing the Runtime operations
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IRuntime extends IBaseSystem {
      /**
         Dismiss the current Application
 
-        @since ARP1.0
+        @since v2.0
      */
      void dismissApplication();
 
@@ -53,7 +53,7 @@ public interface IRuntime extends IBaseSystem {
         Whether the application dismiss the splash screen successfully or not
 
         @return true if the application has dismissed the splash screen;false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      boolean dismissSplashScreen();
 

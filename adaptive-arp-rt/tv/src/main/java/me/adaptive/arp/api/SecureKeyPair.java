@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Represents a single secureKey-value pair.
 
    @author Aryslan
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class SecureKeyPair extends APIBean {
@@ -55,7 +55,7 @@ public class SecureKeyPair extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public SecureKeyPair() {
      }
@@ -65,7 +65,7 @@ public class SecureKeyPair extends APIBean {
 
         @param secureKey  name of the keypair
         @param secureData value of the keypair
-        @since ARP1.0
+        @since v2.0
      */
      public SecureKeyPair(String secureKey, String secureData) {
           super();
@@ -77,7 +77,7 @@ public class SecureKeyPair extends APIBean {
         Returns the object value
 
         @return Value.
-        @since ARP 1.0
+        @since v2.0
      */
      public String getSecureData() {
           return this.secureData;
@@ -87,7 +87,7 @@ public class SecureKeyPair extends APIBean {
         Sets the value for this object
 
         @param secureData value to set.
-        @since ARP 1.0
+        @since v2.0
      */
      public void setSecureData(String secureData) {
           this.secureData = secureData;
@@ -97,7 +97,7 @@ public class SecureKeyPair extends APIBean {
         Returns the object secureKey name.
 
         @return Key name.
-        @since ARP 1.0
+        @since v2.0
      */
      public String getSecureKey() {
           return this.secureKey;
@@ -107,7 +107,7 @@ public class SecureKeyPair extends APIBean {
         Sets the secureKey name for this object.
 
         @param secureKey Key name.
-        @since ARP 1.0
+        @since v2.0
      */
      public void setSecureKey(String secureKey) {
           this.secureKey = secureKey;

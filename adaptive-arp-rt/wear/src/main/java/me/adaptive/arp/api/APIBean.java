@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing a native response to the HTML5
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class APIBean {
@@ -47,7 +47,7 @@ public class APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public APIBean() {
      }

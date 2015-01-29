@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class GeolocationListenerImpl extends BaseListenerImpl implements IGeoloc
         No data received - error condition, not authorized or hardware not available.
 
         @param error Type of error encountered during reading.
-        @since ARP1.0
+        @since v2.0
      */
      public void onError(IGeolocationListenerError error) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleGeolocationListenerError( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(error) +") )");
@@ -65,7 +65,7 @@ public class GeolocationListenerImpl extends BaseListenerImpl implements IGeoloc
         Correct data received.
 
         @param geolocation Geolocation Bean
-        @since ARP1.0
+        @since v2.0
      */
      public void onResult(Geolocation geolocation) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleGeolocationListenerResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(geolocation) +") )");
@@ -76,7 +76,7 @@ public class GeolocationListenerImpl extends BaseListenerImpl implements IGeoloc
 
         @param geolocation Geolocation Bean
         @param warning     Type of warning encountered during reading.
-        @since ARP1.0
+        @since v2.0
      */
      public void onWarning(Geolocation geolocation, IGeolocationListenerWarning warning) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleGeolocationListenerWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(geolocation) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");

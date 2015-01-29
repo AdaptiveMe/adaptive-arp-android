@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Contact operations
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IContactPhotoResultCallback extends IBaseCallback {
@@ -46,7 +46,7 @@ public interface IContactPhotoResultCallback extends IBaseCallback {
         This method is called on Error
 
         @param error returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      void onError(IContactPhotoResultCallbackError error);
 
@@ -54,7 +54,7 @@ public interface IContactPhotoResultCallback extends IBaseCallback {
         This method is called on Result
 
         @param contactPhoto returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(byte[] contactPhoto);
 
@@ -63,7 +63,7 @@ public interface IContactPhotoResultCallback extends IBaseCallback {
 
         @param contactPhoto returned by the platform
         @param warning      returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(byte[] contactPhoto, IContactPhotoResultCallbackWarning warning);
 

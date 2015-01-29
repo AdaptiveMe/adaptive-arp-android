@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing the professional info data elements of a contact.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class ContactProfessionalInfo extends APIBean {
@@ -59,7 +59,7 @@ public class ContactProfessionalInfo extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public ContactProfessionalInfo() {
      }
@@ -70,7 +70,7 @@ public class ContactProfessionalInfo extends APIBean {
         @param jobTitle       The job title
         @param jobDescription The job description
         @param company        The company of the job
-        @since ARP1.0
+        @since v2.0
      */
      public ContactProfessionalInfo(String jobTitle, String jobDescription, String company) {
           super();
@@ -83,7 +83,7 @@ public class ContactProfessionalInfo extends APIBean {
         Returns the company of the job
 
         @return company
-        @since ARP1.0
+        @since v2.0
      */
      public String getCompany() {
           return this.company;
@@ -93,7 +93,7 @@ public class ContactProfessionalInfo extends APIBean {
         Set the company of the job
 
         @param company The company of the job
-        @since ARP1.0
+        @since v2.0
      */
      public void setCompany(String company) {
           this.company = company;
@@ -103,7 +103,7 @@ public class ContactProfessionalInfo extends APIBean {
         Returns the description of the job
 
         @return description
-        @since ARP1.0
+        @since v2.0
      */
      public String getJobDescription() {
           return this.jobDescription;
@@ -113,7 +113,7 @@ public class ContactProfessionalInfo extends APIBean {
         Set the description of the job
 
         @param jobDescription The job description
-        @since ARP1.0
+        @since v2.0
      */
      public void setJobDescription(String jobDescription) {
           this.jobDescription = jobDescription;
@@ -123,7 +123,7 @@ public class ContactProfessionalInfo extends APIBean {
         Returns the title of the job
 
         @return title
-        @since ARP1.0
+        @since v2.0
      */
      public String getJobTitle() {
           return this.jobTitle;
@@ -133,7 +133,7 @@ public class ContactProfessionalInfo extends APIBean {
         Set the title of the job
 
         @param jobTitle The job title
-        @since ARP1.0
+        @since v2.0
      */
      public void setJobTitle(String jobTitle) {
           this.jobTitle = jobTitle;

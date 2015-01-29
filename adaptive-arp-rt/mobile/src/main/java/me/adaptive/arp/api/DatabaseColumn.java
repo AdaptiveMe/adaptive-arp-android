@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing the column specification of a data column.
 
    @author Ferran Vila Conesa
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class DatabaseColumn extends APIBean {
@@ -51,7 +51,7 @@ public class DatabaseColumn extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public DatabaseColumn() {
      }
@@ -60,7 +60,7 @@ public class DatabaseColumn extends APIBean {
         Constructor with fields
 
         @param name Name of the column
-        @since ARP1.0
+        @since v2.0
      */
      public DatabaseColumn(String name) {
           super();
@@ -71,7 +71,7 @@ public class DatabaseColumn extends APIBean {
         Returns the name of the column.
 
         @return The name of the column.
-        @since ARP1.0
+        @since v2.0
      */
      public String getName() {
           return this.name;
@@ -81,7 +81,7 @@ public class DatabaseColumn extends APIBean {
         Sets the name of the column.
 
         @param name The name of the column.
-        @since ARP1.0
+        @since v2.0
      */
      public void setName(String name) {
           this.name = name;

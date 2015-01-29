@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Structure representing the internal unique identifier data elements of a contact.
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class ContactUid extends APIBean {
@@ -51,7 +51,7 @@ public class ContactUid extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public ContactUid() {
      }
@@ -60,7 +60,7 @@ public class ContactUid extends APIBean {
         Constructor used by implementation to set the Contact id.
 
         @param contactId Internal unique contact id.
-        @since ARP1.0
+        @since v2.0
      */
      public ContactUid(String contactId) {
           super();
@@ -71,7 +71,7 @@ public class ContactUid extends APIBean {
         Returns the contact id
 
         @return Contactid Internal unique contact id.
-        @since ARP1.0
+        @since v2.0
      */
      public String getContactId() {
           return this.contactId;
@@ -81,7 +81,7 @@ public class ContactUid extends APIBean {
         Set the id of the Contact
 
         @param contactId Internal unique contact id.
-        @since ARP1.0
+        @since v2.0
      */
      public void setContactId(String contactId) {
           this.contactId = contactId;

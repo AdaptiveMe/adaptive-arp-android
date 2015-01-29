@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Geolocation results
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IGeolocationListener extends IBaseListener {
@@ -46,7 +46,7 @@ public interface IGeolocationListener extends IBaseListener {
         No data received - error condition, not authorized or hardware not available.
 
         @param error Type of error encountered during reading.
-        @since ARP1.0
+        @since v2.0
      */
      void onError(IGeolocationListenerError error);
 
@@ -54,7 +54,7 @@ public interface IGeolocationListener extends IBaseListener {
         Correct data received.
 
         @param geolocation Geolocation Bean
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(Geolocation geolocation);
 
@@ -63,7 +63,7 @@ public interface IGeolocationListener extends IBaseListener {
 
         @param geolocation Geolocation Bean
         @param warning     Type of warning encountered during reading.
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(Geolocation geolocation, IGeolocationListenerWarning warning);
 

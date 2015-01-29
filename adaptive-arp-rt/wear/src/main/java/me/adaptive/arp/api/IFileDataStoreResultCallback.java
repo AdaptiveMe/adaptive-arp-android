@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the File store operations callback
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IFileDataStoreResultCallback extends IBaseCallback {
@@ -46,7 +46,7 @@ public interface IFileDataStoreResultCallback extends IBaseCallback {
         Error processing data retrieval/storage operation.
 
         @param error Error condition encountered.
-        @since ARP1.0
+        @since v2.0
      */
      void onError(IFileDataStoreResultCallbackError error);
 
@@ -54,7 +54,7 @@ public interface IFileDataStoreResultCallback extends IBaseCallback {
         Result of data storage operation.
 
         @param file File reference to stored data.
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(FileDescriptor file);
 
@@ -63,7 +63,7 @@ public interface IFileDataStoreResultCallback extends IBaseCallback {
 
         @param file    File being loaded/stored.
         @param warning Warning condition encountered.
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(FileDescriptor file, IFileDataStoreResultCallbackWarning warning);
 

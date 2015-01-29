@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -44,6 +44,7 @@ public enum IServiceResultCallbackError {
      MethodNotAllowed,
      NotAllowed,
      NotAuthenticated,
+     PaymentRequired,
      TimeOut,
      NoResponse,
      ServerError,

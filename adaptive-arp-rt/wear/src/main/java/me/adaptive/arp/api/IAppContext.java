@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for context management purposes
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IAppContext {
@@ -46,7 +46,7 @@ public interface IAppContext {
         The main application context. This should be cast to the platform specific implementation.
 
         @return Object representing the specific singleton application context provided by the OS.
-        @since ARP1.0
+        @since v2.0
      */
      Object getContext();
 
@@ -54,7 +54,7 @@ public interface IAppContext {
         The type of context provided by the getContext method.
 
         @return Type of platform context.
-        @since ARP1.0
+        @since v2.0
      */
      IOSType getContextType();
 

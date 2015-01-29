@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,79 +38,29 @@ package me.adaptive.arp.api;
    Structure representing the data of a http request or response header.
 
    @author Aryslan
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
-public class ServiceHeader extends APIBean {
+public class ServiceHeader extends KeyValue {
+
 
      /**
-        Value of the header
-     */
-     private String data;
-     /**
-        Name ot the header
-     */
-     private String name;
+        Default constructor.
 
-     /**
-        Default constructor
-
-        @since ARP1.0
+        @since v2.0.6
      */
      public ServiceHeader() {
      }
 
      /**
-        Constructor with fields
+        Convenience constructor.
 
-        @param name Name of the header
-        @param data Value of the header
-        @since ARP1.0
+        @param keyName Name of the key.
+        @param keyData Value of the key.
+        @since v2.0.6
      */
-     public ServiceHeader(String name, String data) {
-          super();
-          this.name = name;
-          this.data = data;
-     }
-
-     /**
-        Returns the header value
-
-        @return ServiceHeader value
-        @since ARP1.0
-     */
-     public String getData() {
-          return this.data;
-     }
-
-     /**
-        Set the header value
-
-        @param data ServiceHeader value
-        @since ARP1.0
-     */
-     public void setData(String data) {
-          this.data = data;
-     }
-
-     /**
-        Returns the header name
-
-        @return ServiceHeader name
-        @since ARP1.0
-     */
-     public String getName() {
-          return this.name;
-     }
-
-     /**
-        Set the header name
-
-        @param name Name of the header
-        @since ARP1.0
-     */
-     public void setName(String name) {
-          this.name = name;
+     public ServiceHeader(String keyName, String keyData) {
+          super(keyNamekeyData);
      }
 
 

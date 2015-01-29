@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Represents a basic bean to store keyName pair values
 
    @author Ferran Vila Conesa
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class KeyPair extends APIBean {
@@ -55,7 +55,7 @@ public class KeyPair extends APIBean {
      /**
         Default Constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public KeyPair() {
      }
@@ -65,7 +65,7 @@ public class KeyPair extends APIBean {
 
         @param keyName  Key of the element
         @param keyValue Value of the element
-        @since ARP1.0
+        @since v2.0
      */
      public KeyPair(String keyName, String keyValue) {
           super();
@@ -77,7 +77,7 @@ public class KeyPair extends APIBean {
         Returns the keyName of the element
 
         @return Key of the element
-        @since ARP1.0
+        @since v2.0
      */
      public String getKeyName() {
           return this.keyName;
@@ -87,7 +87,7 @@ public class KeyPair extends APIBean {
         Sets the keyName of the element
 
         @param keyName Key of the element
-        @since ARP1.0
+        @since v2.0
      */
      public void setKeyName(String keyName) {
           this.keyName = keyName;
@@ -97,7 +97,7 @@ public class KeyPair extends APIBean {
         Returns the keyValue of the element
 
         @return Value of the element
-        @since ARP1.0
+        @since v2.0
      */
      public String getKeyValue() {
           return this.keyValue;
@@ -107,7 +107,7 @@ public class KeyPair extends APIBean {
         Sets the keyValue of the element
 
         @param keyValue Value of the element
-        @since ARP1.0
+        @since v2.0
      */
      public void setKeyValue(String keyValue) {
           this.keyValue = keyValue;

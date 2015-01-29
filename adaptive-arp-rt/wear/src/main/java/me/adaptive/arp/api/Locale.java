@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Represents a specific user or system locate.
 
    @author Aryslan
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class Locale extends APIBean {
@@ -55,7 +55,7 @@ public class Locale extends APIBean {
      /**
         Default constructor
 
-        @since ARP1.0
+        @since v2.0
      */
      public Locale() {
      }
@@ -65,7 +65,7 @@ public class Locale extends APIBean {
 
         @param country  Country of the Locale
         @param language Language of the Locale
-        @since ARP1.0
+        @since v2.0
      */
      public Locale(String language, String country) {
           super();
@@ -77,7 +77,7 @@ public class Locale extends APIBean {
         Returns the country code
 
         @return country code
-        @since ARP1.0
+        @since v2.0
      */
      public String getCountry() {
           return this.country;
@@ -87,7 +87,7 @@ public class Locale extends APIBean {
         Set the country code
 
         @param country code
-        @since ARP1.0
+        @since v2.0
      */
      public void setCountry(String country) {
           this.country = country;
@@ -97,7 +97,7 @@ public class Locale extends APIBean {
         Returns the language code
 
         @return language code
-        @since ARP1.0
+        @since v2.0
      */
      public String getLanguage() {
           return this.language;
@@ -107,7 +107,7 @@ public class Locale extends APIBean {
         Set the language code
 
         @param language code
-        @since ARP1.0
+        @since v2.0
      */
      public void setLanguage(String language) {
           this.language = language;

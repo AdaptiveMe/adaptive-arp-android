@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -60,7 +60,7 @@ public class FileDescriptor extends APIBean {
         Returns the milliseconds passed since 1/1/1970 since the file was created.
 
         @return Timestamp in milliseconds.
-        @since ARP1.0
+        @since v2.0
      */
      public long getDateCreated() {
           return this.dateCreated;
@@ -79,7 +79,7 @@ public class FileDescriptor extends APIBean {
         Returns the milliseconds passed since 1/1/1970 since the file was modified.
 
         @return Timestamp in milliseconds.
-        @since ARP1.0
+        @since v2.0
      */
      public long getDateModified() {
           return this.dateModified;
@@ -98,7 +98,7 @@ public class FileDescriptor extends APIBean {
         Returns the name of the file if the reference is a file or the last path element of the folder.
 
         @return The name of the file.
-        @since ARP1.0
+        @since v2.0
      */
      public String getName() {
           return this.name;
@@ -117,7 +117,7 @@ public class FileDescriptor extends APIBean {
         Returns the path element of the file or folder (excluding the last path element if it's a directory).
 
         @return The path to the file.
-        @since ARP1.0
+        @since v2.0
      */
      public String getPath() {
           return this.path;
@@ -136,7 +136,7 @@ public class FileDescriptor extends APIBean {
         Returns the resolved absolute path elements of the file and/or folders (including the last path element).
 
         @return The absolute path to the file.
-        @since ARP1.0
+        @since v2.0
      */
      public String getPathAbsolute() {
           return this.pathAbsolute;
@@ -155,7 +155,7 @@ public class FileDescriptor extends APIBean {
         Returns the size in bytes of the file or -1 if the reference is a folder.
 
         @return Size in bytes of file.
-        @since ARP1.0
+        @since v2.0
      */
      public long getSize() {
           return this.size;

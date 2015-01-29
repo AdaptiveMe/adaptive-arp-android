@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the File operations callback
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IFileResultCallback extends IBaseCallback {
@@ -46,7 +46,7 @@ public interface IFileResultCallback extends IBaseCallback {
         On error result of a file operation.
 
         @param error Error processing the request.
-        @since ARP1.0
+        @since v2.0
      */
      void onError(IFileResultCallbackError error);
 
@@ -54,7 +54,7 @@ public interface IFileResultCallback extends IBaseCallback {
         On correct result of a file operation.
 
         @param storageFile Reference to the resulting file.
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(FileDescriptor storageFile);
 
@@ -63,7 +63,7 @@ public interface IFileResultCallback extends IBaseCallback {
 
         @param file    Reference to the offending file.
         @param warning Warning processing the request.
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(FileDescriptor file, IFileResultCallbackWarning warning);
 

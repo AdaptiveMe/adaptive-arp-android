@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,78 +38,78 @@ package me.adaptive.arp.api;
    Represents a session object for HTTP request and responses
 
    @author Ferran Vila Conesa
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class ServiceSession extends APIBean {
 
      /**
-        The attributes of the response
+        The attributes of the request or response.
      */
-     private String[] attributes;
+     private ServiceSessionAttribute[] attributes;
      /**
-        The cookies of the response
+        The cookies of the request or response.
      */
-     private ServiceCookie[] cookies;
+     private ServiceSessionCookie[] cookies;
 
      /**
-        Default constructor
+        Default constructor.
 
-        @since ARP1.0
+        @since v2.0
      */
      public ServiceSession() {
      }
 
      /**
-        Constructor with fields
+        Constructor with fields.
 
-        @param cookies    The cookies of the response
-        @param attributes Attributes of the response
-        @since ARP1.0
+        @param cookies    The cookies of the request or response.
+        @param attributes Attributes of the request or response.
+        @since v2.0
      */
-     public ServiceSession(ServiceCookie[] cookies, String[] attributes) {
+     public ServiceSession(ServiceSessionCookie[] cookies, ServiceSessionAttribute[] attributes) {
           super();
           this.cookies = cookies;
           this.attributes = attributes;
      }
 
      /**
-        Gets the attributes of the response
+        Gets the attributes of the request or response.
 
-        @return Attributes of the response
-        @since ARP1.0
+        @return Attributes of the request or response.
+        @since v2.0
      */
-     public String[] getAttributes() {
+     public ServiceSessionAttribute[] getAttributes() {
           return this.attributes;
      }
 
      /**
-        Sets the attributes for the response
+        Sets the attributes for the request or response.
 
-        @param attributes Attributes of the response
-        @since ARP1.0
+        @param attributes Attributes of the request or response.
+        @since v2.0
      */
-     public void setAttributes(String[] attributes) {
+     public void setAttributes(ServiceSessionAttribute[] attributes) {
           this.attributes = attributes;
      }
 
      /**
-        Returns the cookies of the response
+        Returns the cookies of the request or response.
 
-        @return The cookies of the response
-        @since ARP1.0
+        @return The cookies of the request or response.
+        @since v2.0
      */
-     public ServiceCookie[] getCookies() {
+     public ServiceSessionCookie[] getCookies() {
           return this.cookies;
      }
 
      /**
-        Sets the cookies of the response
+        Sets the cookies of the request or response.
 
-        @param cookies The cookies of the response
-        @since ARP1.0
+        @param cookies The cookies of the request or response.
+        @since v2.0
      */
-     public void setCookies(ServiceCookie[] cookies) {
+     public void setCookies(ServiceSessionCookie[] cookies) {
           this.cookies = cookies;
      }
 

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class FileResultCallbackImpl extends BaseCallbackImpl implements IFileRes
         On error result of a file operation.
 
         @param error Error processing the request.
-        @since ARP1.0
+        @since v2.0
      */
      public void onError(IFileResultCallbackError error) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleFileResultCallbackError( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(error) +") )");
@@ -65,7 +65,7 @@ public class FileResultCallbackImpl extends BaseCallbackImpl implements IFileRes
         On correct result of a file operation.
 
         @param storageFile Reference to the resulting file.
-        @since ARP1.0
+        @since v2.0
      */
      public void onResult(FileDescriptor storageFile) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleFileResultCallbackResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(storageFile) +") )");
@@ -76,7 +76,7 @@ public class FileResultCallbackImpl extends BaseCallbackImpl implements IFileRes
 
         @param file    Reference to the offending file.
         @param warning Warning processing the request.
-        @since ARP1.0
+        @since v2.0
      */
      public void onWarning(FileDescriptor file, IFileResultCallbackWarning warning) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleFileResultCallbackWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(file) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");

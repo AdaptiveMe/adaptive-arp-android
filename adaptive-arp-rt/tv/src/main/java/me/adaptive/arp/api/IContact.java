@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Contact operations
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IContact extends IBasePIM {
@@ -47,7 +47,7 @@ public interface IContact extends IBasePIM {
 
         @param contact  id to search for
         @param callback called for return
-        @since ARP1.0
+        @since v2.0
      */
      void getContactPhoto(ContactUid contact, IContactPhotoResultCallback callback);
 
@@ -56,7 +56,7 @@ public interface IContact extends IBasePIM {
 
         @param contact  id to search for
         @param callback called for return
-        @since ARP1.0
+        @since v2.0
      */
      void getContact(ContactUid contact, IContactResultCallback callback);
 
@@ -65,7 +65,7 @@ public interface IContact extends IBasePIM {
 
         @param callback called for return
         @param fields   to get for each Contact
-        @since ARP1.0
+        @since v2.0
      */
      void getContactsForFields(IContactResultCallback callback, IContactFieldGroup[] fields);
 
@@ -75,7 +75,7 @@ public interface IContact extends IBasePIM {
         @param callback called for return
         @param fields   to get for each Contact
         @param filter   to search for
-        @since ARP1.0
+        @since v2.0
      */
      void getContactsWithFilter(IContactResultCallback callback, IContactFieldGroup[] fields, IContactFilter[] filter);
 
@@ -83,7 +83,7 @@ public interface IContact extends IBasePIM {
         Get all contacts
 
         @param callback called for return
-        @since ARP1.0
+        @since v2.0
      */
      void getContacts(IContactResultCallback callback);
 
@@ -93,7 +93,7 @@ public interface IContact extends IBasePIM {
         @param term     string to search
         @param callback called for return
         @param filter   to search for
-        @since ARP1.0
+        @since v2.0
      */
      void searchContactsWithFilter(String term, IContactResultCallback callback, IContactFilter[] filter);
 
@@ -102,7 +102,7 @@ public interface IContact extends IBasePIM {
 
         @param term     string to search
         @param callback called for return
-        @since ARP1.0
+        @since v2.0
      */
      void searchContacts(String term, IContactResultCallback callback);
 
@@ -112,7 +112,7 @@ public interface IContact extends IBasePIM {
         @param contact  id to assign the photo
         @param pngImage photo as byte array
         @return true if set is successful;false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      boolean setContactPhoto(ContactUid contact, byte[] pngImage);
 

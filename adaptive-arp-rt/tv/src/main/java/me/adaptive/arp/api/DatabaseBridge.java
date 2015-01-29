@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -77,7 +77,7 @@ public class DatabaseBridge extends BaseDataBridge implements IDatabase, APIBrid
 
         @param callback Asynchronous callback
         @param database Database object to create
-        @since ARP1.0
+        @since v2.0
      */
      public void createDatabase(Database database, IDatabaseResultCallback callback) {
           // Start logging elapsed time.
@@ -101,7 +101,7 @@ public class DatabaseBridge extends BaseDataBridge implements IDatabase, APIBrid
         @param database      Database for databaseTable creating.
         @param databaseTable DatabaseTable object with the name of the databaseTable inside.
         @param callback      DatabaseTable callback with the response
-        @since ARP1.0
+        @since v2.0
      */
      public void createTable(Database database, DatabaseTable databaseTable, IDatabaseTableResultCallback callback) {
           // Start logging elapsed time.
@@ -124,7 +124,7 @@ public class DatabaseBridge extends BaseDataBridge implements IDatabase, APIBrid
 
         @param database Database object to delete
         @param callback Asynchronous callback
-        @since ARP1.0
+        @since v2.0
      */
      public void deleteDatabase(Database database, IDatabaseResultCallback callback) {
           // Start logging elapsed time.
@@ -148,7 +148,7 @@ public class DatabaseBridge extends BaseDataBridge implements IDatabase, APIBrid
         @param database      Database for databaseTable removal.
         @param databaseTable DatabaseTable object with the name of the databaseTable inside.
         @param callback      DatabaseTable callback with the response
-        @since ARP1.0
+        @since v2.0
      */
      public void deleteTable(Database database, DatabaseTable databaseTable, IDatabaseTableResultCallback callback) {
           // Start logging elapsed time.
@@ -174,7 +174,7 @@ should be passed as a parameter
         @param statement    SQL statement.
         @param replacements List of SQL statement replacements.
         @param callback     DatabaseTable callback with the response.
-        @since ARP1.0
+        @since v2.0
      */
      public void executeSqlStatement(Database database, String statement, String[] replacements, IDatabaseTableResultCallback callback) {
           // Start logging elapsed time.
@@ -200,7 +200,7 @@ should be passed as a parameter
         @param rollbackFlag Indicates if rollback should be performed when any
                     statement execution fails.
         @param callback     DatabaseTable callback with the response.
-        @since ARP1.0
+        @since v2.0
      */
      public void executeSqlTransactions(Database database, String[] statements, boolean rollbackFlag, IDatabaseTableResultCallback callback) {
           // Start logging elapsed time.
@@ -223,7 +223,7 @@ should be passed as a parameter
 
         @param database Database Object to check if exists
         @return True if exists, false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      public boolean existsDatabase(Database database) {
           // Start logging elapsed time.
@@ -248,7 +248,7 @@ should be passed as a parameter
         @param database      Database for databaseTable consulting.
         @param databaseTable DatabaseTable object with the name of the databaseTable inside.
         @return True if exists, false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      public boolean existsTable(Database database, DatabaseTable databaseTable) {
           // Start logging elapsed time.
@@ -329,7 +329,7 @@ should be passed as a parameter
                default:
                     // 404 - response null.
                     responseCode = 404;
-                    responseMessage = "DatabaseBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.3.";
+                    responseMessage = "DatabaseBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.0.8.";
           }
           response.setResponse(responseJSON);
           response.setStatusCode(responseCode);

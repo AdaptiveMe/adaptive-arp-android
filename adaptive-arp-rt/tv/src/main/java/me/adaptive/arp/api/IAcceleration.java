@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface defining methods about the acceleration sensor
 
    @author Carlos Lozano Diez
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IAcceleration extends IBaseSensor {
@@ -46,7 +46,7 @@ public interface IAcceleration extends IBaseSensor {
         Register a new listener that will receive acceleration events.
 
         @param listener to be registered.
-        @since ARP1.0
+        @since v2.0
      */
      void addAccelerationListener(IAccelerationListener listener);
 
@@ -54,14 +54,14 @@ public interface IAcceleration extends IBaseSensor {
         De-registers an existing listener from receiving acceleration events.
 
         @param listener to be registered.
-        @since ARP1.0
+        @since v2.0
      */
      void removeAccelerationListener(IAccelerationListener listener);
 
      /**
         Removed all existing listeners from receiving acceleration events.
 
-        @since ARP1.0
+        @since v2.0
      */
      void removeAccelerationListeners();
 

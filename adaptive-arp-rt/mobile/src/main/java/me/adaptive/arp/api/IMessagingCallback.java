@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,7 +38,7 @@ package me.adaptive.arp.api;
    Interface for Managing the Messaging responses
 
    @author Francisco Javier Martin Bueno
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public interface IMessagingCallback extends IBaseCallback {
@@ -46,7 +46,7 @@ public interface IMessagingCallback extends IBaseCallback {
         This method is called on Error
 
         @param error returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      void onError(IMessagingCallbackError error);
 
@@ -54,7 +54,7 @@ public interface IMessagingCallback extends IBaseCallback {
         This method is called on Result
 
         @param success true if sent;false otherwise
-        @since ARP1.0
+        @since v2.0
      */
      void onResult(boolean success);
 
@@ -63,7 +63,7 @@ public interface IMessagingCallback extends IBaseCallback {
 
         @param success true if sent;false otherwise
         @param warning returned by the platform
-        @since ARP1.0
+        @since v2.0
      */
      void onWarning(boolean success, IMessagingCallbackWarning warning);
 

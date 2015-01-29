@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -55,7 +55,7 @@ public class ButtonListenerImpl extends BaseListenerImpl implements IButtonListe
         No data received
 
         @param error occurred
-        @since ARP1.0
+        @since v2.0
      */
      public void onError(IButtonListenerError error) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleButtonListenerError( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(error) +") )");
@@ -65,7 +65,7 @@ public class ButtonListenerImpl extends BaseListenerImpl implements IButtonListe
         Called on button pressed
 
         @param button pressed
-        @since ARP1.0
+        @since v2.0
      */
      public void onResult(Button button) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleButtonListenerResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(button) +") )");
@@ -76,7 +76,7 @@ public class ButtonListenerImpl extends BaseListenerImpl implements IButtonListe
 
         @param button  pressed
         @param warning happened
-        @since ARP1.0
+        @since v2.0
      */
      public void onWarning(Button button, IButtonListenerWarning warning) {
           AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleButtonListenerWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(button) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");

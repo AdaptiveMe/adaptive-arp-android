@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -38,114 +38,110 @@ package me.adaptive.arp.api;
    Represents a local or remote service request.
 
    @author Aryslan
-   @since ARP1.0
+   @since v2.0
    @version 1.0
 */
 public class ServiceRequest extends APIBean {
 
      /**
-        The HTTP procotol version to be used for this request.
+        Body parameters to be included in the body of the request to a service. These may be applied
+during GET/POST operations. No body parameters are included if this array is null or length zero.
      */
-     private IServiceProtocolVersion protocolVersion;
+     private ServiceRequestParameter[] bodyParameters;
      /**
-        Request/Response data content (plain text).
+        Request data content (plain text). This should be populated by the application. The content should be
+in some well-known web format - in specific, binaries submitted should be encoded to base64 and the content
+type should be set respectively by the application.
      */
      private String content;
      /**
-        The byte[] representing the Content field.
-     */
-     private byte[] contentBinary;
-     /**
-        The length in bytes for the binary Content.
-     */
-     private int contentBinaryLength;
-     /**
-        Encoding of the binary payload - by default assumed to be UTF8.
+        Encoding of the content - by default assumed to be UTF8. This may be populated by the application, the platform
+populates this field with defaults for the service.
      */
      private String contentEncoding;
      /**
-        The length in bytes for the Content field.
+        The length in bytes of the content. This may be populated by the application, the platform
+calculates this length automatically if a specific contentLength is not specified.
      */
      private int contentLength;
      /**
-        The request/response content type (MIME TYPE).
+        The request content type (MIME TYPE). This may be populated by the application, the platform
+populates this field with defaults for the service.
      */
      private String contentType;
      /**
-        The request method
+        Query string parameters to be appended to the service URL when making the request. These may be applied
+during GET/POST operations. No query parameters are appended if this array is null or length zero.
      */
-     private String method;
+     private ServiceRequestParameter[] queryParameters;
      /**
-        The serviceHeaders array (name,value pairs) to be included on the I/O service request.
+        The serviceHeaders array (name,value pairs) to be included in the request. This may be populated by the
+application, the platform populates this field with defaults for the service and the previous headers.
+In specific, the platform maintains request and response state automatically.
      */
      private ServiceHeader[] serviceHeaders;
      /**
-        Information about the session
+        Session attributes and cookies. This may be populated by the application, the platform populates
+this field with defaults for the service and the previous state information. In specific, the platform
+maintains request and response state automatically.
      */
      private ServiceSession serviceSession;
+     /**
+        Token used for the creation of the request with the destination service, endpoint, function and method
+identifiers. This should not be manipulated by the application directly.
+     */
+     private ServiceToken serviceToken;
+     /**
+        This attribute allows for the default user-agent string to be overridden by the application.
+     */
+     private String userAgent;
 
      /**
-        Default constructor
+        Default constructor.
 
-        @since ARP1.0
+        @since v2.0
      */
      public ServiceRequest() {
      }
 
      /**
-        Contructor used by the implementation
+        Convenience constructor.
 
-        @param content             Request/Response data content (plain text)
-        @param contentType         The request/response content type (MIME TYPE).
-        @param contentEncoding     Encoding of the binary payload - by default assumed to be UTF8.
-        @param contentLength       The length in bytes for the Content field.
-        @param contentBinary       The byte[] representing the Content field.
-        @param contentBinaryLength The length in bytes for the binary Content.
-        @param serviceHeaders      The serviceHeaders array (name,value pairs) to be included on the I/O service request.
-        @param method              The request method
-        @param protocolVersion     The HTTP procotol version to be used for this request.
-        @param serviceSession      The element service session
-        @since ARP1.0
+        @param content      Content payload.
+        @param serviceToken ServiceToken for the request.
+        @since v2.0.6
      */
-     public ServiceRequest(String content, String contentType, String contentEncoding, int contentLength, byte[] contentBinary, int contentBinaryLength, ServiceHeader[] serviceHeaders, String method, IServiceProtocolVersion protocolVersion, ServiceSession serviceSession) {
+     public ServiceRequest(String content, ServiceToken serviceToken) {
           super();
           this.content = content;
-          this.contentType = contentType;
-          this.contentEncoding = contentEncoding;
-          this.contentLength = contentLength;
-          this.contentBinary = contentBinary;
-          this.contentBinaryLength = contentBinaryLength;
-          this.serviceHeaders = serviceHeaders;
-          this.method = method;
-          this.protocolVersion = protocolVersion;
-          this.serviceSession = serviceSession;
+          this.serviceToken = serviceToken;
      }
 
      /**
-        Returns the protocol version
+        Gets the body parameters of the request.
 
-        @return protocolVersion enum
-        @since ARP1.0
+        @return ServiceRequestParameter array or null if none are specified.
+        @since v2.0.6
      */
-     public IServiceProtocolVersion getProtocolVersion() {
-          return this.protocolVersion;
+     public ServiceRequestParameter[] getBodyParameters() {
+          return this.bodyParameters;
      }
 
      /**
-        Set the protocol version
+        Sets the body parameters of the request.
 
-        @param protocolVersion The HTTP procotol version to be used for this request.
-        @since ARP1.0
+        @param bodyParameters ServiceRequestParameter array or null if none are specified.
+        @since v2.0.6
      */
-     public void setProtocolVersion(IServiceProtocolVersion protocolVersion) {
-          this.protocolVersion = protocolVersion;
+     public void setBodyParameters(ServiceRequestParameter[] bodyParameters) {
+          this.bodyParameters = bodyParameters;
      }
 
      /**
         Returns the content
 
         @return content
-        @since ARP1.0
+        @since v2.0
      */
      public String getContent() {
           return this.content;
@@ -155,57 +151,17 @@ public class ServiceRequest extends APIBean {
         Set the content
 
         @param content Request/Response data content (plain text)
-        @since ARP1.0
+        @since v2.0
      */
      public void setContent(String content) {
           this.content = content;
      }
 
      /**
-        Returns the byte[] of the content
-
-        @return contentBinary
-        @since ARP1.0
-     */
-     public byte[] getContentBinary() {
-          return this.contentBinary;
-     }
-
-     /**
-        Set the byte[] of the content
-
-        @param contentBinary The byte[] representing the Content field.
-        @since ARP1.0
-     */
-     public void setContentBinary(byte[] contentBinary) {
-          this.contentBinary = contentBinary;
-     }
-
-     /**
-        Retrusn the binary content length
-
-        @return contentBinaryLength
-        @since ARP1.0
-     */
-     public int getContentBinaryLength() {
-          return this.contentBinaryLength;
-     }
-
-     /**
-        Set the binary content length
-
-        @param contentBinaryLength The length in bytes for the binary Content.
-        @since ARP1.0
-     */
-     public void setContentBinaryLength(int contentBinaryLength) {
-          this.contentBinaryLength = contentBinaryLength;
-     }
-
-     /**
         Returns the content encoding
 
         @return contentEncoding
-        @since ARP1.0
+        @since v2.0
      */
      public String getContentEncoding() {
           return this.contentEncoding;
@@ -215,7 +171,7 @@ public class ServiceRequest extends APIBean {
         Set the content encoding
 
         @param contentEncoding Encoding of the binary payload - by default assumed to be UTF8.
-        @since ARP1.0
+        @since v2.0
      */
      public void setContentEncoding(String contentEncoding) {
           this.contentEncoding = contentEncoding;
@@ -225,7 +181,7 @@ public class ServiceRequest extends APIBean {
         Returns the content length
 
         @return contentLength
-        @since ARP1.0
+        @since v2.0
      */
      public int getContentLength() {
           return this.contentLength;
@@ -235,7 +191,7 @@ public class ServiceRequest extends APIBean {
         Set the content length
 
         @param contentLength The length in bytes for the Content field.
-        @since ARP1.0
+        @since v2.0
      */
      public void setContentLength(int contentLength) {
           this.contentLength = contentLength;
@@ -245,7 +201,7 @@ public class ServiceRequest extends APIBean {
         Returns the content type
 
         @return contentType
-        @since ARP1.0
+        @since v2.0
      */
      public String getContentType() {
           return this.contentType;
@@ -255,37 +211,37 @@ public class ServiceRequest extends APIBean {
         Set the content type
 
         @param contentType The request/response content type (MIME TYPE).
-        @since ARP1.0
+        @since v2.0
      */
      public void setContentType(String contentType) {
           this.contentType = contentType;
      }
 
      /**
-        Returns the method
+        Gets the query parameters of the request.
 
-        @return method
-        @since ARP1.0
+        @return ServiceRequestParameter array or null if none are specified.
+        @since v2.0.6
      */
-     public String getMethod() {
-          return this.method;
+     public ServiceRequestParameter[] getQueryParameters() {
+          return this.queryParameters;
      }
 
      /**
-        Set the method
+        Sets the query parameters of the request.
 
-        @param method The request method
-        @since ARP1.0
+        @param queryParameters ServiceRequestParameter array or null if none are specified.
+        @since v2.0.6
      */
-     public void setMethod(String method) {
-          this.method = method;
+     public void setQueryParameters(ServiceRequestParameter[] queryParameters) {
+          this.queryParameters = queryParameters;
      }
 
      /**
         Returns the array of ServiceHeader
 
         @return serviceHeaders
-        @since ARP1.0
+        @since v2.0
      */
      public ServiceHeader[] getServiceHeaders() {
           return this.serviceHeaders;
@@ -295,7 +251,7 @@ public class ServiceRequest extends APIBean {
         Set the array of ServiceHeader
 
         @param serviceHeaders The serviceHeaders array (name,value pairs) to be included on the I/O service request.
-        @since ARP1.0
+        @since v2.0
      */
      public void setServiceHeaders(ServiceHeader[] serviceHeaders) {
           this.serviceHeaders = serviceHeaders;
@@ -305,7 +261,7 @@ public class ServiceRequest extends APIBean {
         Getter for service session
 
         @return The element service session
-        @since ARP1.0
+        @since v2.0
      */
      public ServiceSession getServiceSession() {
           return this.serviceSession;
@@ -315,10 +271,50 @@ public class ServiceRequest extends APIBean {
         Setter for service session
 
         @param serviceSession The element service session
-        @since ARP1.0
+        @since v2.0
      */
      public void setServiceSession(ServiceSession serviceSession) {
           this.serviceSession = serviceSession;
+     }
+
+     /**
+        Gets the ServiceToken of the request.
+
+        @return ServiceToken.
+        @since v2.0.6
+     */
+     public ServiceToken getServiceToken() {
+          return this.serviceToken;
+     }
+
+     /**
+        Sets the ServiceToken of the request.
+
+        @param serviceToken ServiceToken to be used for the invocation.
+        @since v2.0.6
+     */
+     public void setServiceToken(ServiceToken serviceToken) {
+          this.serviceToken = serviceToken;
+     }
+
+     /**
+        Gets the overridden user-agent string.
+
+        @return User-agent string.
+        @since v2.0.6
+     */
+     public String getUserAgent() {
+          return this.userAgent;
+     }
+
+     /**
+        Sets the user-agent to override the default user-agent string.
+
+        @param userAgent User-agent string.
+        @since v2.0.6
+     */
+     public void setUserAgent(String userAgent) {
+          this.userAgent = userAgent;
      }
 
 

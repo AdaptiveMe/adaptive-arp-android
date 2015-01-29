@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.0.3
+    * @version v2.0.8
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -1189,7 +1189,7 @@ public class AppRegistryDelegate implements IAppRegistry {
         Method that returns the API version of the implementation.
      */
      public String getAPIVersion() {
-          return "v2.0.3";
+          return "v2.0.8";
      }
 
      /**
@@ -1201,7 +1201,7 @@ public class AppRegistryDelegate implements IAppRegistry {
         Returns a reference to the Platform Context
 
         @return Reference to the platform context
-        @since ARP1.0
+        @since v2.0
      */
      public AppContextBridge getPlatformContext() {
            if(__appcontextBridge == null) {
@@ -1219,7 +1219,7 @@ public class AppRegistryDelegate implements IAppRegistry {
         Returns a reference to the Webview platform context
 
         @return Reference to the Webview Context
-        @since ARP1.0
+        @since v2.0
      */
      public AppContextWebviewBridge getPlatformContextWeb() {
            if(__appcontextwebviewBridge == null) {
