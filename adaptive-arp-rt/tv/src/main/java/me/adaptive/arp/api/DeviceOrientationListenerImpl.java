@@ -65,23 +65,23 @@ platform impedes the rotation of the device.
      /**
         Event fired with the successful start and finish of a rotation.
 
-        @param event RotationEvent containing origin, destination and state of the event.
+        @param rotationEvent RotationEvent containing origin, destination and state of the event.
         @since v2.0.5
      */
-     public void onResult(RotationEvent event) {
-          AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleDeviceOrientationListenerResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(event) +") )");
+     public void onResult(RotationEvent rotationEvent) {
+          AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleDeviceOrientationListenerResult( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(rotationEvent) +") )");
      }
 
      /**
         Event fired with a warning when the rotation is aborted. In specific, this
 event may be fired if the devices vetoes the rotation before rotation is completed.
 
-        @param event   RotationEvent containing origin, destination and state of the event.
+        @param rotationEvent   RotationEvent containing origin, destination and state of the event.
         @param warning Type of condition that aborted rotation execution.
         @since v2.0.5
      */
-     public void onWarning(RotationEvent event, IDeviceOrientationListenerWarning warning) {
-          AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleDeviceOrientationListenerWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(event) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");
+     public void onWarning(RotationEvent rotationEvent, IDeviceOrientationListenerWarning warning) {
+          AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleDeviceOrientationListenerWarning( '"+getId()+"', JSON.parse(" + getJSONParser().toJson(rotationEvent) +"), JSON.parse(" + getJSONParser().toJson(warning) +") )");
      }
 
 }
