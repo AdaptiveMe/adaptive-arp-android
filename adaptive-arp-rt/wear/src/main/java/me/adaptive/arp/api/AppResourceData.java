@@ -41,7 +41,7 @@ package me.adaptive.arp.api;
    @since v2.1.3
    @version 1.0
 */
-public class ResourceData {
+public class AppResourceData {
 
      /**
         Marker to indicate whether the resource is cooked in some way (compressed, encrypted, etc.) If true, the
@@ -81,7 +81,7 @@ after uncompressing and unencrypting.
 
         @since v2.1.3
      */
-     public ResourceData() {
+     public AppResourceData() {
      }
 
      /**
@@ -96,7 +96,7 @@ after uncompressing and unencrypting.
         @param cookedLength The cooked length in bytes of the resource.
         @since v2.1.3
      */
-     public ResourceData(String id, byte[] data, String rawType, long rawLength, boolean cooked, String cookedType, long cookedLength) {
+     public AppResourceData(String id, byte[] data, String rawType, long rawLength, boolean cooked, String cookedType, long cookedLength) {
           this();
           this.id = id;
           this.data = data;
