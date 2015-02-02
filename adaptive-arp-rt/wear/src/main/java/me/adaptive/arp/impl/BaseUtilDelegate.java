@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.1
+    * @version v2.1.2
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -67,7 +67,7 @@ public class BaseUtilDelegate implements IBaseUtil {
      */
      @Override
      public String getAPIVersion() {
-          return "v2.1.1";
+          return "v2.1.2";
      }
 
 }

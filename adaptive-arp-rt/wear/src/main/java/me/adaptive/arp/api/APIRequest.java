@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.1
+    * @version v2.1.2
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -43,6 +43,10 @@ package me.adaptive.arp.api;
 */
 public class APIRequest {
 
+     /**
+        Identifier of API version of this request.
+     */
+     private String apiVersion;
      /**
         Identifier of callback or listener for async operations.
      */
@@ -96,6 +100,26 @@ public class APIRequest {
           this.methodName = methodName;
           this.parameters = parameters;
           this.asyncId = asyncId;
+     }
+
+     /**
+        Returns the request's API version. This should be the same or higher than the platform managing the
+request.
+
+        @return String with the API version of the request.
+     */
+     public String getApiVersion() {
+          return this.apiVersion;
+     }
+
+     /**
+        Sets the request's API version. This should be the same or higher than the platform managing the
+request.
+
+        @param apiVersion String with the API version of the request.
+     */
+     public void setApiVersion(String apiVersion) {
+          this.apiVersion = apiVersion;
      }
 
      /**
