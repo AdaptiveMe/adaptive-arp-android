@@ -63,14 +63,6 @@ public class BaseListenerImpl implements IBaseListener {
      }
 
      /**
-        Get the listener id.
-        @return long with the identifier of the listener.
-     */
-     public final long getId() {
-          return this.id;
-     }
-
-     /**
         Return the API group for the given interface.
      */
      @Override
@@ -101,7 +93,7 @@ in every platform. This id is populated by the Javascript platform
         @return Unique Listener identifier
      */
      public long getId() {
-          AppRegistryBridge.getInstance().getPlatformContextWeb().executeJavaScript("Adaptive.handleBaseListenertId( '"+getId()+"',  )");
+          return this.id;
      }
 
 }
