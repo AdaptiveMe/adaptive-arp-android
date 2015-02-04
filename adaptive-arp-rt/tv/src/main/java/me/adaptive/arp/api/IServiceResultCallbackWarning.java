@@ -43,6 +43,13 @@ public enum IServiceResultCallbackWarning {
      NotSecure,
      Redirected,
      Wrong_Params,
+     Forbidden,
+     NotFound,
+     MethodNotAllowed,
+     NotAllowed,
+     NotAuthenticated,
+     PaymentRequired,
+     ServerError,
      Unknown;
 
      /**

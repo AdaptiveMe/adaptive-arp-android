@@ -39,15 +39,8 @@ package me.adaptive.arp.api;
 */
 public enum IServiceResultCallbackError {
 
-     Forbidden,
-     NotFound,
-     MethodNotAllowed,
-     NotAllowed,
-     NotAuthenticated,
-     PaymentRequired,
      TimeOut,
      NoResponse,
-     ServerError,
      Unreachable,
      MalformedUrl,
      NotRegisteredService,

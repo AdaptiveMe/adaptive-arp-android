@@ -68,6 +68,10 @@ should be encoded in base64.
         Information about the session.
      */
      private ServiceSession serviceSession;
+     /**
+        HTTP Status code of the response. With this status code it is possible to perform some actions, redirects, authentication, etc.
+     */
+     private int statusCode;
 
      /**
         Default constructor.
@@ -86,9 +90,10 @@ should be encoded in base64.
         @param contentLength   The length in bytes for the Content field.
         @param serviceHeaders  The serviceHeaders array (name,value pairs) to be included on the I/O service request.
         @param serviceSession  Information about the session
+        @param statusCode      HTTP Status code of the response.
         @since v2.0
      */
-     public ServiceResponse(String content, String contentType, String contentEncoding, int contentLength, ServiceHeader[] serviceHeaders, ServiceSession serviceSession) {
+     public ServiceResponse(String content, String contentType, String contentEncoding, int contentLength, ServiceHeader[] serviceHeaders, ServiceSession serviceSession, int statusCode) {
           super();
           this.content = content;
           this.contentType = contentType;
@@ -96,6 +101,7 @@ should be encoded in base64.
           this.contentLength = contentLength;
           this.serviceHeaders = serviceHeaders;
           this.serviceSession = serviceSession;
+          this.statusCode = statusCode;
      }
 
      /**
@@ -149,7 +155,7 @@ should be encoded in base64.
      }
 
      /**
-        Set the content length
+        Set the content length.
 
         @param contentLength The length in bytes for the Content field.
         @since v2.0
@@ -216,6 +222,26 @@ should be encoded in base64.
      */
      public void setServiceSession(ServiceSession serviceSession) {
           this.serviceSession = serviceSession;
+     }
+
+     /**
+        Returns the status code of the response.
+
+        @return HTTP status code
+        @since v2.1.4
+     */
+     public int getStatusCode() {
+          return this.statusCode;
+     }
+
+     /**
+        Sets the status code of the response
+
+        @param statusCode HTTP status code
+        @since v2.1.4
+     */
+     public void setStatusCode(int statusCode) {
+          this.statusCode = statusCode;
      }
 
 

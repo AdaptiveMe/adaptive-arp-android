@@ -128,6 +128,33 @@ configured in the platform's XML service definition file.
      }
 
      /**
+        Obtains a Service token by a concrete uri (http://domain.com/path). This method would be useful when
+a service response is a redirect (3XX) and it is necessary to make a request to another host and we
+don't know by advance the name of the service.
+
+        @param uri Unique Resource Identifier for a Service-Endpoint-Path-Method
+        @return ServiceToken to create a service request or null if the given parameter is not
+configured in the platform's XML service definition file.
+        @since v2.1.4
+     */
+     public ServiceToken getServiceTokenByUri(String uri) {
+          // Start logging elapsed time.
+          long tIn = System.currentTimeMillis();
+          ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
+
+          if (logger!=null) logger.log(ILoggingLogLevel.DEBUG, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getServiceTokenByUri({"+uri+"}).");
+
+          ServiceToken result = null;
+          if (this.delegate != null) {
+               result = this.delegate.getServiceTokenByUri(uri);
+               if (logger!=null) logger.log(ILoggingLogLevel.DEBUG, this.apiGroup.name(),this.getClass().getSimpleName()+" executed 'getServiceTokenByUri' in "+(System.currentTimeMillis()-tIn)+"ms.");
+          } else {
+               if (logger!=null) logger.log(ILoggingLogLevel.ERROR, this.apiGroup.name(),this.getClass().getSimpleName()+" no delegate for 'getServiceTokenByUri'.");
+          }
+          return result;          
+     }
+
+     /**
         Returns all the possible service tokens configured in the platform's XML service definition file.
 
         @return Array of service tokens configured.
@@ -230,24 +257,31 @@ XML service definition file.
                          responseJSON = getJSONParser().toJson(response1);
                     }
                     break;
-               case "getServicesRegistered":
-                    ServiceToken[] response2 = this.getServicesRegistered();
+               case "getServiceTokenByUri":
+                    String uri2 = getJSONParser().fromJson(request.getParameters()[0], String.class);
+                    ServiceToken response2 = this.getServiceTokenByUri(uri2);
                     if (response2 != null) {
                          responseJSON = getJSONParser().toJson(response2);
                     }
                     break;
+               case "getServicesRegistered":
+                    ServiceToken[] response3 = this.getServicesRegistered();
+                    if (response3 != null) {
+                         responseJSON = getJSONParser().toJson(response3);
+                    }
+                    break;
                case "invokeService":
-                    ServiceRequest serviceRequest3 = getJSONParser().fromJson(request.getParameters()[0], ServiceRequest.class);
-                    IServiceResultCallback callback3 = new ServiceResultCallbackImpl(request.getAsyncId());
-                    this.invokeService(serviceRequest3, callback3);
+                    ServiceRequest serviceRequest4 = getJSONParser().fromJson(request.getParameters()[0], ServiceRequest.class);
+                    IServiceResultCallback callback4 = new ServiceResultCallbackImpl(request.getAsyncId());
+                    this.invokeService(serviceRequest4, callback4);
                     break;
                case "isServiceRegistered":
-                    String serviceName4 = getJSONParser().fromJson(request.getParameters()[0], String.class);
-                    String endpointName4 = getJSONParser().fromJson(request.getParameters()[1], String.class);
-                    String functionName4 = getJSONParser().fromJson(request.getParameters()[2], String.class);
-                    IServiceMethod method4 = getJSONParser().fromJson(request.getParameters()[3], IServiceMethod.class);
-                    boolean response4 = this.isServiceRegistered(serviceName4, endpointName4, functionName4, method4);
-                    responseJSON = getJSONParser().toJson(response4);
+                    String serviceName5 = getJSONParser().fromJson(request.getParameters()[0], String.class);
+                    String endpointName5 = getJSONParser().fromJson(request.getParameters()[1], String.class);
+                    String functionName5 = getJSONParser().fromJson(request.getParameters()[2], String.class);
+                    IServiceMethod method5 = getJSONParser().fromJson(request.getParameters()[3], IServiceMethod.class);
+                    boolean response5 = this.isServiceRegistered(serviceName5, endpointName5, functionName5, method5);
+                    responseJSON = getJSONParser().toJson(response5);
                     break;
                default:
                     // 404 - response null.
