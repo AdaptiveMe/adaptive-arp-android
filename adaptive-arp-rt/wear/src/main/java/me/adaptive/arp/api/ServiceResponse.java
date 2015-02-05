@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.4
+    * @version v2.1.5
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -44,14 +44,14 @@ package me.adaptive.arp.api;
 public class ServiceResponse extends APIBean {
 
      /**
+        Encoding of the binary payload - by default assumed to be UTF8.
+     */
+     private IServiceContentEncoding contentEncoding;
+     /**
         Response data content. The content should be in some well-known web format - in specific, binaries returned
 should be encoded in base64.
      */
      private String content;
-     /**
-        Encoding of the binary payload - by default assumed to be UTF8.
-     */
-     private String contentEncoding;
      /**
         The length in bytes for the Content field.
      */
@@ -93,7 +93,7 @@ should be encoded in base64.
         @param statusCode      HTTP Status code of the response.
         @since v2.0
      */
-     public ServiceResponse(String content, String contentType, String contentEncoding, int contentLength, ServiceHeader[] serviceHeaders, ServiceSession serviceSession, int statusCode) {
+     public ServiceResponse(String content, String contentType, IServiceContentEncoding contentEncoding, int contentLength, ServiceHeader[] serviceHeaders, ServiceSession serviceSession, int statusCode) {
           super();
           this.content = content;
           this.contentType = contentType;
@@ -102,6 +102,26 @@ should be encoded in base64.
           this.serviceHeaders = serviceHeaders;
           this.serviceSession = serviceSession;
           this.statusCode = statusCode;
+     }
+
+     /**
+        Returns the content encoding
+
+        @return contentEncoding
+        @since v2.0
+     */
+     public IServiceContentEncoding getContentEncoding() {
+          return this.contentEncoding;
+     }
+
+     /**
+        Set the content encoding
+
+        @param contentEncoding Encoding of the binary payload - by default assumed to be UTF8.
+        @since v2.0
+     */
+     public void setContentEncoding(IServiceContentEncoding contentEncoding) {
+          this.contentEncoding = contentEncoding;
      }
 
      /**
@@ -122,26 +142,6 @@ should be encoded in base64.
      */
      public void setContent(String content) {
           this.content = content;
-     }
-
-     /**
-        Returns the content encoding
-
-        @return contentEncoding
-        @since v2.0
-     */
-     public String getContentEncoding() {
-          return this.contentEncoding;
-     }
-
-     /**
-        Set the content encoding
-
-        @param contentEncoding Encoding of the binary payload - by default assumed to be UTF8.
-        @since v2.0
-     */
-     public void setContentEncoding(String contentEncoding) {
-          this.contentEncoding = contentEncoding;
      }
 
      /**

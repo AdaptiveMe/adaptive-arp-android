@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.4
+    * @version v2.1.5
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -44,6 +44,11 @@ package me.adaptive.arp.api;
 public class ServiceRequest extends APIBean {
 
      /**
+        Encoding of the content - by default assumed to be UTF8. This may be populated by the application, the platform
+populates this field with defaults for the service.
+     */
+     private IServiceContentEncoding contentEncoding;
+     /**
         Body parameters to be included in the body of the request to a service. These may be applied
 during GET/POST operations. No body parameters are included if this array is null or length zero.
      */
@@ -54,11 +59,6 @@ in some well-known web format - in specific, binaries submitted should be encode
 type should be set respectively by the application.
      */
      private String content;
-     /**
-        Encoding of the content - by default assumed to be UTF8. This may be populated by the application, the platform
-populates this field with defaults for the service.
-     */
-     private String contentEncoding;
      /**
         The length in bytes of the content. This may be populated by the application, the platform
 calculates this length automatically if a specific contentLength is not specified.
@@ -122,6 +122,26 @@ identifiers. This should not be manipulated by the application directly.
      }
 
      /**
+        Returns the content encoding
+
+        @return contentEncoding
+        @since v2.0
+     */
+     public IServiceContentEncoding getContentEncoding() {
+          return this.contentEncoding;
+     }
+
+     /**
+        Set the content encoding
+
+        @param contentEncoding Encoding of the binary payload - by default assumed to be UTF8.
+        @since v2.0
+     */
+     public void setContentEncoding(IServiceContentEncoding contentEncoding) {
+          this.contentEncoding = contentEncoding;
+     }
+
+     /**
         Gets the body parameters of the request.
 
         @return ServiceRequestParameter array or null if none are specified.
@@ -159,26 +179,6 @@ identifiers. This should not be manipulated by the application directly.
      */
      public void setContent(String content) {
           this.content = content;
-     }
-
-     /**
-        Returns the content encoding
-
-        @return contentEncoding
-        @since v2.0
-     */
-     public String getContentEncoding() {
-          return this.contentEncoding;
-     }
-
-     /**
-        Set the content encoding
-
-        @param contentEncoding Encoding of the binary payload - by default assumed to be UTF8.
-        @since v2.0
-     */
-     public void setContentEncoding(String contentEncoding) {
-          this.contentEncoding = contentEncoding;
      }
 
      /**
