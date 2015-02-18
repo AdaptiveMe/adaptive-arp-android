@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.8
+    * @version v2.1.9
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -75,7 +75,7 @@ public class BaseListenerImpl implements IBaseListener {
      */
      @Override
      public String getAPIVersion() {
-          return "v2.1.8";
+          return "v2.1.9";
      }
 
      /**
