@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.9
+    * @version v2.2.0
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -84,14 +84,14 @@ public class TelephonyBridge extends BaseCommunicationBridge implements ITelepho
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.DEBUG, this.apiGroup.name(),this.getClass().getSimpleName()+" executing call({"+number+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing call({"+number+"}).");
 
           ITelephonyStatus result = null;
           if (this.delegate != null) {
                result = this.delegate.call(number);
-               if (logger!=null) logger.log(ILoggingLogLevel.DEBUG, this.apiGroup.name(),this.getClass().getSimpleName()+" executed 'call' in "+(System.currentTimeMillis()-tIn)+"ms.");
+               if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executed 'call' in "+(System.currentTimeMillis()-tIn)+"ms.");
           } else {
-               if (logger!=null) logger.log(ILoggingLogLevel.ERROR, this.apiGroup.name(),this.getClass().getSimpleName()+" no delegate for 'call'.");
+               if (logger!=null) logger.log(ILoggingLogLevel.Error, this.apiGroup.name(),this.getClass().getSimpleName()+" no delegate for 'call'.");
           }
           return result;          
      }
@@ -118,7 +118,7 @@ public class TelephonyBridge extends BaseCommunicationBridge implements ITelepho
                default:
                     // 404 - response null.
                     responseCode = 404;
-                    responseMessage = "TelephonyBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.1.9.";
+                    responseMessage = "TelephonyBridge does not provide the function '"+request.getMethodName()+"' Please check your client-side API version; should be API version >= v2.2.0.";
           }
           response.setResponse(responseJSON);
           response.setStatusCode(responseCode);

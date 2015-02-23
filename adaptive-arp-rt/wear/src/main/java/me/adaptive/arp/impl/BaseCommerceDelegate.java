@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.9
+    * @version v2.2.0
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -67,7 +67,7 @@ public class BaseCommerceDelegate implements IBaseCommerce {
      */
      @Override
      public String getAPIVersion() {
-          return "v2.1.9";
+          return "v2.2.0";
      }
 
 }

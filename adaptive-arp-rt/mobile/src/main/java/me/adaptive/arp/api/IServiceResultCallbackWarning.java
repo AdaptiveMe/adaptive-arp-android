@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.9
+    * @version v2.2.0
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -42,7 +42,7 @@ public enum IServiceResultCallbackWarning {
      CertificateUntrusted,
      NotSecure,
      Redirected,
-     Wrong_Params,
+     WrongParams,
      Forbidden,
      NotFound,
      MethodNotAllowed,

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.9
+    * @version v2.2.0
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -40,8 +40,8 @@ package me.adaptive.arp.api;
 public enum IContactPhotoResultCallbackError {
 
      NoPermission,
-     Wrong_Params,
-     No_Photo,
+     WrongParams,
+     NoPhoto,
      Unknown;
 
      /**

@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.9
+    * @version v2.2.0
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -47,7 +47,7 @@ public enum INetworkReachabilityCallbackError {
      TimeOut,
      NoResponse,
      Unreachable,
-     Wrong_Params,
+     WrongParams,
      MalformedUrl,
      DomainUnresolvable,
      Unknown;

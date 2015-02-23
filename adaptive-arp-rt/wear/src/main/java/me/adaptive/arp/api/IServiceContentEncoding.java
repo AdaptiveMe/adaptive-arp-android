@@ -27,7 +27,7 @@ Contributors:
 
 Release:
 
-    * @version v2.1.9
+    * @version v2.2.0
 
 -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
 */
@@ -39,9 +39,9 @@ package me.adaptive.arp.api;
 */
 public enum IServiceContentEncoding {
 
-     ASCII,
-     UTF8,
-     ISOLatin1,
+     Ascii,
+     Utf8,
+     IsoLatin1,
      Unicode,
      Unknown;
 
