@@ -86,7 +86,7 @@ This method does not create the actual file in the specified folder.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing createFileDescriptor({"+parent+"},{"+name+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing createFileDescriptor...");
 
           FileDescriptor result = null;
           if (this.delegate != null) {
@@ -111,7 +111,7 @@ This path is volatile and may be cleaned by the OS periodically.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationCacheFolder.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationCacheFolder...");
 
           FileDescriptor result = null;
           if (this.delegate != null) {
@@ -135,7 +135,7 @@ This path must always be writable by the current application.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationCloudFolder.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationCloudFolder...");
 
           FileDescriptor result = null;
           if (this.delegate != null) {
@@ -159,7 +159,7 @@ This path must always be writable by the current application.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationDocumentsFolder.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationDocumentsFolder...");
 
           FileDescriptor result = null;
           if (this.delegate != null) {
@@ -183,7 +183,7 @@ This path may or may not be directly readable or writable - it usually contains 
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationFolder.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationFolder...");
 
           FileDescriptor result = null;
           if (this.delegate != null) {
@@ -207,7 +207,7 @@ This path must always be writable by the current application.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationProtectedFolder.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getApplicationProtectedFolder...");
 
           FileDescriptor result = null;
           if (this.delegate != null) {
@@ -230,7 +230,7 @@ This path must always be writable by the current application.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getSeparator.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getSeparator...");
 
           char result = ' ';
           if (this.delegate != null) {
@@ -256,7 +256,7 @@ This path may or may not be writable by the current application.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getSystemExternalFolder.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getSystemExternalFolder...");
 
           FileDescriptor result = null;
           if (this.delegate != null) {

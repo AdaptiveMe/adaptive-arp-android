@@ -83,7 +83,7 @@ public class GlobalizationBridge extends BaseApplicationBridge implements IGloba
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getDefaultLocale.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getDefaultLocale...");
 
           Locale result = null;
           if (this.delegate != null) {
@@ -106,7 +106,7 @@ public class GlobalizationBridge extends BaseApplicationBridge implements IGloba
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getLocaleSupportedDescriptors.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getLocaleSupportedDescriptors...");
 
           Locale[] result = null;
           if (this.delegate != null) {
@@ -131,7 +131,7 @@ public class GlobalizationBridge extends BaseApplicationBridge implements IGloba
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getResourceLiteral({"+key+"},{"+locale+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getResourceLiteral...");
 
           String result = null;
           if (this.delegate != null) {
@@ -155,7 +155,7 @@ public class GlobalizationBridge extends BaseApplicationBridge implements IGloba
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getResourceLiterals({"+locale+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getResourceLiterals...");
 
           KeyPair[] result = null;
           if (this.delegate != null) {

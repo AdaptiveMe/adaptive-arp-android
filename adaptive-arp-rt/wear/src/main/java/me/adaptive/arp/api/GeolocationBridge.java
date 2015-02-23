@@ -83,7 +83,7 @@ public class GeolocationBridge extends BaseSensorBridge implements IGeolocation,
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addGeolocationListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addGeolocationListener...");
 
           if (this.delegate != null) {
                this.delegate.addGeolocationListener(listener);
@@ -105,7 +105,7 @@ public class GeolocationBridge extends BaseSensorBridge implements IGeolocation,
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeGeolocationListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeGeolocationListener...");
 
           if (this.delegate != null) {
                this.delegate.removeGeolocationListener(listener);
@@ -126,7 +126,7 @@ public class GeolocationBridge extends BaseSensorBridge implements IGeolocation,
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeGeolocationListeners.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeGeolocationListeners...");
 
           if (this.delegate != null) {
                this.delegate.removeGeolocationListeners();

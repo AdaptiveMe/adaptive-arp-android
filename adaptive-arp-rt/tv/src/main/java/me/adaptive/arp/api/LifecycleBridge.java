@@ -83,7 +83,7 @@ public class LifecycleBridge extends BaseApplicationBridge implements ILifecycle
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addLifecycleListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addLifecycleListener...");
 
           if (this.delegate != null) {
                this.delegate.addLifecycleListener(listener);
@@ -105,7 +105,7 @@ public class LifecycleBridge extends BaseApplicationBridge implements ILifecycle
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isBackground.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isBackground...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -128,7 +128,7 @@ public class LifecycleBridge extends BaseApplicationBridge implements ILifecycle
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeLifecycleListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeLifecycleListener...");
 
           if (this.delegate != null) {
                this.delegate.removeLifecycleListener(listener);
@@ -149,7 +149,7 @@ public class LifecycleBridge extends BaseApplicationBridge implements ILifecycle
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeLifecycleListeners.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeLifecycleListeners...");
 
           if (this.delegate != null) {
                this.delegate.removeLifecycleListeners();

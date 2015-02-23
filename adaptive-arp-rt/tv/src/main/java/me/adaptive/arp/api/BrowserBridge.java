@@ -84,7 +84,7 @@ public class BrowserBridge extends BaseUIBridge implements IBrowser, APIBridge {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing openExtenalBrowser({"+url+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing openExtenalBrowser...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -110,7 +110,7 @@ public class BrowserBridge extends BaseUIBridge implements IBrowser, APIBridge {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing openInternalBrowser({"+url+"},{"+title+"},{"+backButtonText+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing openInternalBrowser...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -136,7 +136,7 @@ public class BrowserBridge extends BaseUIBridge implements IBrowser, APIBridge {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing openInternalBrowserModal({"+url+"},{"+title+"},{"+backButtonText+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing openInternalBrowserModal...");
 
           boolean result = false;
           if (this.delegate != null) {

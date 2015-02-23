@@ -85,7 +85,7 @@ public class MessagingBridge extends BasePIMBridge implements IMessaging, APIBri
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing sendSMS({"+number+"},{"+text+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing sendSMS...");
 
           if (this.delegate != null) {
                this.delegate.sendSMS(number, text, callback);

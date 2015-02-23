@@ -84,7 +84,7 @@ public class DatabaseBridge extends BaseDataBridge implements IDatabase, APIBrid
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing createDatabase({"+database+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing createDatabase...");
 
           if (this.delegate != null) {
                this.delegate.createDatabase(database, callback);
@@ -108,7 +108,7 @@ public class DatabaseBridge extends BaseDataBridge implements IDatabase, APIBrid
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing createTable({"+database+"},{"+databaseTable+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing createTable...");
 
           if (this.delegate != null) {
                this.delegate.createTable(database, databaseTable, callback);
@@ -131,7 +131,7 @@ public class DatabaseBridge extends BaseDataBridge implements IDatabase, APIBrid
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing deleteDatabase({"+database+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing deleteDatabase...");
 
           if (this.delegate != null) {
                this.delegate.deleteDatabase(database, callback);
@@ -155,7 +155,7 @@ public class DatabaseBridge extends BaseDataBridge implements IDatabase, APIBrid
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing deleteTable({"+database+"},{"+databaseTable+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing deleteTable...");
 
           if (this.delegate != null) {
                this.delegate.deleteTable(database, databaseTable, callback);
@@ -181,7 +181,7 @@ should be passed as a parameter
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing executeSqlStatement({"+database+"},{"+statement+"},{"+replacements+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing executeSqlStatement...");
 
           if (this.delegate != null) {
                this.delegate.executeSqlStatement(database, statement, replacements, callback);
@@ -207,7 +207,7 @@ should be passed as a parameter
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing executeSqlTransactions({"+database+"},{"+statements+"},{"+rollbackFlag+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing executeSqlTransactions...");
 
           if (this.delegate != null) {
                this.delegate.executeSqlTransactions(database, statements, rollbackFlag, callback);
@@ -230,7 +230,7 @@ should be passed as a parameter
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing existsDatabase({"+database+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing existsDatabase...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -255,7 +255,7 @@ should be passed as a parameter
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing existsTable({"+database+"},{"+databaseTable+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing existsTable...");
 
           boolean result = false;
           if (this.delegate != null) {

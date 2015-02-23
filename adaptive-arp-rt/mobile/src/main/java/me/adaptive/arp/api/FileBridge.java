@@ -84,7 +84,7 @@ public class FileBridge extends BaseDataBridge implements IFile, APIBridge {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing canRead({"+descriptor+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing canRead...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -108,7 +108,7 @@ public class FileBridge extends BaseDataBridge implements IFile, APIBridge {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing canWrite({"+descriptor+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing canWrite...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -132,7 +132,7 @@ public class FileBridge extends BaseDataBridge implements IFile, APIBridge {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing create({"+descriptor+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing create...");
 
           if (this.delegate != null) {
                this.delegate.create(descriptor, callback);
@@ -157,7 +157,7 @@ deleted if the cascade parameter is set to true.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing delete({"+descriptor+"},{"+cascade+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing delete...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -181,7 +181,7 @@ deleted if the cascade parameter is set to true.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing exists({"+descriptor+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing exists...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -205,7 +205,7 @@ deleted if the cascade parameter is set to true.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContent({"+descriptor+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContent...");
 
           if (this.delegate != null) {
                this.delegate.getContent(descriptor, callback);
@@ -228,7 +228,7 @@ deleted if the cascade parameter is set to true.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getFileStorageType({"+descriptor+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getFileStorageType...");
 
           IFileSystemStorageType result = null;
           if (this.delegate != null) {
@@ -252,7 +252,7 @@ deleted if the cascade parameter is set to true.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getFileType({"+descriptor+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getFileType...");
 
           IFileSystemType result = null;
           if (this.delegate != null) {
@@ -276,7 +276,7 @@ deleted if the cascade parameter is set to true.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getSecurityType({"+descriptor+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getSecurityType...");
 
           IFileSystemSecurity result = null;
           if (this.delegate != null) {
@@ -300,7 +300,7 @@ deleted if the cascade parameter is set to true.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isDirectory({"+descriptor+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isDirectory...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -325,7 +325,7 @@ any results.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing listFiles({"+descriptor+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing listFiles...");
 
           if (this.delegate != null) {
                this.delegate.listFiles(descriptor, callback);
@@ -350,7 +350,7 @@ is a file, it will not yield any results.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing listFilesForRegex({"+descriptor+"},{"+regex+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing listFilesForRegex...");
 
           if (this.delegate != null) {
                this.delegate.listFilesForRegex(descriptor, regex, callback);
@@ -374,7 +374,7 @@ is a file, it will not yield any results.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing mkDir({"+descriptor+"},{"+recursive+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing mkDir...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -402,7 +402,7 @@ new destination file.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing move({"+source+"},{"+destination+"},{"+createPath+"},{"+overwrite+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing move...");
 
           if (this.delegate != null) {
                this.delegate.move(source, destination, createPath, overwrite, callback);
@@ -426,7 +426,7 @@ new destination file.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing setContent({"+descriptor+"},{"+content+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing setContent...");
 
           if (this.delegate != null) {
                this.delegate.setContent(descriptor, content, callback);

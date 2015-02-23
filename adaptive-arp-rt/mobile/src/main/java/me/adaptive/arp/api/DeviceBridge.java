@@ -83,7 +83,7 @@ public class DeviceBridge extends BaseSystemBridge implements IDevice, APIBridge
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addButtonListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addButtonListener...");
 
           if (this.delegate != null) {
                this.delegate.addButtonListener(listener);
@@ -105,7 +105,7 @@ public class DeviceBridge extends BaseSystemBridge implements IDevice, APIBridge
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addDeviceOrientationListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addDeviceOrientationListener...");
 
           if (this.delegate != null) {
                this.delegate.addDeviceOrientationListener(listener);
@@ -127,7 +127,7 @@ public class DeviceBridge extends BaseSystemBridge implements IDevice, APIBridge
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getDeviceInfo.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getDeviceInfo...");
 
           DeviceInfo result = null;
           if (this.delegate != null) {
@@ -150,7 +150,7 @@ public class DeviceBridge extends BaseSystemBridge implements IDevice, APIBridge
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getLocaleCurrent.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getLocaleCurrent...");
 
           Locale result = null;
           if (this.delegate != null) {
@@ -174,7 +174,7 @@ of the display. For display orientation, use the IDisplay APIs.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getOrientationCurrent.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getOrientationCurrent...");
 
           ICapabilitiesOrientation result = null;
           if (this.delegate != null) {
@@ -197,7 +197,7 @@ of the display. For display orientation, use the IDisplay APIs.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeButtonListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeButtonListener...");
 
           if (this.delegate != null) {
                this.delegate.removeButtonListener(listener);
@@ -218,7 +218,7 @@ of the display. For display orientation, use the IDisplay APIs.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeButtonListeners.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeButtonListeners...");
 
           if (this.delegate != null) {
                this.delegate.removeButtonListeners();
@@ -240,7 +240,7 @@ of the display. For display orientation, use the IDisplay APIs.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeDeviceOrientationListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeDeviceOrientationListener...");
 
           if (this.delegate != null) {
                this.delegate.removeDeviceOrientationListener(listener);
@@ -261,7 +261,7 @@ of the display. For display orientation, use the IDisplay APIs.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeDeviceOrientationListeners.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeDeviceOrientationListeners...");
 
           if (this.delegate != null) {
                this.delegate.removeDeviceOrientationListeners();

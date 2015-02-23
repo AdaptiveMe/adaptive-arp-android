@@ -1676,7 +1676,7 @@ public class AppRegistryBridge implements IAppRegistry {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getAPIVersion.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getAPIVersion...");
 
           String result = null;
           if (this.delegate != null) {
@@ -1699,7 +1699,7 @@ public class AppRegistryBridge implements IAppRegistry {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getPlatformContext.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getPlatformContext...");
 
           AppContextBridge result = null;
           if (this.delegate != null) {
@@ -1722,7 +1722,7 @@ public class AppRegistryBridge implements IAppRegistry {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getPlatformContextWeb.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getPlatformContextWeb...");
 
           AppContextWebviewBridge result = null;
           if (this.delegate != null) {

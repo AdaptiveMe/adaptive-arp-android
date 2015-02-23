@@ -85,7 +85,7 @@ public class SecurityBridge extends BaseSecurityBridge implements ISecurity, API
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing deleteSecureKeyValuePairs({"+keys+"},{"+publicAccessName+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing deleteSecureKeyValuePairs...");
 
           if (this.delegate != null) {
                this.delegate.deleteSecureKeyValuePairs(keys, publicAccessName, callback);
@@ -109,7 +109,7 @@ public class SecurityBridge extends BaseSecurityBridge implements ISecurity, API
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getSecureKeyValuePairs({"+keys+"},{"+publicAccessName+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getSecureKeyValuePairs...");
 
           if (this.delegate != null) {
                this.delegate.getSecureKeyValuePairs(keys, publicAccessName, callback);
@@ -131,7 +131,7 @@ public class SecurityBridge extends BaseSecurityBridge implements ISecurity, API
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isDeviceModified.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isDeviceModified...");
 
           boolean result = false;
           if (this.delegate != null) {
@@ -156,7 +156,7 @@ public class SecurityBridge extends BaseSecurityBridge implements ISecurity, API
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing setSecureKeyValuePairs({"+keyValues+"},{"+publicAccessName+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing setSecureKeyValuePairs...");
 
           if (this.delegate != null) {
                this.delegate.setSecureKeyValuePairs(keyValues, publicAccessName, callback);

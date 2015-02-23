@@ -83,7 +83,7 @@ public class OSBridge extends BaseSystemBridge implements IOS, APIBridge {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getOSInfo.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getOSInfo...");
 
           OSInfo result = null;
           if (this.delegate != null) {

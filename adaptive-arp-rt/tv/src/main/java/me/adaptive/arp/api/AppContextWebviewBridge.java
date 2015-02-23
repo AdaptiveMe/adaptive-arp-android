@@ -91,7 +91,7 @@ not be added using this method.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addWebview({"+webView+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addWebview...");
 
           if (this.delegate != null) {
                this.delegate.addWebview(webView);
@@ -112,7 +112,7 @@ not be added using this method.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing executeJavaScript({"+javaScriptText+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing executeJavaScript...");
 
           if (this.delegate != null) {
                this.delegate.executeJavaScript(javaScriptText);
@@ -134,7 +134,7 @@ not be added using this method.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing executeJavaScript({"+javaScriptText+"},{"+webViewReference+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing executeJavaScript...");
 
           if (this.delegate != null) {
                this.delegate.executeJavaScript(javaScriptText, webViewReference);
@@ -158,7 +158,7 @@ WebView, WKWebView, etc.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getWebviewPrimary.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getWebviewPrimary...");
 
           Object result = null;
           if (this.delegate != null) {
@@ -182,7 +182,7 @@ This method will always return at least one element; the primary webview.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getWebviews.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getWebviews...");
 
           Object[] result = null;
           if (this.delegate != null) {
@@ -206,7 +206,7 @@ ARP functions and release resources. The primary webview can not be removed.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeWebview({"+webView+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeWebview...");
 
           if (this.delegate != null) {
                this.delegate.removeWebview(webView);

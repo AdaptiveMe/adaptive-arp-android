@@ -83,7 +83,7 @@ public class VideoBridge extends BaseMediaBridge implements IVideo, APIBridge {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing playStream({"+url+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing playStream...");
 
           if (this.delegate != null) {
                this.delegate.playStream(url);

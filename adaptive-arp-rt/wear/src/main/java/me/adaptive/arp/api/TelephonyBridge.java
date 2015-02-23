@@ -84,7 +84,7 @@ public class TelephonyBridge extends BaseCommunicationBridge implements ITelepho
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing call({"+number+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing call...");
 
           ITelephonyStatus result = null;
           if (this.delegate != null) {

@@ -84,7 +84,7 @@ public class ContactBridge extends BasePIMBridge implements IContact, APIBridge 
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContact({"+contact+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContact...");
 
           if (this.delegate != null) {
                this.delegate.getContact(contact, callback);
@@ -107,7 +107,7 @@ public class ContactBridge extends BasePIMBridge implements IContact, APIBridge 
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContactPhoto({"+contact+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContactPhoto...");
 
           if (this.delegate != null) {
                this.delegate.getContactPhoto(contact, callback);
@@ -129,7 +129,7 @@ public class ContactBridge extends BasePIMBridge implements IContact, APIBridge 
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContacts({"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContacts...");
 
           if (this.delegate != null) {
                this.delegate.getContacts(callback);
@@ -152,7 +152,7 @@ public class ContactBridge extends BasePIMBridge implements IContact, APIBridge 
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContactsForFields({"+callback+"},{"+fields+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContactsForFields...");
 
           if (this.delegate != null) {
                this.delegate.getContactsForFields(callback, fields);
@@ -176,7 +176,7 @@ public class ContactBridge extends BasePIMBridge implements IContact, APIBridge 
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContactsWithFilter({"+callback+"},{"+fields+"},{"+filter+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getContactsWithFilter...");
 
           if (this.delegate != null) {
                this.delegate.getContactsWithFilter(callback, fields, filter);
@@ -199,7 +199,7 @@ public class ContactBridge extends BasePIMBridge implements IContact, APIBridge 
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing searchContacts({"+term+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing searchContacts...");
 
           if (this.delegate != null) {
                this.delegate.searchContacts(term, callback);
@@ -223,7 +223,7 @@ public class ContactBridge extends BasePIMBridge implements IContact, APIBridge 
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing searchContactsWithFilter({"+term+"},{"+callback+"},{"+filter+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing searchContactsWithFilter...");
 
           if (this.delegate != null) {
                this.delegate.searchContactsWithFilter(term, callback, filter);
@@ -247,7 +247,7 @@ public class ContactBridge extends BasePIMBridge implements IContact, APIBridge 
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing setContactPhoto({"+contact+"},{"+pngImage+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing setContactPhoto...");
 
           boolean result = false;
           if (this.delegate != null) {

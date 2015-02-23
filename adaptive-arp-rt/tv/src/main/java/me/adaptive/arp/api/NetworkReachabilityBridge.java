@@ -84,7 +84,7 @@ public class NetworkReachabilityBridge extends BaseCommunicationBridge implement
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isNetworkReachable({"+host+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isNetworkReachable...");
 
           if (this.delegate != null) {
                this.delegate.isNetworkReachable(host, callback);
@@ -107,7 +107,7 @@ public class NetworkReachabilityBridge extends BaseCommunicationBridge implement
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isNetworkServiceReachable({"+url+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isNetworkServiceReachable...");
 
           if (this.delegate != null) {
                this.delegate.isNetworkServiceReachable(url, callback);

@@ -84,7 +84,7 @@ public class MailBridge extends BasePIMBridge implements IMail, APIBridge {
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing sendEmail({"+data+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing sendEmail...");
 
           if (this.delegate != null) {
                this.delegate.sendEmail(data, callback);

@@ -87,7 +87,7 @@ manipulated as needed by the application before submitting the ServiceRequest vi
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getServiceRequest({"+serviceToken+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getServiceRequest...");
 
           ServiceRequest result = null;
           if (this.delegate != null) {
@@ -115,7 +115,7 @@ configured in the platform's XML service definition file.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getServiceToken({"+serviceName+"},{"+endpointName+"},{"+functionName+"},{"+method+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getServiceToken...");
 
           ServiceToken result = null;
           if (this.delegate != null) {
@@ -142,7 +142,7 @@ configured in the platform's XML service definition file.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getServiceTokenByUri({"+uri+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getServiceTokenByUri...");
 
           ServiceToken result = null;
           if (this.delegate != null) {
@@ -165,7 +165,7 @@ configured in the platform's XML service definition file.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getServicesRegistered.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getServicesRegistered...");
 
           ServiceToken[] result = null;
           if (this.delegate != null) {
@@ -189,7 +189,7 @@ configured in the platform's XML service definition file.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing invokeService({"+serviceRequest+"},{"+callback+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing invokeService...");
 
           if (this.delegate != null) {
                this.delegate.invokeService(serviceRequest, callback);
@@ -216,7 +216,7 @@ XML service definition file.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isServiceRegistered({"+serviceName+"},{"+endpointName+"},{"+functionName+"},{"+method+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing isServiceRegistered...");
 
           boolean result = false;
           if (this.delegate != null) {

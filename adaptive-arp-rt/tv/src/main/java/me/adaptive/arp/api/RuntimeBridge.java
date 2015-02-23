@@ -82,7 +82,7 @@ public class RuntimeBridge extends BaseSystemBridge implements IRuntime, APIBrid
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing dismissApplication.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing dismissApplication...");
 
           if (this.delegate != null) {
                this.delegate.dismissApplication();
@@ -104,7 +104,7 @@ public class RuntimeBridge extends BaseSystemBridge implements IRuntime, APIBrid
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing dismissSplashScreen.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing dismissSplashScreen...");
 
           boolean result = false;
           if (this.delegate != null) {

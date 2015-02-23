@@ -83,7 +83,7 @@ public class DisplayBridge extends BaseSystemBridge implements IDisplay, APIBrid
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addDisplayOrientationListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addDisplayOrientationListener...");
 
           if (this.delegate != null) {
                this.delegate.addDisplayOrientationListener(listener);
@@ -106,7 +106,7 @@ of the device. For device orientation, use the IDevice APIs.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getOrientationCurrent.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing getOrientationCurrent...");
 
           ICapabilitiesOrientation result = null;
           if (this.delegate != null) {
@@ -129,7 +129,7 @@ of the device. For device orientation, use the IDevice APIs.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeDisplayOrientationListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeDisplayOrientationListener...");
 
           if (this.delegate != null) {
                this.delegate.removeDisplayOrientationListener(listener);
@@ -150,7 +150,7 @@ of the device. For device orientation, use the IDevice APIs.
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeDisplayOrientationListeners.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeDisplayOrientationListeners...");
 
           if (this.delegate != null) {
                this.delegate.removeDisplayOrientationListeners();

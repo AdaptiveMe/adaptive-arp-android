@@ -83,7 +83,7 @@ public class AccelerationBridge extends BaseSensorBridge implements IAcceleratio
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addAccelerationListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addAccelerationListener...");
 
           if (this.delegate != null) {
                this.delegate.addAccelerationListener(listener);
@@ -105,7 +105,7 @@ public class AccelerationBridge extends BaseSensorBridge implements IAcceleratio
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeAccelerationListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeAccelerationListener...");
 
           if (this.delegate != null) {
                this.delegate.removeAccelerationListener(listener);
@@ -126,7 +126,7 @@ public class AccelerationBridge extends BaseSensorBridge implements IAcceleratio
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeAccelerationListeners.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeAccelerationListeners...");
 
           if (this.delegate != null) {
                this.delegate.removeAccelerationListeners();

@@ -83,7 +83,7 @@ public class NetworkStatusBridge extends BaseCommunicationBridge implements INet
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addNetworkStatusListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing addNetworkStatusListener...");
 
           if (this.delegate != null) {
                this.delegate.addNetworkStatusListener(listener);
@@ -105,7 +105,7 @@ public class NetworkStatusBridge extends BaseCommunicationBridge implements INet
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeNetworkStatusListener({"+listener+"}).");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeNetworkStatusListener...");
 
           if (this.delegate != null) {
                this.delegate.removeNetworkStatusListener(listener);
@@ -126,7 +126,7 @@ public class NetworkStatusBridge extends BaseCommunicationBridge implements INet
           long tIn = System.currentTimeMillis();
           ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
-          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeNetworkStatusListeners.");
+          if (logger!=null) logger.log(ILoggingLogLevel.Debug, this.apiGroup.name(),this.getClass().getSimpleName()+" executing removeNetworkStatusListeners...");
 
           if (this.delegate != null) {
                this.delegate.removeNetworkStatusListeners();
