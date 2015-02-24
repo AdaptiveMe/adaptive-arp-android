@@ -1,0 +1,18 @@
+language: android
+jdk: oraclejdk8
+env:
+  matrix:
+    - ANDROID_TARGET=android-21
+    
+notifications:
+  email: false
+
+android:
+  components:
+    - build-tools-21.1.2
+
+before_install:
+  - ./gradlew -v
+  - uname -a
+  
+script: ./gradlew clean build
