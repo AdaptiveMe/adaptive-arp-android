@@ -1,9 +1,0 @@
-<component name="CopyrightManager">
-  <copyright>
-    <option name="notice" value="/**&#10; --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------&#10;&#10; (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me &lt;http://adaptive.me&gt;.&#10;&#10; Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the&#10; License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-&#10; -cable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS,  WITHOUT&#10; WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing&#10; permissions and limitations under the License.&#10;&#10; Original author:&#10;&#10; * Carlos Lozano Diez&#10; &lt;http://github.com/carloslozano&gt;&#10; &lt;http://twitter.com/adaptivecoder&gt;&#10; &lt;mailto:carlos@adaptive.me&gt;&#10;&#10; Contributors:&#10;&#10; * Ferran Vila Conesa&#10; &lt;http://github.com/fnva&gt;&#10; &lt;http://twitter.com/ferran_vila&gt;&#10; &lt;mailto:ferran.vila.conesa@gmail.com&gt;&#10;&#10; * Francisco Javier Martin Bueno&#10; &lt;http://github.com/kechis&gt;&#10; &lt;mailto:kechis@gmail.com&gt;&#10;&#10; * See source code files for contributors.&#10;&#10; Release:&#10;&#10; * @version v2.0.2&#10;&#10;-------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------&#10; */" />
-    <option name="keyword" value="Copyright" />
-    <option name="allowReplaceKeyword" value="" />
-    <option name="myName" value="adaptive" />
-    <option name="myLocal" value="true" />
-  </copyright>
-</component>
