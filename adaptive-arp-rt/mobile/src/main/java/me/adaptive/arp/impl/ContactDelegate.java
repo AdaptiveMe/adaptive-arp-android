@@ -34,12 +34,19 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -52,12 +59,14 @@ import me.adaptive.arp.api.Contact;
 import me.adaptive.arp.api.ContactAddress;
 import me.adaptive.arp.api.ContactAddressType;
 import me.adaptive.arp.api.ContactEmail;
+import me.adaptive.arp.api.ContactEmailType;
 import me.adaptive.arp.api.ContactPersonalInfo;
 import me.adaptive.arp.api.ContactPersonalInfoTitle;
 import me.adaptive.arp.api.ContactPhone;
 import me.adaptive.arp.api.ContactPhoneType;
-import me.adaptive.arp.api.ContactSocial;
+import me.adaptive.arp.api.ContactProfessionalInfo;
 import me.adaptive.arp.api.ContactUid;
+import me.adaptive.arp.api.ContactWebsite;
 import me.adaptive.arp.api.IContact;
 import me.adaptive.arp.api.IContactFieldGroup;
 import me.adaptive.arp.api.IContactFilter;
@@ -65,6 +74,7 @@ import me.adaptive.arp.api.IContactPhotoResultCallback;
 import me.adaptive.arp.api.IContactPhotoResultCallbackError;
 import me.adaptive.arp.api.IContactResultCallback;
 import me.adaptive.arp.api.IContactResultCallbackError;
+import me.adaptive.arp.api.IContactResultCallbackWarning;
 import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
@@ -74,29 +84,8 @@ import me.adaptive.arp.api.ILoggingLogLevel;
 public class ContactDelegate extends BasePIMDelegate implements IContact {
 
 
-    private static final Map<Integer, ContactPhoneType> PHONE_TYPES_MAP = new HashMap<Integer, ContactPhoneType>();
-    private static final Map<Integer, ContactAddressType> ADDRESS_TYPES_MAP = new HashMap<Integer, ContactAddressType>();
-    static {
-        // Phone
-        PHONE_TYPES_MAP.put(ContactsContract.CommonDataKinds.Phone.TYPE_FAX_HOME, ContactPhoneType.HomeFax);
-        PHONE_TYPES_MAP.put(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE, ContactPhoneType.Mobile);
-        PHONE_TYPES_MAP.put(ContactsContract.CommonDataKinds.Phone.TYPE_WORK, ContactPhoneType.Work);
-        PHONE_TYPES_MAP.put(ContactsContract.CommonDataKinds.Phone.TYPE_FAX_WORK, ContactPhoneType.WorkFax);
-        PHONE_TYPES_MAP.put(ContactsContract.CommonDataKinds.Phone.TYPE_COMPANY_MAIN, ContactPhoneType.Work);
-        PHONE_TYPES_MAP.put(ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE, ContactPhoneType.Work);
-        PHONE_TYPES_MAP.put(ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM, ContactPhoneType.Other);
-
-        // Address
-        ADDRESS_TYPES_MAP.put(ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME,
-                ContactAddressType.Home);
-        ADDRESS_TYPES_MAP.put(ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK, ContactAddressType.Work);
-        ADDRESS_TYPES_MAP.put(ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER,
-                ContactAddressType.Other);
-
-
-    }
     public static String APIService = "contact";
-    static LoggingDelegate Logger;
+    private static LoggingDelegate Logger;
 
     /**
      * Default Constructor.
@@ -106,22 +95,6 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
     }
 
-    private static ContactPhoneType getNumberType(int phoneType) {
-        return PHONE_TYPES_MAP.get(phoneType) == null ? ContactPhoneType.Other
-                : PHONE_TYPES_MAP.get(phoneType);
-    }
-
-    private static ContactAddressType getAddressType(int value) {
-
-        for (Map.Entry<Integer, ContactAddressType> e : ADDRESS_TYPES_MAP.entrySet()) {
-            if (e.getKey().equals(value)) {
-                return e.getValue();
-            }
-        }
-
-        return ContactAddressType.Other;
-    }
-
     /**
      * Get all the details of a contact according to its id
      *
@@ -129,192 +102,9 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      * @param callback called for return
      * @since ARP1.0
      */
-    public void getContact(ContactUid contact, IContactResultCallback callback) {
-        Contact contactBean = new Contact();
-        contactBean.setContactId(contact.getContactId());
+    public void getContact(final ContactUid contact, final IContactResultCallback callback) {
+        nativeToAdaptive(callback, contact, null, null, null);
 
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "getContact: Getting contactBean data for id: " + contact.getContactId());
-
-        String company = null, department = null, firstMame = null, group = null, jobTitle = null, lastName = null, name = null, notes = null, photoBase64Encoded = null, displayName = null;
-        List<ContactAddress> addressList = new ArrayList<ContactAddress>();
-        List<ContactEmail> emailList = new ArrayList<ContactEmail>();
-        List<ContactPhone> phoneList = new ArrayList<ContactPhone>();
-        List<String> webSiteList = new ArrayList<String>();
-
-        Context context = AppContextDelegate.getMainActivity().getApplicationContext();
-        ContentResolver cr = context.getContentResolver();
-        String selectionSingle = ContactsContract.RawContactsEntity.CONTACT_ID + " = " + contact.getContactId();
-        Cursor raws = cr.query(ContactsContract.RawContactsEntity.CONTENT_URI, null,
-                selectionSingle, null, null);
-        try {
-            raws.moveToFirst();
-            while (!raws.isAfterLast()) {
-                String type = raws
-                        .getString(raws
-                                .getColumnIndex(ContactsContract.Data.MIMETYPE));
-                if (ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE.equals(type)) {
-                    // structured name
-
-                    displayName = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-
-                    Logger.log(ILoggingLogLevel.DEBUG, APIService, "getContact: display name " + displayName);
-
-                } else if (ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE.equals(type)) {
-                    // it's a phone, gets all properties and add in
-                    // the phone list
-                    ContactPhone phone = new ContactPhone();
-                    String number = raws.getString(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    phone.setPhone(number);
-                    int primary = raws.getInt(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_PRIMARY));
-                    //phone.setIsPrimary(primary != 0);
-                    int phoneType = raws.getInt(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-                    phone.setPhoneType(getNumberType(phoneType));
-                    phoneList.add(phone);
-                } else if (ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE
-                        .equals(type)) {
-                    // it's an Address, gets all properties and add
-                    // in
-                    // the address list
-                    ContactAddress address = new ContactAddress();
-                    String city = raws.getString(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY));
-                    String country = raws.getString(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY));
-                    String postcode = raws.getString(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE));
-                    String street = raws.getString(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.STREET));
-                    // TODO Check about Number, as Android doesn't store
-                    // number in a different column. (Is in the street)
-                    // (linked with the way contacts are stored by this
-                    // class)
-                    int typeInt = raws.getInt(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.TYPE));
-                    ContactAddressType dType = getAddressType(typeInt);
-                    address.setType(dType);
-                    address.setAddress(street + " - " + postcode + " (" + city.toUpperCase() + ") " + country.toUpperCase());
-                    //
-                    //TODO: how to get the number?
-                    // address.setAddressNumber(number);
-                    //
-                    addressList.add(address);
-                } else if (ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE.equals(type)) {
-                    // it's an Email address, gets all properties
-                    // and add in the email list
-                    ContactEmail email = new ContactEmail();
-                    String emailAddress = raws
-                            .getString(raws
-                                    .getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA1));
-                    email.setEmail(emailAddress);
-
-                    // TODO set first name and last name
-                    emailList.add(email);
-                } else if (ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE.equals(type)) {
-                    if (raws.getInt(raws
-                            .getColumnIndex(ContactsContract.RawContactsEntity.IS_PRIMARY)) == 1
-                            || company == null || company.equals("")) {
-                        company = raws.getString(raws
-                                .getColumnIndex(ContactsContract.CommonDataKinds.Organization.COMPANY));
-                        department = raws
-                                .getString(raws
-                                        .getColumnIndex(ContactsContract.CommonDataKinds.Organization.DEPARTMENT));
-                        jobTitle = raws.getString(raws
-                                .getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
-                    }
-                } else if (ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE
-                        .equals(type)) {
-                    group = raws
-                            .getString(raws
-                                    .getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.DATA1));
-                } else if (ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE.equals(type)) {
-                    /*photo = raws.getBlob(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.Photo.PHOTO));
-                    photoBase64Encoded = photo != null ? new String(
-                            Base64.encode(photo, Base64.DEFAULT))
-                            : null;*/
-                } else if (ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE
-                        .equals(type)) {
-                    webSiteList.add(raws.getString(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.Website.URL)));
-                } else if (ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE.equals(type)) {
-                    // No need for nickname
-
-                    String nickName = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.Nickname.NAME));
-
-                    Logger.log(ILoggingLogLevel.DEBUG, APIService, "getContact: nickName: " + nickName);
-
-                } else if (ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE.equals(type)) {
-                    if (raws.getInt(raws
-                            .getColumnIndex(ContactsContract.RawContactsEntity.IS_PRIMARY)) == 1
-                            || notes == null || notes.equals("")) {
-                        notes = raws.getString(raws
-                                .getColumnIndex(ContactsContract.CommonDataKinds.Note.NOTE));
-                    }
-                }
-                raws.moveToNext();
-            }
-
-        } finally {
-            if (raws != null) {
-                raws.close();
-            }
-        }
-
-        // filling the bean
-
-        contactBean.setContactAddresses(addressList
-                .toArray(new ContactAddress[addressList.size()]));
-        contactBean.setContactSocials(webSiteList.toArray(new ContactSocial[webSiteList
-                .size()]));
-
-        contactBean.setContactEmails(emailList.toArray(new ContactEmail[emailList.size()]));
-        contactBean.setContactPhones(phoneList.toArray(new ContactPhone[phoneList.size()]));
-
-        contactBean.setPersonalInfo(new ContactPersonalInfo(displayName, null, lastName, ContactPersonalInfoTitle.Mr));
-
-        callback.onResult(new Contact[]{contactBean});
-    }
-
-    /**
-     * Get the contact photo
-     *
-     * @param contact  id to search for
-     * @param callback called for return
-     * @since ARP1.0
-     */
-    public void getContactPhoto(ContactUid contact, IContactPhotoResultCallback callback) {
-        Context context = AppContextDelegate.getMainActivity().getApplicationContext();
-        ContentResolver cr = context.getContentResolver();
-        String selectionSingle = ContactsContract.RawContactsEntity.CONTACT_ID + " = " + contact.getContactId();
-        Cursor raws = cr.query(ContactsContract.RawContactsEntity.CONTENT_URI, null,
-                selectionSingle, null, null);
-        byte[] photo = null;
-        try {
-            raws.moveToFirst();
-            while (!raws.isAfterLast()) {
-                String type = raws
-                        .getString(raws
-                                .getColumnIndex(ContactsContract.Data.MIMETYPE));
-                if (ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE.equals(type)) {
-                    photo = raws.getBlob(raws
-                            .getColumnIndex(ContactsContract.CommonDataKinds.Photo.PHOTO));
-
-                    raws.close();
-                }
-                raws.moveToNext();
-            }
-
-        } finally {
-            if (raws != null) {
-                raws.close();
-            }
-        }
-
-        if (photo != null) callback.onResult(photo);
-        else callback.onError(IContactPhotoResultCallbackError.No_Photo);
     }
 
     /**
@@ -324,7 +114,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      * @since ARP1.0
      */
     public void getContacts(IContactResultCallback callback) {
-        searchContacts(null, callback);
+        nativeToAdaptive(callback, null, null, null, null);
     }
 
     /**
@@ -334,192 +124,8 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      * @param fields   to get for each Contact
      * @since ARP1.0
      */
-    public void getContactsForFields(final IContactResultCallback callback, final IContactFieldGroup[] fields) {
-        AppContextDelegate.getExecutorService().submit(new Runnable() {
-            public void run() {
-                Date startSearching = new Date();
-                boolean addressRequired = false, mailRequired = false, phoneRequired = false;
-
-                Uri uri = null;
-                Context context = AppContextDelegate.getMainActivity().getApplicationContext();
-                ContentResolver cr = context.getContentResolver();
-                Cursor contactsCursor = null;
-                String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
-                Cursor cur;
-
-
-                uri = ContactsContract.Contacts.CONTENT_URI;
-                contactsCursor = cr.query(uri, new String[]{
-                        ContactsContract.Contacts._ID,
-                        ContactsContract.Contacts.DISPLAY_NAME}, null, null, sortOrder);
-
-
-                List<Contact> contactList = new ArrayList<Contact>();
-                List<String> webSiteList = new ArrayList<String>();
-                try {
-                    // iterate cursor to
-                    contactsCursor.moveToFirst();
-                    int excludedContacts = 0;
-                    Map<String, Contact> contactsIDs = new HashMap<String, Contact>();
-                    String contactsIDsString = "";
-                    while (!contactsCursor.isAfterLast()) {
-
-
-                        Long id = contactsCursor.getLong(0);
-                        String displayName = contactsCursor.getString(1);
-                        Contact contact = new Contact(id.toString());
-                        ContactPersonalInfo pI = new ContactPersonalInfo();
-                        pI.setName(displayName);
-                        contact.setPersonalInfo(pI);
-
-                        contactsIDs.put("" + id, contact);
-                        contactsIDsString += (contactsIDsString.length() > 0 ? "," : "") + "'" + id + "'";
-                        contactsCursor.moveToNext();
-                    }
-
-
-                    // querying the content resolver for all contacts
-
-                    String selectionMultiple = ContactsContract.RawContactsEntity.CONTACT_ID + " IN (" + contactsIDsString + ")";
-
-                    Cursor raws = cr.query(ContactsContract.RawContactsEntity.CONTENT_URI, projectionFromFieldGroup(fields),
-                            selectionMultiple, null, null);
-
-                    try {
-                        raws.moveToFirst();
-
-                        // it seems that there is a time saving by querying the indexes before the cursor loop
-                        int columnIndex_CONTACTID = raws.getColumnIndex(ContactsContract.RawContactsEntity.CONTACT_ID);
-                        int columnIndex_MIMETYPE = raws.getColumnIndex(ContactsContract.Data.MIMETYPE);
-                        int columnIndex_PHONE_NUMBER = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                        int columnIndex_IS_PRIMARY = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_PRIMARY);
-                        int columnIndex_PHONE_TYPE = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
-                        int columnIndex_EMAIL_ADDRESS = raws.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA1);
-                        //int columnIndex_DISPLAY_NAME = raws.getColumnIndex(ContactsContract.CommonDataKinds.Email.DISPLAY_NAME);
-                        int columnIndex_GROUP_MEMBERSHIP = raws.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.DATA1);
-                        int columnIndex_FORMATTED_ADDRESS = raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.DATA1);
-
-                        while (!raws.isAfterLast()) {
-
-                            String contactId = raws.getString(columnIndex_CONTACTID);
-
-                            String firstname = null, group = null, lastname = null, name = null, address = null;
-                            List<ContactEmail> emailList = new ArrayList<ContactEmail>();
-                            List<ContactPhone> phoneList = new ArrayList<ContactPhone>();
-                            List<ContactAddress> addressList = new ArrayList<ContactAddress>();
-                            Contact contact = null;
-
-                            if (contactsIDs != null && contactsIDs.containsKey(contactId)) {
-                                contact = contactsIDs.get(contactId);
-                                // asList returns unmodifiable lists, so we need to create new lists from them
-                                if (contact.getContactEmails() != null)
-                                    emailList.addAll(Arrays.asList(contact.getContactEmails()));
-                                if (contact.getContactPhones() != null)
-                                    phoneList.addAll(Arrays.asList(contact.getContactPhones()));
-                                if (contact.getContactAddresses() != null)
-                                    addressList.addAll(Arrays.asList(contact.getContactAddresses()));
-                            }
-
-                            String type = raws.getString(columnIndex_MIMETYPE);
-                            if (ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE.equals(type)/* && requiredField(fields,FieldGroup.PERSONAL_INFO)*/) {
-                                // structured name
-                                firstname = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME));
-                                lastname = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
-                                //displayName = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-                            } else if (ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE.equals(type)/* && requiredField(fields,FieldGroup.ADDRESSES)*/) {
-                                // structured name
-
-                                ContactAddress contactAddress = new ContactAddress();
-                                address = raws.getString(columnIndex_FORMATTED_ADDRESS);
-                                contactAddress.setAddress(address);
-                                //email.setCommonName(raws.getString(columnIndex_DISPLAY_NAME));
-                                addressList.add(contactAddress);
-                                //displayName = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-                            } else if (ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE.equals(type)/* && requiredField(fields,FieldGroup.PHONES)*/) {
-                                // it's a phone, gets all properties and add in
-
-                                // the phone list
-                                ContactPhone phone = new ContactPhone();
-                                String number = raws.getString(columnIndex_PHONE_NUMBER);
-                                phone.setPhone(number);
-                                int primary = raws.getInt(columnIndex_IS_PRIMARY);
-                                //phone.setIsPrimary(primary != 0);
-                                int phonetype = raws.getInt(columnIndex_PHONE_TYPE);
-                                phone.setPhoneType(getNumberType(phonetype));
-                                phoneList.add(phone);
-                            } else if (ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE.equals(type)/* && requiredField(fields,FieldGroup.EMAILS)*/) {
-                                // it's an Email address, gets all properties
-                                // and add in the email list
-                                ContactEmail email = new ContactEmail();
-                                String emailaddress = raws.getString(columnIndex_EMAIL_ADDRESS);
-                                email.setEmail(emailaddress);
-                                //email.setCommonName(raws.getString(columnIndex_DISPLAY_NAME));
-                                emailList.add(email);
-                            } else if (ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE
-                                    .equals(type)/* && requiredField(fields,FieldGroup.SOCIALS)*/) {
-                                webSiteList.add(raws.getString(raws
-                                        .getColumnIndex(ContactsContract.CommonDataKinds.Website.URL)));
-                            } else if (ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE
-                                    .equals(type)) {
-                                group = raws.getString(columnIndex_GROUP_MEMBERSHIP);
-                            }
-
-                            if (contactsIDs != null && contactsIDs.containsKey(contactId)) {
-                                contact = contactsIDs.get(contactId);
-                            }
-                            // filling the bean
-                            if (contact != null) {
-
-                                if (emailList.size() > 0)
-                                    contact.setContactEmails(emailList.toArray(new ContactEmail[emailList.size()]));
-                                if (phoneList.size() > 0) {
-                                    contact.setContactPhones(phoneList.toArray(new ContactPhone[phoneList.size()]));
-                                }
-                                if (phoneList.size() > 0) {
-                                    contact.setContactPhones(phoneList.toArray(new ContactPhone[phoneList.size()]));
-                                }
-                                if (addressList.size() > 0) {
-                                    contact.setContactAddresses(addressList.toArray(new ContactAddress[addressList.size()]));
-                                }
-                                if (webSiteList.size() > 0) {
-                                    contact.setContactSocials(webSiteList.toArray(new ContactSocial[webSiteList
-                                            .size()]));
-                                }
-
-                                if (firstname != null) contact.getPersonalInfo().setName(firstname);
-                                if (lastname != null)
-                                    contact.getPersonalInfo().setLastName(lastname);
-                                if (name != null) contact.getPersonalInfo().setName(name);
-
-
-                                // replace contact in the hashmap
-                                contactsIDs.put(contactId, contact);
-
-                            }
-                            raws.moveToNext();
-                        }
-
-                    } finally {
-                        if (raws != null) {
-                            raws.close();
-                        }
-                    }
-                    contactList = new ArrayList<Contact>(contactsIDs.values());
-                } catch (Exception ex) {
-                    callback.onError(IContactResultCallbackError.NoPermission);
-                    return;
-                } finally {
-                    if (contactsCursor != null) {
-                        contactsCursor.close();
-                    }
-                }
-
-                Logger.log(ILoggingLogLevel.DEBUG, APIService, "ARP: contactList has " + contactList.size() + " Contacts");
-                callback.onResult((Contact[]) contactList.toArray(new Contact[contactList.size()]));
-
-            }
-
-        });
+    public void getContactsForFields(IContactResultCallback callback, IContactFieldGroup[] fields) {
+        nativeToAdaptive(callback, null, null, fields, null);
     }
 
     /**
@@ -530,220 +136,8 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      * @param filter   to search for
      * @since ARP1.0
      */
-    public void getContactsWithFilter(final IContactResultCallback callback, final IContactFieldGroup[] fields, final IContactFilter[] filter) {
-        AppContextDelegate.getExecutorService().submit(new Runnable() {
-            public void run() {
-                Date startSearching = new Date();
-                boolean addressRequired = false, mailRequired = false, phoneRequired = false;
-                for (int i = 0; i < filter.length; i++) {
-                    if (filter[i].equals(IContactFilter.HAS_ADDRESS)) {
-                        Logger.log(ILoggingLogLevel.DEBUG, APIService, "Filter: HAS_ADDRESS");
-                        addressRequired = true;
-                    }
-                    if (filter[i].equals(IContactFilter.HAS_EMAIL)) {
-                        Logger.log(ILoggingLogLevel.DEBUG, APIService, "Filter: HAS_EMAIL");
-                        mailRequired = true;
-                    }
-                    if (filter[i].equals(IContactFilter.HAS_PHONE)) {
-                        Logger.log(ILoggingLogLevel.DEBUG, APIService, "Filter: HAS_PHONE");
-                        phoneRequired = true;
-                    }
-
-
-                }
-                Uri uri = null;
-                Context context = AppContextDelegate.getMainActivity().getApplicationContext();
-                ContentResolver cr = context.getContentResolver();
-                Cursor contactsCursor = null;
-                String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
-                Cursor cur;
-
-
-                uri = ContactsContract.Contacts.CONTENT_URI;
-                contactsCursor = cr.query(uri, new String[]{
-                        ContactsContract.Contacts._ID,
-                        ContactsContract.Contacts.DISPLAY_NAME}, null, null, sortOrder);
-
-
-                List<Contact> contactList = new ArrayList<Contact>();
-                try {
-                    // iterate cursor to
-                    contactsCursor.moveToFirst();
-                    int excludedContacts = 0;
-                    Map<String, Contact> contactsIDs = new HashMap<String, Contact>();
-                    String contactsIDsString = "";
-                    while (!contactsCursor.isAfterLast()) {
-
-
-                        Long id = contactsCursor.getLong(0);
-                        String displayName = contactsCursor.getString(1);
-                        Contact contact = new Contact(id.toString());
-                        ContactPersonalInfo pI = new ContactPersonalInfo();
-                        pI.setName(displayName);
-                        contact.setPersonalInfo(pI);
-
-                        contactsIDs.put("" + id, contact);
-                        contactsIDsString += (contactsIDsString.length() > 0 ? "," : "") + "'" + id + "'";
-                        contactsCursor.moveToNext();
-                    }
-
-
-                    // querying the content resolver for all contacts
-
-                    String selectionMultiple = ContactsContract.RawContactsEntity.CONTACT_ID + " IN (" + contactsIDsString + ")";
-                    Cursor raws = cr.query(ContactsContract.RawContactsEntity.CONTENT_URI, projectionFromFieldGroup(fields),
-                            selectionMultiple, null, null);
-
-                    try {
-                        raws.moveToFirst();
-
-                        // it seems that there is a time saving by querying the indexes before the cursor loop
-                        int columnIndex_CONTACTID = raws.getColumnIndex(ContactsContract.RawContactsEntity.CONTACT_ID);
-                        int columnIndex_MIMETYPE = raws.getColumnIndex(ContactsContract.Data.MIMETYPE);
-                        int columnIndex_PHONE_NUMBER = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                        int columnIndex_IS_PRIMARY = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_PRIMARY);
-                        int columnIndex_PHONE_TYPE = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
-                        int columnIndex_EMAIL_ADDRESS = raws.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA1);
-                        //int columnIndex_DISPLAY_NAME = raws.getColumnIndex(ContactsContract.CommonDataKinds.Email.DISPLAY_NAME);
-                        int columnIndex_GROUP_MEMBERSHIP = raws.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.DATA1);
-                        int columnIndex_FORMATTED_ADDRESS = raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.DATA1);
-
-                        while (!raws.isAfterLast()) {
-
-                            String contactId = raws.getString(columnIndex_CONTACTID);
-
-                            String firstname = null, group = null, lastname = null, name = null, address = null;
-                            List<ContactEmail> emailList = new ArrayList<ContactEmail>();
-                            List<ContactPhone> phoneList = new ArrayList<ContactPhone>();
-                            List<ContactAddress> addressList = new ArrayList<ContactAddress>();
-                            Contact contact = null;
-
-                            if (contactsIDs != null && contactsIDs.containsKey(contactId)) {
-                                contact = contactsIDs.get(contactId);
-                                // asList returns unmodifiable lists, so we need to create new lists from them
-                                if (contact.getContactEmails() != null)
-                                    emailList.addAll(Arrays.asList(contact.getContactEmails()));
-                                if (contact.getContactPhones() != null)
-                                    phoneList.addAll(Arrays.asList(contact.getContactPhones()));
-                                if (contact.getContactAddresses() != null)
-                                    addressList.addAll(Arrays.asList(contact.getContactAddresses()));
-                            }
-
-                            String type = raws.getString(columnIndex_MIMETYPE);
-                            if (ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE.equals(type)) {
-                                // structured name
-                                firstname = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME));
-                                lastname = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
-                                //displayName = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-                            } else if (ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE.equals(type)) {
-                                // structured name
-
-                                ContactAddress contactAddress = new ContactAddress();
-                                address = raws.getString(columnIndex_FORMATTED_ADDRESS);
-                                contactAddress.setAddress(address);
-                                //email.setCommonName(raws.getString(columnIndex_DISPLAY_NAME));
-                                addressList.add(contactAddress);
-                                //displayName = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-                            } else if (ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE.equals(type)) {
-                                // it's a phone, gets all properties and add in
-
-                                // the phone list
-                                ContactPhone phone = new ContactPhone();
-                                String number = raws.getString(columnIndex_PHONE_NUMBER);
-                                phone.setPhone(number);
-                                int primary = raws.getInt(columnIndex_IS_PRIMARY);
-                                //phone.setIsPrimary(primary != 0);
-                                int phonetype = raws.getInt(columnIndex_PHONE_TYPE);
-                                phone.setPhoneType(getNumberType(phonetype));
-                                phoneList.add(phone);
-                            } else if (ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE.equals(type)) {
-                                // it's an Email address, gets all properties
-                                // and add in the email list
-                                ContactEmail email = new ContactEmail();
-                                String emailaddress = raws.getString(columnIndex_EMAIL_ADDRESS);
-                                email.setEmail(emailaddress);
-                                //email.setCommonName(raws.getString(columnIndex_DISPLAY_NAME));
-                                emailList.add(email);
-                            } else if (ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE
-                                    .equals(type)) {
-                                group = raws.getString(columnIndex_GROUP_MEMBERSHIP);
-                            }
-
-                            if (contactsIDs != null && contactsIDs.containsKey(contactId)) {
-                                contact = contactsIDs.get(contactId);
-                            }
-                            // filling the bean
-                            if (contact != null) {
-
-                                if (emailList.size() > 0)
-                                    contact.setContactEmails(emailList.toArray(new ContactEmail[emailList.size()]));
-                                if (phoneList.size() > 0) {
-                                    contact.setContactPhones(phoneList.toArray(new ContactPhone[phoneList.size()]));
-                                }
-                                if (phoneList.size() > 0) {
-                                    contact.setContactPhones(phoneList.toArray(new ContactPhone[phoneList.size()]));
-                                }
-                                if (addressList.size() > 0) {
-                                    contact.setContactAddresses(addressList.toArray(new ContactAddress[addressList.size()]));
-                                }
-
-                                if (firstname != null) contact.getPersonalInfo().setName(firstname);
-                                if (lastname != null)
-                                    contact.getPersonalInfo().setLastName(lastname);
-                                if (name != null) contact.getPersonalInfo().setName(name);
-
-
-                                // replace contact in the hashmap
-                                contactsIDs.put(contactId, contact);
-
-                            }
-                            raws.moveToNext();
-                        }
-
-                    } finally {
-                        if (raws != null) {
-                            raws.close();
-                        }
-                    }
-
-                    List<String> removeContact = new ArrayList<String>();
-                    for (Contact contact : contactsIDs.values()) {
-                        if (mailRequired && contact.getContactEmails() == null) {
-                            removeContact.add(contact.getContactId());
-
-
-                        }
-                        if (phoneRequired && contact.getContactPhones() == null) {
-                            removeContact.add(contact.getContactId());
-
-                        }
-                        if (addressRequired && contact.getContactAddresses() == null) {
-                            removeContact.add(contact.getContactId());
-
-                        }
-                    }
-
-                    for (String key : removeContact) {
-                        contactsIDs.remove(key);
-                    }
-
-                    contactList = new ArrayList<Contact>(contactsIDs.values());
-
-
-                } catch (Exception ex) {
-                    callback.onError(IContactResultCallbackError.NoPermission);
-                    return;
-                } finally {
-                    if (contactsCursor != null) {
-                        contactsCursor.close();
-                    }
-                }
-
-                Logger.log(ILoggingLogLevel.DEBUG, APIService, "ARP: contactList has " + contactList.size() + " Contacts");
-                callback.onResult((Contact[]) contactList.toArray(new Contact[contactList.size()]));
-
-            }
-        });
+    public void getContactsWithFilter(IContactResultCallback callback, IContactFieldGroup[] fields, IContactFilter[] filter) {
+        nativeToAdaptive(callback, null, null, fields, filter);
     }
 
     /**
@@ -753,174 +147,8 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      * @param callback called for return
      * @since ARP1.0
      */
-    public void searchContacts(final String term, final IContactResultCallback callback) {
-        AppContextDelegate.getExecutorService().submit(new Runnable() {
-            public void run() {
-                Logger.log(ILoggingLogLevel.DEBUG, APIService, "searchContacts: term " + term);
-                Date startSearching = new Date();
-                Uri uri = null;
-                Context context = AppContextDelegate.getMainActivity().getApplicationContext();
-                ContentResolver cr = context.getContentResolver();
-                Cursor contactsCursor = null;
-                String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
-
-
-                if (term != null) {
-
-                    String selection = null;
-                    String[] selectionValues = null;
-                    selection = ContactsContract.Contacts.DISPLAY_NAME + " LIKE ?";
-                    selectionValues = new String[]{"%" + term + "%"};
-                    uri = ContactsContract.Contacts.CONTENT_URI;
-
-                    contactsCursor = cr.query(uri, new String[]{
-                            ContactsContract.Contacts._ID,
-                            ContactsContract.Contacts.DISPLAY_NAME}, selection, selectionValues, sortOrder);
-
-                } else {
-                    uri = ContactsContract.Contacts.CONTENT_URI;
-                    contactsCursor = cr.query(uri, new String[]{
-                            ContactsContract.Contacts._ID,
-                            ContactsContract.Contacts.DISPLAY_NAME}, null, null, sortOrder);
-                }
-
-                List<Contact> contactList = new ArrayList<Contact>();
-                try {
-                    // iterate cursor to
-                    contactsCursor.moveToFirst();
-                    int excludedContacts = 0;
-                    Map<String, Contact> contactsIDs = new HashMap<String, Contact>();
-                    String contactsIDsString = "";
-                    while (!contactsCursor.isAfterLast()) {
-                        Long id = contactsCursor.getLong(0);
-                        String displayName = contactsCursor.getString(1);
-                        Contact contact = new Contact(id.toString());
-                        ContactPersonalInfo pI = new ContactPersonalInfo();
-                        pI.setName(displayName);
-                        contact.setPersonalInfo(pI);
-
-                        contactsIDs.put("" + id, contact);
-                        contactsIDsString += (contactsIDsString.length() > 0 ? "," : "") + "'" + id + "'";
-                        contactsCursor.moveToNext();
-                    }
-
-                    // querying the content resolver for all contacts
-                    String selectionMultiple = ContactsContract.RawContactsEntity.CONTACT_ID + " IN (" + contactsIDsString + ") ";
-                    Cursor raws = cr.query(ContactsContract.RawContactsEntity.CONTENT_URI, null,
-                            selectionMultiple, null, null);
-
-                    try {
-                        raws.moveToFirst();
-
-                        // it seems that there is a time saving by querying the indexes before the cursor loop
-                        int columnIndex_CONTACTID = raws.getColumnIndex(ContactsContract.RawContactsEntity.CONTACT_ID);
-                        int columnIndex_MIMETYPE = raws.getColumnIndex(ContactsContract.Data.MIMETYPE);
-                        int columnIndex_PHONE_NUMBER = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                        int columnIndex_IS_PRIMARY = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_PRIMARY);
-                        int columnIndex_PHONE_TYPE = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
-                        int columnIndex_EMAIL_ADDRESS = raws.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA1);
-                        int columnIndex_GROUP_MEMBERSHIP = raws.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.DATA1);
-                        int columnIndex_FORMATTED_ADDRESS = raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.DATA1);
-
-                        while (!raws.isAfterLast()) {
-
-                            String contactId = raws.getString(columnIndex_CONTACTID);
-
-                            String firstname = null, group = null, lastname = null, name = null, address = null;
-                            List<ContactEmail> emailList = new ArrayList<ContactEmail>();
-                            List<ContactPhone> phoneList = new ArrayList<ContactPhone>();
-                            List<ContactAddress> addressList = new ArrayList<ContactAddress>();
-                            Contact contact = null;
-
-                            if (contactsIDs != null && contactsIDs.containsKey(contactId)) {
-                                contact = contactsIDs.get(contactId);
-                                // asList returns unmodifiable lists, so we need to create new lists from them
-                                if (contact.getContactEmails() != null)
-                                    emailList.addAll(Arrays.asList(contact.getContactEmails()));
-                                if (contact.getContactPhones() != null)
-                                    phoneList.addAll(Arrays.asList(contact.getContactPhones()));
-                                if (contact.getContactAddresses() != null)
-                                    addressList.addAll(Arrays.asList(contact.getContactAddresses()));
-                            }
-
-                            String type = raws.getString(columnIndex_MIMETYPE);
-                            if (ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE.equals(type)) {
-                                // structured name
-                                firstname = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME));
-                                lastname = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
-                                //displayName = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-                            } else if (ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE.equals(type)) {
-                                // structured name
-                                ContactAddress contactAddress = new ContactAddress();
-                                address = raws.getString(columnIndex_FORMATTED_ADDRESS);
-                                contactAddress.setAddress(address);
-                                //email.setCommonName(raws.getString(columnIndex_DISPLAY_NAME));
-                                addressList.add(contactAddress);
-                            } else if (ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE.equals(type)) {
-                                // it's a phone, gets all properties and add in
-                                // the phone list
-                                ContactPhone phone = new ContactPhone();
-                                String number = raws.getString(columnIndex_PHONE_NUMBER);
-                                phone.setPhone(number);
-                                int primary = raws.getInt(columnIndex_IS_PRIMARY);
-                                //phone.setIsPrimary(primary != 0);
-                                int phonetype = raws.getInt(columnIndex_PHONE_TYPE);
-                                phone.setPhoneType(getNumberType(phonetype));
-                                phoneList.add(phone);
-                            } else if (ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE.equals(type)) {
-                                // it's an Email address, gets all properties
-                                // and add in the email list
-                                ContactEmail email = new ContactEmail();
-                                String emailaddress = raws.getString(columnIndex_EMAIL_ADDRESS);
-                                email.setEmail(emailaddress);
-                                //email.setCommonName(raws.getString(columnIndex_DISPLAY_NAME));
-                                emailList.add(email);
-                            } else if (ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE
-                                    .equals(type)) {
-                                group = raws.getString(columnIndex_GROUP_MEMBERSHIP);
-                            }
-                            raws.moveToNext();
-
-                            // filling the bean
-                            if (contact != null) {
-                                if (emailList.size() > 0)
-                                    contact.setContactEmails(emailList.toArray(new ContactEmail[emailList.size()]));
-                                if (phoneList.size() > 0)
-                                    contact.setContactPhones(phoneList.toArray(new ContactPhone[phoneList.size()]));
-                                if (addressList.size() > 0) {
-                                    contact.setContactAddresses(addressList.toArray(new ContactAddress[addressList.size()]));
-                                }
-                                if (firstname != null) contact.getPersonalInfo().setName(firstname);
-                                if (lastname != null)
-                                    contact.getPersonalInfo().setLastName(lastname);
-                                if (name != null) contact.getPersonalInfo().setName(name);
-
-                                // replace contact in the hashmap
-                                contactsIDs.put(contactId, contact);
-                            }
-                        }
-
-                    } finally {
-                        if (raws != null) {
-                            raws.close();
-                        }
-                    }
-
-                    contactList = new ArrayList<Contact>(contactsIDs.values());
-                } catch (Exception ex) {
-                    callback.onError(IContactResultCallbackError.NoPermission);
-                    return;
-                } finally {
-                    if (contactsCursor != null) {
-                        contactsCursor.close();
-                    }
-                }
-
-                Logger.log(ILoggingLogLevel.DEBUG, APIService, "ARP: contactList has " + contactList.size() + " Contacts");
-                Logger.log(ILoggingLogLevel.DEBUG, APIService, "Time lapsed (query raw data for all contacts matched)" + (new Date().getTime() - startSearching.getTime()) + " ms");
-                callback.onResult((Contact[]) contactList.toArray(new Contact[contactList.size()]));
-            }
-        });
+    public void searchContacts(String term, IContactResultCallback callback) {
+        nativeToAdaptive(callback, null, term, null, null);
     }
 
     /**
@@ -931,241 +159,60 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      * @param filter   to search for
      * @since ARP1.0
      */
-    public void searchContactsWithFilter(final String term, final IContactResultCallback callback, final IContactFilter[] filter) {
-        AppContextDelegate.getExecutorService().submit(new Runnable() {
-            public void run() {
-                Date startSearching = new Date();
-                Boolean addressRequired = false;
-                Boolean mailRequired = false;
-                Boolean phoneRequired = false;
-                for (int i = 0; i < filter.length; i++) {
-                    if (filter[i].equals(IContactFilter.HAS_ADDRESS)) {
-                        Logger.log(ILoggingLogLevel.DEBUG, APIService, "Filter: HAS_ADDRESS");
-                        addressRequired = true;
-                    }
-                    if (filter[i].equals(IContactFilter.HAS_EMAIL)) {
-                        Logger.log(ILoggingLogLevel.DEBUG, APIService, "Filter: HAS_EMAIL");
-                        mailRequired = true;
-                    }
-                    if (filter[i].equals(IContactFilter.HAS_PHONE)) {
-                        Logger.log(ILoggingLogLevel.DEBUG, APIService, "Filter: HAS_PHONE");
-                        phoneRequired = true;
-                    }
+    public void searchContactsWithFilter(String term, IContactResultCallback callback, IContactFilter[] filter) {
+        nativeToAdaptive(callback, null, term, null, filter);
+    }
 
 
-                }
-                Uri uri = null;
-                Context context = AppContextDelegate.getMainActivity().getApplicationContext();
-                ContentResolver cr = context.getContentResolver();
-                Cursor contactsCursor = null;
-                String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
-                Cursor cur;
 
-
-                if (term != null) {
-
-                    String selection = null;
-                    String[] selectionValues = null;
-
-                    selection = ContactsContract.Contacts.DISPLAY_NAME + " LIKE ?";
-                    selectionValues = new String[]{"%" + term + "%"};
-
-                    uri = ContactsContract.Contacts.CONTENT_URI;
-                    contactsCursor = cr.query(uri, new String[]{
-                            ContactsContract.Contacts._ID,
-                            ContactsContract.Contacts.DISPLAY_NAME}, selection, selectionValues, sortOrder);
-
-
-                } else {
-                    uri = ContactsContract.Contacts.CONTENT_URI;
-                    contactsCursor = cr.query(uri, new String[]{
-                            ContactsContract.Contacts._ID,
-                            ContactsContract.Contacts.DISPLAY_NAME}, null, null, sortOrder);
-
-
-                }
-
-                List<Contact> contactList = new ArrayList<Contact>();
-                try {
-                    // iterate cursor to
-                    contactsCursor.moveToFirst();
-                    int excludedContacts = 0;
-                    Map<String, Contact> contactsIDs = new HashMap<String, Contact>();
-                    String contactsIDsString = "";
-                    while (!contactsCursor.isAfterLast()) {
-
-
-                        Long id = contactsCursor.getLong(0);
-                        String displayName = contactsCursor.getString(1);
-                        Contact contact = new Contact(id.toString());
-                        ContactPersonalInfo pI = new ContactPersonalInfo();
-                        pI.setName(displayName);
-                        contact.setPersonalInfo(pI);
-
-                        contactsIDs.put("" + id, contact);
-                        contactsIDsString += (contactsIDsString.length() > 0 ? "," : "") + "'" + id + "'";
-                        contactsCursor.moveToNext();
-                    }
-
-
-                    // querying the content resolver for all contacts
-
-                    String selectionMultiple = ContactsContract.RawContactsEntity.CONTACT_ID + " IN (" + contactsIDsString + ")";
-                    Cursor raws = cr.query(ContactsContract.RawContactsEntity.CONTENT_URI, null,
-                            selectionMultiple, null, null);
-
-                    try {
-                        raws.moveToFirst();
-
-                        // it seems that there is a time saving by querying the indexes before the cursor loop
-                        int columnIndex_CONTACTID = raws.getColumnIndex(ContactsContract.RawContactsEntity.CONTACT_ID);
-                        int columnIndex_MIMETYPE = raws.getColumnIndex(ContactsContract.Data.MIMETYPE);
-                        int columnIndex_PHONE_NUMBER = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                        int columnIndex_IS_PRIMARY = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_PRIMARY);
-                        int columnIndex_PHONE_TYPE = raws.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
-                        int columnIndex_EMAIL_ADDRESS = raws.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA1);
-                        //int columnIndex_DISPLAY_NAME = raws.getColumnIndex(ContactsContract.CommonDataKinds.Email.DISPLAY_NAME);
-                        int columnIndex_GROUP_MEMBERSHIP = raws.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.DATA1);
-                        int columnIndex_FORMATTED_ADDRESS = raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.DATA1);
-
-                        while (!raws.isAfterLast()) {
-
-                            String contactId = raws.getString(columnIndex_CONTACTID);
-
-                            String firstname = null, group = null, lastname = null, name = null, address = null;
-                            List<ContactEmail> emailList = new ArrayList<ContactEmail>();
-                            List<ContactPhone> phoneList = new ArrayList<ContactPhone>();
-                            List<ContactAddress> addressList = new ArrayList<ContactAddress>();
-                            Contact contact = null;
-
-                            if (contactsIDs != null && contactsIDs.containsKey(contactId)) {
-                                contact = contactsIDs.get(contactId);
-                                // asList returns unmodifiable lists, so we need to create new lists from them
-                                if (contact.getContactEmails() != null)
-                                    emailList.addAll(Arrays.asList(contact.getContactEmails()));
-                                if (contact.getContactPhones() != null)
-                                    phoneList.addAll(Arrays.asList(contact.getContactPhones()));
-                                if (contact.getContactAddresses() != null)
-                                    addressList.addAll(Arrays.asList(contact.getContactAddresses()));
-                            }
-
-                            String type = raws.getString(columnIndex_MIMETYPE);
-                            if (ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE.equals(type)) {
-                                // structured name
-                                firstname = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME));
-                                lastname = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
-                                //displayName = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-                            } else if (ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE.equals(type)) {
-                                // structured name
-
-                                ContactAddress contactAddress = new ContactAddress();
-                                address = raws.getString(columnIndex_FORMATTED_ADDRESS);
-                                contactAddress.setAddress(address);
-                                //email.setCommonName(raws.getString(columnIndex_DISPLAY_NAME));
-                                addressList.add(contactAddress);
-                                //displayName = raws.getString(raws.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-                            } else if (ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE.equals(type)) {
-                                // it's a phone, gets all properties and add in
-
-                                // the phone list
-                                ContactPhone phone = new ContactPhone();
-                                String number = raws.getString(columnIndex_PHONE_NUMBER);
-                                phone.setPhone(number);
-                                int primary = raws.getInt(columnIndex_IS_PRIMARY);
-                                //phone.setIsPrimary(primary != 0);
-                                int phonetype = raws.getInt(columnIndex_PHONE_TYPE);
-                                phone.setPhoneType(getNumberType(phonetype));
-                                phoneList.add(phone);
-                            } else if (ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE.equals(type)) {
-                                // it's an Email address, gets all properties
-                                // and add in the email list
-                                ContactEmail email = new ContactEmail();
-                                String emailaddress = raws.getString(columnIndex_EMAIL_ADDRESS);
-                                email.setEmail(emailaddress);
-                                //email.setCommonName(raws.getString(columnIndex_DISPLAY_NAME));
-                                emailList.add(email);
-                            } else if (ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE
-                                    .equals(type)) {
-                                group = raws.getString(columnIndex_GROUP_MEMBERSHIP);
-                            }
-
-                            if (contactsIDs != null && contactsIDs.containsKey(contactId)) {
-                                contact = contactsIDs.get(contactId);
-                            }
-                            // filling the bean
-                            if (contact != null) {
-
-                                if (emailList.size() > 0)
-                                    contact.setContactEmails(emailList.toArray(new ContactEmail[emailList.size()]));
-                                if (phoneList.size() > 0) {
-                                    contact.setContactPhones(phoneList.toArray(new ContactPhone[phoneList.size()]));
-                                }
-                                if (phoneList.size() > 0) {
-                                    contact.setContactPhones(phoneList.toArray(new ContactPhone[phoneList.size()]));
-                                }
-                                if (addressList.size() > 0) {
-                                    contact.setContactAddresses(addressList.toArray(new ContactAddress[addressList.size()]));
-                                }
-
-                                if (firstname != null) contact.getPersonalInfo().setName(firstname);
-                                if (lastname != null)
-                                    contact.getPersonalInfo().setLastName(lastname);
-                                if (name != null) contact.getPersonalInfo().setName(name);
-
-
-                                // replace contact in the hashmap
-                                contactsIDs.put(contactId, contact);
-
-                            }
-                            raws.moveToNext();
-                        }
-
-                    } finally {
-                        if (raws != null) {
-                            raws.close();
-                        }
-                    }
-
-
-                    List<String> removeContact = new ArrayList<String>();
-                    for (Contact contact : contactsIDs.values()) {
-                        if (mailRequired && contact.getContactEmails() == null) {
-                            removeContact.add(contact.getContactId());
-
-
-                        }
-                        if (phoneRequired && contact.getContactPhones() == null) {
-                            removeContact.add(contact.getContactId());
-
-                        }
-                        if (addressRequired && contact.getContactAddresses() == null) {
-                            removeContact.add(contact.getContactId());
-
-                        }
-                    }
-
-                    for (String key : removeContact) {
-                        contactsIDs.remove(key);
-                    }
-
-                    contactList = new ArrayList<Contact>(contactsIDs.values());
-
-
-                } catch (Exception ex) {
-                    callback.onError(IContactResultCallbackError.NoPermission);
-                    return;
-                } finally {
-                    if (contactsCursor != null) {
-                        contactsCursor.close();
-                    }
-                }
-
-                Logger.log(ILoggingLogLevel.DEBUG, APIService, "ARP: contactList has " + contactList.size() + " Contacts");
-                Logger.log(ILoggingLogLevel.DEBUG, APIService, "Time lapsed (main query A)" + (new Date().getTime() - startSearching.getTime()) + " ms");
-                callback.onResult((Contact[]) contactList.toArray(new Contact[contactList.size()]));
+    @Override
+    public void getContactPhoto(ContactUid contact, IContactPhotoResultCallback callback) {
+        if(contact == null){
+            callback.onError(IContactPhotoResultCallbackError.WrongParams);
+            return;
+        }
+        Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.valueOf(contact.getContactId()));
+        Uri displayPhotoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.DISPLAY_PHOTO);
+        try {
+            AssetFileDescriptor fd = context.
+                    getContentResolver().openAssetFileDescriptor(displayPhotoUri, "r");
+            InputStream image = fd.createInputStream();
+            byte[] bytes = getBytesFromInputStream(image);
+            if(bytes == null) {
+                callback.onResult(bytes);
+                return;
             }
+        } catch (IOException e) {
+            Logger.log(ILoggingLogLevel.Error,"Error getting the photo: "+Log.getStackTraceString(e));
+            callback.onError(IContactPhotoResultCallbackError.Unknown);
+        }
+        callback.onError(IContactPhotoResultCallbackError.Unknown);
+    }
 
-        });
+
+    /**
+     * Cast from InputStream to byte[]
+     * @param is InputStream
+     * @return byte[]
+     */
+    public static byte[] getBytesFromInputStream(InputStream is)
+    {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream();)
+        {
+            byte[] buffer = new byte[0xFFFF];
+
+            for (int len; (len = is.read(buffer)) != -1;)
+                os.write(buffer, 0, len);
+
+            os.flush();
+
+            return os.toByteArray();
+        }
+        catch (IOException e)
+        {
+            return null;
+        }
     }
 
     /**
@@ -1177,11 +224,341 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      * @since ARP1.0
      */
     public boolean setContactPhoto(ContactUid contact, byte[] pngImage) {
-        boolean response;
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":setContactPhoto");
-        // return response;
+
+        try {
+            ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.getContactId()) // here 9 is _ID where I'm inserting image
+                    .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, pngImage)
+                    .build();
+        } catch (Exception ex) {
+            Logger.log(ILoggingLogLevel.Error, APIService, "setContactPhoto Error: " + Log.getStackTraceString(ex));
+            return false;
+        }
+        return true;
+
     }
+
+    /**
+     * @param callback
+     * @param contact
+     * @param term
+     * @param fields
+     * @param filter
+     */
+    private void nativeToAdaptive(final IContactResultCallback callback, final ContactUid contact, final String term, final IContactFieldGroup[] fields, final IContactFilter[] filter) {
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
+            public void run() {
+                Logger.log(ILoggingLogLevel.Debug, APIService, "androidContactToAdaptive contactID[" + (contact == null ? "NO_ID" : contact.getContactId()) + "] - term[" + (term == null ? "NO_TERM" : term) + "] - fields[" + (fields == null ? "NO_FILTER" : fields.toString()) + "] - filter[" + (filter == null ? "NO_FILTER" : filter.toString()) + "]");
+                Date ini = new Date();
+                Logger.log(ILoggingLogLevel.Debug, "nativeToAdaptive@" + ini.toString());
+
+
+                Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+                ContentResolver cr = context.getContentResolver();
+                List<Contact> contactList = null;
+                String selection = null;
+                String[] args = null;
+                String[] projection = projectionFromFieldGroup(fields);
+
+                Map<String, Contact> contactsIDs = new HashMap<>();
+                Uri uri = null;
+                Cursor cursorID = null;
+                int cursorLength = 0;
+                boolean addressRequired = false, mailRequired = false, phoneRequired = false, error = false;
+                String sortOrder = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
+                try {
+
+
+                    if (term != null && filter != null) {
+                        //throw new UnsupportedOperationException(this.getClass().getName() + ": androidContactToAdaptive");
+                        Logger.log(ILoggingLogLevel.Error, "Error: Wrong Params");
+                        error = true;
+                    }
+
+
+                    if (contact != null) {
+                        selection = ContactsContract.Contacts._ID + " = ?";
+                        args = new String[]{contact.getContactId()};
+                    } else if (term != null) {
+                        selection = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME + " LIKE ?";
+                        args = new String[]{"%" + term + "%"};
+                    } else if(fields != null){
+
+                    }else if (filter != null) {
+                        for (IContactFilter aFilter : filter) {
+                            if (aFilter.equals(IContactFilter.HasAddress)) {
+                                Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HAS_ADDRESS");
+                                selection = (selection == null ? "" : " AND ") + ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS + " IS NOT NULL ";
+                                addressRequired = true;
+                            }
+                            if (aFilter.equals(IContactFilter.HasEmail)) {
+                                Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HAS_EMAIL");
+                                selection = (selection == null ? "" : " AND ") + ContactsContract.CommonDataKinds.Email.ADDRESS + " NOT LIKE ''";
+
+                                mailRequired = true;
+                            }
+                            if (aFilter.equals(IContactFilter.HasPhone)) {
+                                Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HAS_PHONE");
+                                selection = (selection == null ? "" : " AND ") + ContactsContract.CommonDataKinds.Phone.NUMBER + " IS NOT NULL ";
+                                phoneRequired = true;
+                            }
+
+
+                        }
+                    }
+                    //THIS PRESELECTION JUST ADD OVERLOAD
+            /*uri = ContactsContract.Contacts.CONTENT_URI;
+
+            cursorID = cr.query(uri, new String[]{
+                    ContactsContract.Contacts._ID,
+                    ContactsContract.Contacts.DISPLAY_NAME}, selection, args, sortOrder);
+            cursorID.moveToFirst();
+            cursorLength = cursorID.getCount();
+            //Map<String, Contact> contactsIDs = new HashMap<>();
+            String contactsIDsString = "";
+            while (!cursorID.isAfterLast()) {
+                Long id = cursorID.getLong(cursorID.getColumnIndex(ContactsContract.Contacts._ID));
+                contactsIDsString += (contactsIDsString.length() > 0 ? "," : "") + "'" + id + "'";
+                cursorID.moveToNext();
+            }
+            String selectionMultiple = ContactsContract.RawContactsEntity.CONTACT_ID + " IN (" + contactsIDsString + ") ";
+            */
+
+                    uri = ContactsContract.RawContactsEntity.CONTENT_URI;
+
+                    // querying the content resolver for all contacts
+
+                    cursorID = cr.query(uri, projection,
+                            selection, args, sortOrder);
+                    cursorID.moveToFirst();
+                    while (!cursorID.isAfterLast()) {
+                        ContactPhone phones = null;
+                        ContactWebsite websites = null;
+                        ContactAddress addresses = null;
+                        ContactEmail emails = null;
+                        String WEBSITE,
+                                FAMILY_NAME = null,
+                                MIDDLE_NAME = null,
+                                DISPLAY_NAME = null,
+                                PREFIX = null,
+                                JOB = null,
+                                JOB_TITLE = null,
+                                COMPANY = null;
+                        Long id = null;
+                        id = cursorID.getLong(cursorID.getColumnIndex(ContactsContract.Contacts._ID));
+                        Contact contactBean = contactsIDs.get(String.valueOf(id));
+                        if (contactBean == null) {
+                            contactBean = new Contact(id.toString());
+                        }
+
+                        int columnIndex_MIMETYPE = cursorID.getColumnIndex(ContactsContract.Data.MIMETYPE);
+
+                        String type = cursorID.getString(columnIndex_MIMETYPE);
+
+                        switch (type) {
+                            case ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
+                                ContactPhoneType contactPhoneType = null;
+                                int phoneType = cursorID.getInt(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                                switch (phoneType) {
+                                    case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                                        contactPhoneType = ContactPhoneType.Home;
+                                        break;
+                                    case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                                        contactPhoneType = ContactPhoneType.Mobile;
+                                        break;
+                                    case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+                                        contactPhoneType = ContactPhoneType.Work;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                phones = new ContactPhone(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)), contactPhoneType);
+                                break;
+                            case ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE:
+                                ContactAddressType contactAddressType = null;
+                                int addressType = cursorID.getInt(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.TYPE));
+                                switch (addressType) {
+                                    case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_CUSTOM:
+                                    case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME:
+                                        contactAddressType = ContactAddressType.Home;
+                                        break;
+                                    case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK:
+                                        contactAddressType = ContactAddressType.Work;
+                                        break;
+                                    case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER:
+                                        contactAddressType = ContactAddressType.Other;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                addresses = new ContactAddress(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS)), contactAddressType);
+                                break;
+                            case ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE:
+                                ContactEmailType contactEmailType = null;
+                                int emailType = cursorID.getInt(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.TYPE));
+                                switch (emailType) {
+                                    case ContactsContract.CommonDataKinds.Email.TYPE_CUSTOM:
+                                        contactEmailType = ContactEmailType.Other;
+                                        break;
+                                    case ContactsContract.CommonDataKinds.Email.TYPE_HOME:
+                                        contactEmailType = ContactEmailType.Other;
+                                        break;
+                                    case ContactsContract.CommonDataKinds.Email.TYPE_WORK:
+                                        contactEmailType = ContactEmailType.Other;
+                                        break;
+                                    case ContactsContract.CommonDataKinds.Email.TYPE_OTHER:
+                                        contactEmailType = ContactEmailType.Other;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                emails = new ContactEmail(contactEmailType,
+                                        Boolean.valueOf(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.IS_PRIMARY))),
+                                        cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS)));
+                                break;
+                            case ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE:
+                                WEBSITE = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Website.URL));
+                                websites = new ContactWebsite(WEBSITE);
+                                break;
+                            case ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE:
+                                DISPLAY_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
+                                FAMILY_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
+                                MIDDLE_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME));
+                                PREFIX = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.PREFIX));
+                                break;
+                            case ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE:
+                                JOB = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Organization.JOB_DESCRIPTION));
+                                COMPANY = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Organization.COMPANY));
+                                JOB_TITLE = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
+
+                                break;
+                        }
+
+                        if (contactsIDs != null && contactsIDs.containsKey(id)) {
+                            contactBean = contactsIDs.get(id);
+                        }
+                        // filling the bean
+                        if (contactBean != null) {
+
+                            //Emails
+                            if (emails != null) {
+                                ContactEmail[] array = contactBean.getContactEmails();
+                                if (array == null) {
+                                    array = new ContactEmail[0];
+                                }
+                                contactBean.setContactEmails(addElement(array, emails));
+                            }
+                            //Phones
+                            if (phones != null) {
+                                ContactPhone[] array = contactBean.getContactPhones();
+                                if (array == null) {
+                                    array = new ContactPhone[0];
+                                }
+                                contactBean.setContactPhones(addElement(array, phones));
+                            }
+                            //Addresses
+                            if (addresses != null) {
+                                ContactAddress[] array = contactBean.getContactAddresses();
+                                if (array == null) {
+                                    array = new ContactAddress[0];
+                                }
+                                contactBean.setContactAddresses(addElement(array, addresses));
+                            }
+                            //Websites/social
+                            if (websites != null) {
+                                ContactWebsite[] array = contactBean.getContactWebsites();
+                                if (array == null) {
+                                    array = new ContactWebsite[0];
+                                }
+                                contactBean.setContactWebsites(addElement(array, websites));
+                            }
+
+                            //PersonalInfo
+                            if (DISPLAY_NAME != null) {
+                                if (contactBean.getPersonalInfo() == null)
+                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
+                                contactBean.getPersonalInfo().setName(DISPLAY_NAME);
+                            }
+                            if (MIDDLE_NAME != null) {
+                                if (contactBean.getPersonalInfo() == null)
+                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
+                                contactBean.getPersonalInfo().setMiddleName(MIDDLE_NAME);
+                            }
+                            if (FAMILY_NAME != null) {
+                                if (contactBean.getPersonalInfo() == null)
+                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
+                                contactBean.getPersonalInfo().setLastName(FAMILY_NAME);
+                            }
+                            if (PREFIX != null) {
+                                ContactPersonalInfoTitle prefix = getContactTitle(PREFIX);
+                                if (contactBean.getPersonalInfo() == null)
+                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
+
+                            }
+                            //ProfessionalInfo
+                            if (JOB != null) {
+                                if (contactBean.getProfessionalInfo() == null)
+                                    contactBean.setProfessionalInfo(new ContactProfessionalInfo());
+                                contactBean.getProfessionalInfo().setJobDescription(JOB);
+                            }
+                            if (COMPANY != null) {
+                                if (contactBean.getProfessionalInfo() == null)
+                                    contactBean.setProfessionalInfo(new ContactProfessionalInfo());
+                                contactBean.getProfessionalInfo().setCompany(COMPANY);
+                            }
+                            if (JOB_TITLE != null) {
+                                if (contactBean.getPersonalInfo() == null)
+                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
+                                contactBean.getProfessionalInfo().setJobTitle(JOB_TITLE);
+                            }
+
+                        }
+
+                        contactsIDs.put(String.valueOf(id), contactBean);
+                        cursorID.moveToNext();
+
+
+                    }
+
+                } catch (Exception ex) {
+                    Logger.log(ILoggingLogLevel.Error, "Error: " + Log.getStackTraceString(ex));
+                    error = true;
+                } finally {
+                    Logger.log(ILoggingLogLevel.Error, "finally clause");
+                    if (cursorID != null) {
+                        cursorID.close();
+                    }
+                }
+
+
+                contactList = new ArrayList<>(contactsIDs.values());
+
+                Logger.log(ILoggingLogLevel.Debug, "nativeToAdaptive", "It tooks " + String.valueOf(new Date().getTime() - ini.getTime()) + "ms retrieving " + contactList.size() + " contacts");
+
+                if (error) {
+                    callback.onError(IContactResultCallbackError.WrongParams);
+                } else {
+                    if (contactList.size() == 0) {
+                        callback.onWarning((Contact[]) contactList.toArray(new Contact[contactList.size()]), IContactResultCallbackWarning.NoMatches);
+                    } else if (contactList.size() < cursorLength) {
+                        callback.onWarning((Contact[]) contactList.toArray(new Contact[contactList.size()]), IContactResultCallbackWarning.LimitExceeded);
+                    } else
+                        callback.onResult((Contact[]) contactList.toArray(new Contact[contactList.size()]));
+                }
+            }
+        });
+
+    }
+
+
+    public <APIBean> APIBean[] addElement(APIBean[] a, APIBean e) {
+        a = Arrays.copyOf(a, a.length + 1);
+        a[a.length - 1] = e;
+        return a;
+    }
+
 
     /**
      * Create a projection from selected fields
@@ -1190,57 +567,124 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      * @return string generated
      */
     private String[] projectionFromFieldGroup(IContactFieldGroup[] fields) {
-        List<String> projection = new ArrayList<String>();
-        int i = 0;
-        String CONTACT_ID = ContactsContract.Contacts._ID;
-        String DISPLAY_NAME = ContactsContract.Contacts.DISPLAY_NAME;
-        String NAME = ContactsContract.CommonDataKinds.StructuredName.DATA1;
-        String EMAIL_CONTACT_ID = ContactsContract.CommonDataKinds.Email.CONTACT_ID;
-        String EMAIL_DATA = ContactsContract.CommonDataKinds.Email.DATA;
-        String HAS_PHONE_NUMBER = ContactsContract.Contacts.HAS_PHONE_NUMBER;
-        String PHONE_NUMBER = ContactsContract.CommonDataKinds.Phone.NUMBER;
-        String PHONE_CONTACT_ID = ContactsContract.CommonDataKinds.Phone.CONTACT_ID;
-        String STARRED_CONTACT = ContactsContract.Contacts.STARRED;
-        String ADDRESS = ContactsContract.CommonDataKinds.StructuredPostal.DATA1;
+        List<String> projection = new ArrayList<>();
 
+        String CONTACT_ID = ContactsContract.Contacts._ID;
+        String MIMETYPE = ContactsContract.Data.MIMETYPE;
+
+        String PHONE_NUMBER = ContactsContract.CommonDataKinds.Phone.NUMBER;
+        String PHONETYPE = ContactsContract.CommonDataKinds.Phone.TYPE;
+
+        String ADDRESS = ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS;
+        String ADDRESSTYPE = ContactsContract.CommonDataKinds.StructuredPostal.TYPE;
+
+        String EMAIL_DATA = ContactsContract.CommonDataKinds.Email.ADDRESS;
+        String EMAILPRIMARY = ContactsContract.CommonDataKinds.Email.IS_PRIMARY;
+        String EMAILTYPE = ContactsContract.CommonDataKinds.Email.TYPE;
+
+        String WEBSITE = ContactsContract.CommonDataKinds.Website.URL;
+
+        String DISPLAY_NAME = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME;
+        String MIDDLE_NAME = ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME;
+        String FAMILY_NAME = ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME;
+
+        String JOB = ContactsContract.CommonDataKinds.Organization.JOB_DESCRIPTION;
+        String COMPANY = ContactsContract.CommonDataKinds.Organization.COMPANY;
+        String JOBTITLE = ContactsContract.CommonDataKinds.Organization.TITLE;
 
         projection.add(CONTACT_ID);
+        projection.add(MIMETYPE);
 
-        for (IContactFieldGroup field : fields) {
-            switch (field) {
-                case ADDRESSES:
-                    projection.add(ADDRESS);
-                    break;
-                case EMAILS:
-                    projection.add(DISPLAY_NAME);
-                    projection.add(NAME);
-                    break;
-                case PERSONAL_INFO:
-                    projection.add(EMAIL_CONTACT_ID);
-                    projection.add(EMAIL_DATA);
-                    break;
-                case PHONES:
-                    projection.add(PHONE_CONTACT_ID);
-                    projection.add(HAS_PHONE_NUMBER);
-                    projection.add(PHONE_NUMBER);
-                    break;
-                case PROFESSIONAL_INFO:
-                    projection.add(ContactsContract.CommonDataKinds.Organization.DATA1);
-                case SOCIALS:
-                    break;
-                case TAGS:
-                    break;
-                case WEBSITES:
-                    projection.add(ContactsContract.CommonDataKinds.Website.DATA1);
-                    break;
+        if (fields != null) {
+            for (IContactFieldGroup field : fields) {
+                switch (field) {
+                    case Addresses:
+                        projection.add(ADDRESS);
+                        projection.add(ADDRESSTYPE);
+                        break;
+                    case PersonalInfo:
+                        projection.add(DISPLAY_NAME);
+                        projection.add(MIDDLE_NAME);
+                        projection.add(FAMILY_NAME);
+                        break;
+                    case Emails:
+                        projection.add(EMAIL_DATA);
+                        projection.add(EMAILPRIMARY);
+                        projection.add(EMAILTYPE);
+                        break;
+                    case Phones:
+                        projection.add(PHONETYPE);
+                        projection.add(PHONE_NUMBER);
+                        break;
+                    case ProfessionalInfo:
+                        projection.add(JOB);
+                        projection.add(JOBTITLE);
+                        projection.add(COMPANY);
+                    case Socials:
+                        break;
+                    case Tags:
+                        break;
+                    case Websites:
+                        projection.add(WEBSITE);
+                        break;
+                }
             }
+        } else {
+
+            projection.add(PHONE_NUMBER);
+            projection.add(PHONETYPE);
+
+            projection.add(ADDRESS);
+            projection.add(ADDRESSTYPE);
+
+            projection.add(EMAIL_DATA);
+            projection.add(EMAILPRIMARY);
+            projection.add(EMAILTYPE);
+
+            projection.add(WEBSITE);
+
+            projection.add(DISPLAY_NAME);
+            projection.add(MIDDLE_NAME);
+            projection.add(FAMILY_NAME);
+
+            projection.add(JOB);
+            projection.add(COMPANY);
+            projection.add(JOBTITLE);
+
         }
 
         return (String[]) projection.toArray(new String[projection.size()]);
     }
 
+    /**
+     * @param prefix
+     * @return
+     */
+    private ContactPersonalInfoTitle getContactTitle(String prefix) {
+        ContactPersonalInfoTitle result = null;
+        if (prefix != null) {
+            switch (prefix) {
+                case "Mr":
+                    result = ContactPersonalInfoTitle.Mr;
+                    break;
+                case "Ms":
+                    result = ContactPersonalInfoTitle.Ms;
+                    break;
+                case "Mrs":
+                    result = ContactPersonalInfoTitle.Mrs;
+                    break;
+                case "Dr":
+                    result = ContactPersonalInfoTitle.Dr;
+                    break;
+                default:
+                    result = ContactPersonalInfoTitle.Unknown;
+            }
+        }
+        return result;
+    }
+
 
 }
 /**
- ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+ ------------------------------------| Engineered with ? in Barcelona, Catalonia |--------------------------------------
  */

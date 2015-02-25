@@ -53,7 +53,7 @@ public class AppContextDelegate implements IAppContext {
 
 
     private static Activity mainActivity;
-    private static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private static ExecutorService executor;
 
     /**
      * Default Constructor.
@@ -65,6 +65,7 @@ public class AppContextDelegate implements IAppContext {
     public AppContextDelegate(Activity activity) {
         super();
         mainActivity = activity;
+        executor = Executors.newFixedThreadPool(50);
     }
 
     public static Activity getMainActivity() {

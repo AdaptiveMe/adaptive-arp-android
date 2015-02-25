@@ -34,7 +34,10 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
 import android.telephony.TelephonyManager;
+import android.view.Surface;
+import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +61,16 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
     public static String APIService = "device";
     static LoggingDelegate Logger;
     public List<IButtonListener> listeners = new ArrayList<IButtonListener>();
+    public List<IDeviceOrientationListener> listenersOrientation = new ArrayList<IDeviceOrientationListener>();
+
+
+    public List<IButtonListener> getListeners() {
+        return listeners;
+    }
+
+    public List<IDeviceOrientationListener> getListenersOrientation() {
+        return listenersOrientation;
+    }
 
     /**
      * Default Constructor.
@@ -65,7 +78,6 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
     public DeviceDelegate() {
         super();
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-
     }
 
     /**
@@ -77,9 +89,9 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
     public void addButtonListener(IButtonListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "addButtonListener: " + listener.toString() + " Added!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addButtonListener: " + listener.toString() + " Added!");
         } else
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "addButtonListener: " + listener.toString() + " is already added!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addButtonListener: " + listener.toString() + " is already added!");
     }
 
     /**
@@ -90,7 +102,11 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
      */
     @Override
     public void addDeviceOrientationListener(IDeviceOrientationListener listener) {
-        // TODO: Not implemented.
+        if (!listenersOrientation.contains(listener)) {
+            listenersOrientation.add(listener);
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addDeviceOrientationListener: " + listener.toString() + " Added!");
+        } else
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addDeviceOrientationListener: " + listener.toString() + " is already added!");
     }
 
     /**
@@ -100,7 +116,7 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
      * @since ARP1.0
      */
     public DeviceInfo getDeviceInfo() {
-        TelephonyManager tManager = (TelephonyManager) AppContextDelegate.getMainActivity().getSystemService(AppContextDelegate.getMainActivity().getApplicationContext().TELEPHONY_SERVICE);
+        TelephonyManager tManager = (TelephonyManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getSystemService(((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().TELEPHONY_SERVICE);
         String uuid = tManager.getDeviceId();
         return new DeviceInfo(android.os.Build.DEVICE, android.os.Build.BOARD, android.os.Build.BRAND, uuid);
     }
@@ -126,9 +142,33 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
      */
     @Override
     public ICapabilitiesOrientation getOrientationCurrent() {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getOrientationCurrent");
+        Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getDelegate().getContext());
+        /*Configuration config = context.getResources().getConfiguration();
+        switch(config.orientation){
+            case Configuration.ORIENTATION_LANDSCAPE:
+                return ICapabilitiesOrientation.Portrait_Up;
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                return ICapabilitiesOrientation.Landscape_Left;
+                break;
+        }*/
+
+        final int rotation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                return ICapabilitiesOrientation.PortraitUp;
+            case Surface.ROTATION_90:
+                return ICapabilitiesOrientation.LandscapeRight;
+            case Surface.ROTATION_180:
+                return ICapabilitiesOrientation.PortraitDown;
+            case Surface.ROTATION_270:
+                return ICapabilitiesOrientation.LandscapeLeft;
+            default:
+                return ICapabilitiesOrientation.Unknown;
+        }
+
     }
+
 
     /**
      * De-registers an existing listener from receiving button events.
@@ -139,9 +179,9 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
     public void removeButtonListener(IButtonListener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeButtonListener: " + listener.toString() + " Removed!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeButtonListener: " + listener.toString() + " Removed!");
         } else
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeButtonListener: " + listener.toString() + " is NOT registered");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeButtonListener: " + listener.toString() + " is NOT registered");
     }
 
     /**
@@ -151,8 +191,7 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
      */
     public void removeButtonListeners() {
         listeners.clear();
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeButtonListeners: " + "ALL ButtonListeners have been removed!");
-
+        Logger.log(ILoggingLogLevel.Debug, APIService, "removeButtonListeners: " + "ALL ButtonListeners have been removed!");
     }
 
     /**
@@ -163,8 +202,11 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
      */
     @Override
     public void removeDeviceOrientationListener(IDeviceOrientationListener listener) {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":removeDeviceOrientationListener");
+        if (listenersOrientation.contains(listener)) {
+            listenersOrientation.remove(listener);
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeDeviceOrientationListener: " + listener.toString() + " Removed!");
+        } else
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeDeviceOrientationListener: " + listener.toString() + " is NOT registered");
     }
 
     /**
@@ -174,8 +216,8 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
      */
     @Override
     public void removeDeviceOrientationListeners() {
-        /// TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":removeDeviceOrientationListeners");
+        listenersOrientation.clear();
+        Logger.log(ILoggingLogLevel.Debug, APIService, "removeDeviceOrientationListeners: " + "ALL DeviceOrientationListeners have been removed!");
     }
 
 }

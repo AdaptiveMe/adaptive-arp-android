@@ -86,7 +86,7 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
     public void playStream(String url) {
         boolean result = false;
 
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "playStream: url: " + url);
+        Logger.log(ILoggingLogLevel.Debug, APIService, "playStream: url: " + url);
 
         try {
             String mimeType = getMimeType(url);
@@ -99,9 +99,9 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
                 intent.setDataAndType(uri, "video/mp4");
 
                 if (isCallable(intent)) {
-                    AppContextDelegate.getMainActivity().startActivity(intent);
+                    ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(intent);
                 } else {
-                    Logger.log(ILoggingLogLevel.ERROR, APIService, "NOT callable");
+                    Logger.log(ILoggingLogLevel.Error, APIService, "NOT callable");
                 }
             } else {
                 Uri uri = Uri.parse(url);
@@ -114,14 +114,14 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
             }
 
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "playStream: Error " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "playStream: Error " + ex.getLocalizedMessage());
         } finally {
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "playStream: " + String.valueOf(result));
+            Logger.log(ILoggingLogLevel.Debug, APIService, "playStream: " + String.valueOf(result));
         }
     }
 
     private boolean isCallable(Intent intent) {
-        List<ResolveInfo> list = AppContextDelegate.getMainActivity().getPackageManager().queryIntentActivities(intent,
+        List<ResolveInfo> list = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getPackageManager().queryIntentActivities(intent,
                 PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }
@@ -130,7 +130,7 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
         if (uri == null) {
             mp = new MediaPlayer();
         } else {
-            mp = MediaPlayer.create(AppContextDelegate.getMainActivity().getApplicationContext(), uri);
+            mp = MediaPlayer.create(((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext(), uri);
         }
     }
 

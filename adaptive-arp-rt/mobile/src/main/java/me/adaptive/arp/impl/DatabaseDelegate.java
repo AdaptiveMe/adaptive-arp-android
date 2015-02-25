@@ -82,10 +82,10 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void createDatabase(Database database, IDatabaseResultCallback callback) {
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "createDatabase: dbName " + database.getName());
+        Logger.log(ILoggingLogLevel.Debug, APIService, "createDatabase: dbName " + database.getName());
         SQLiteDatabase sqlDB = null;
         try {
-            Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
             sqlDB = context.openOrCreateDatabase(database.getName(), Context.MODE_PRIVATE,
                     null);
             if (!sqlDB.isOpen()) {
@@ -93,14 +93,14 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
             }
 
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "createDatabase: Error " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "createDatabase: Error " + ex.getLocalizedMessage());
             callback.onError(IDatabaseResultCallbackError.SqlException);
             return;
         } finally {
             closeDatabase(sqlDB);
         }
 
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "createDatabase: " + database.getName() + " Created!");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "createDatabase: " + database.getName() + " Created!");
         callback.onResult(database);
     }
 
@@ -114,7 +114,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      */
     public void createTable(Database database, DatabaseTable databaseTable, IDatabaseTableResultCallback callback) {
         SQLiteDatabase sqlDB = null;
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "createTable: " + databaseTable.getName());
+        Logger.log(ILoggingLogLevel.Debug, APIService, "createTable: " + databaseTable.getName());
         try {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < databaseTable.getDatabaseColumns().length; i++) {
@@ -133,13 +133,13 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                 sqlDB.execSQL(sql);
             }
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "createTable: Error " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "createTable: Error " + ex.getLocalizedMessage());
             callback.onError(IDatabaseTableResultCallbackError.SqlException);
             return;
         } finally {
             closeDatabase(sqlDB);
         }
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "createTable: " + databaseTable.getName() + " IS created");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "createTable: " + databaseTable.getName() + " IS created");
         callback.onResult(databaseTable);
     }
 
@@ -151,18 +151,18 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void deleteDatabase(Database database, IDatabaseResultCallback callback) {
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "deleteDatabase: " + database.getName());
+        Logger.log(ILoggingLogLevel.Debug, APIService, "deleteDatabase: " + database.getName());
         try {
-            Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
             context.deleteDatabase(database.getName());
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "deleteDatabase: Error " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "deleteDatabase: Error " + ex.getLocalizedMessage());
             callback.onError(IDatabaseResultCallbackError.NotDeleted);
             return;
         } finally {
 
         }
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "deleteDatabase: " + database.getName() + " Deleted!");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "deleteDatabase: " + database.getName() + " Deleted!");
         callback.onResult(database);
 
     }
@@ -177,7 +177,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      */
     public void deleteTable(Database database, DatabaseTable databaseTable, IDatabaseTableResultCallback callback) {
         SQLiteDatabase sqlDB = null;
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "deleteTable: Deleting Table: " + databaseTable);
+        Logger.log(ILoggingLogLevel.Debug, APIService, "deleteTable: Deleting Table: " + databaseTable);
         try {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < databaseTable.getDatabaseColumns().length; i++) {
@@ -195,13 +195,13 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                 sqlDB.execSQL(sql);
             }
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "deleteTable: Error " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "deleteTable: Error " + ex.getLocalizedMessage());
             callback.onError(IDatabaseTableResultCallbackError.SqlException);
             return;
         } finally {
             closeDatabase(sqlDB);
         }
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "deleteTable: " + databaseTable.getName() + " Deleted!");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "deleteTable: " + databaseTable.getName() + " Deleted!");
         callback.onResult(databaseTable);
     }
 
@@ -216,29 +216,39 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void executeSqlStatement(Database database, String statement, String[] replacements, IDatabaseTableResultCallback callback) {
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "executeSqlStatement: " + String.valueOf(new Object[]{database, statement,
+        Logger.log(ILoggingLogLevel.Debug, APIService, "executeSqlStatement: " + String.valueOf(new Object[]{database, statement,
                 replacements}));
         String formatedStatement = null;
         SQLiteDatabase sqlDB = null;
+        DatabaseTable result = null;
         try {
             sqlDB = openDatabase(database);
             if (sqlDB != null) {
-                if ((replacements != null) && (replacements.length > 0)) {
-                    formatedStatement = getFormattedSQL(statement, replacements);
+
+                Cursor c;
+
+                if(statement.toLowerCase().startsWith("select ")){
+                    c = sqlDB.rawQuery(statement, replacements);
+                    result = cursorToTable(c);
+                }else {
+                    if ((replacements != null) && (replacements.length > 0)) {
+                        formatedStatement = getFormattedSQL(statement, replacements);
+                    }
+                    sqlDB.execSQL(formatedStatement);
+                    result = new DatabaseTable();
+
                 }
-                sqlDB.execSQL(formatedStatement);
 
             }
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "executeSqlStatement: Error: " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "executeSqlStatement: Error: " + ex.getLocalizedMessage());
             callback.onError(IDatabaseTableResultCallbackError.SqlException);
             return;
         } finally {
             closeDatabase(sqlDB);
         }
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "executeSqlStatement: " + formatedStatement + " executed!");
-        //TODO create table?
-        callback.onResult(new DatabaseTable());
+        Logger.log(ILoggingLogLevel.Debug, APIService, "executeSqlStatement: " + formatedStatement + " executed!");
+        callback.onResult(result);
 
     }
 
@@ -253,7 +263,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void executeSqlTransactions(Database database, String[] statements, boolean rollbackFlag, IDatabaseTableResultCallback callback) {
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "executeSqlTransactions: " + String.valueOf(new Object[]{database, statements,
+        Logger.log(ILoggingLogLevel.Debug, APIService, "executeSqlTransactions: " + String.valueOf(new Object[]{database, statements,
 
                 rollbackFlag}));
 
@@ -267,11 +277,11 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                     try {
                         sqlDB.execSQL(statement);
                     } catch (Exception ex) {
-                        Logger.log(ILoggingLogLevel.ERROR, APIService, "executeSqlTransactions: " +
+                        Logger.log(ILoggingLogLevel.Error, APIService, "executeSqlTransactions: " +
                                 "ExecuteSQLTransaction error executing sql statement ["
                                 + statement + "] " + ex.getLocalizedMessage());
                         if (rollbackFlag) {
-                            Logger.log(ILoggingLogLevel.INFO, APIService, "executeSqlTransactions: " +
+                            Logger.log(ILoggingLogLevel.Info, APIService, "executeSqlTransactions: " +
                                     "Transaction rolled back");
                             rollback = true;
                             break;
@@ -284,7 +294,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                 }
             }
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "executeSqlTransactions: Error " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "executeSqlTransactions: Error " + ex.getLocalizedMessage());
             callback.onError(IDatabaseTableResultCallbackError.SqlException);
             return;
         } finally {
@@ -293,7 +303,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
             }
             closeDatabase(sqlDB);
         }
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "executeSqlTransactions: SQL Transaction finished");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "executeSqlTransactions: SQL Transaction finished");
         //TODO create table?
         callback.onResult(new DatabaseTable());
     }
@@ -307,9 +317,9 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      */
     public boolean existsDatabase(Database database) {
         boolean result = false;
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "existsDatabase: dbName " + database.getName());
+        Logger.log(ILoggingLogLevel.Debug, APIService, "existsDatabase: dbName " + database.getName());
         try {
-            Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
             String[] databaseNames = context.databaseList();
             for (String dbName : databaseNames) {
                 if (database.getName().equals(dbName)) {
@@ -318,9 +328,9 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                 }
             }
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "existsDatabase: Error " + ex);
+            Logger.log(ILoggingLogLevel.Error, APIService, "existsDatabase: Error " + ex);
         } finally {
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "existsDatabase: " + String.valueOf(result));
+            Logger.log(ILoggingLogLevel.Debug, APIService, "existsDatabase: " + String.valueOf(result));
         }
 
         return result;
@@ -336,7 +346,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      */
     public boolean existsTable(Database database, DatabaseTable databaseTable) {
         boolean result = false;
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "existsTable: dbName " + databaseTable.getName());
+        Logger.log(ILoggingLogLevel.Debug, APIService, "existsTable: dbName " + databaseTable.getName());
         SQLiteDatabase sqlDB = null;
         try {
 
@@ -352,11 +362,11 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
             } else result = false;
 
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "existsTable: Error " + ex.toString());
+            Logger.log(ILoggingLogLevel.Error, APIService, "existsTable: Error " + ex.toString());
             return false;
         } finally {
             closeDatabase(sqlDB);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "existsTable: " + databaseTable.getName() + " DOES exist");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "existsTable: " + databaseTable.getName() + " DOES exist");
         }
 
         return result;
@@ -364,7 +374,6 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
 
 
     //TODO @Override
-
     /**
      * Execute a query
      *
@@ -376,7 +385,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
     public void executeSqlQuery(Database database, String query, String[] replacements, IDatabaseTableResultCallback callback) {
 
         String sql = getFormattedSQL(query, replacements);
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "executeSqlQuery: Query: " + sql);
+        Logger.log(ILoggingLogLevel.Debug, APIService, "executeSqlQuery: Query: " + sql);
         Cursor cursor = null;
         DatabaseTable result = null;
         try {
@@ -389,7 +398,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                 return;
             }
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "executeSqlQuery: Error" + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "executeSqlQuery: Error" + ex.getLocalizedMessage());
             callback.onError(IDatabaseTableResultCallbackError.SqlException);
             return;
         } finally {
@@ -397,7 +406,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                 cursor.close();
             }
         }
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "executeSqlQuery: " + sql + " executed!");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "executeSqlQuery: " + sql + " executed!");
         callback.onResult(result);
     }
 
@@ -447,14 +456,14 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @throws SQLiteException Exception
      */
     private SQLiteDatabase openDatabase(Database db) throws SQLiteException {
-        Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+        Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
         if (db != null) {
             return SQLiteDatabase.openDatabase(context
                             .getDatabasePath(db.getName()).getAbsolutePath(), null,
                     SQLiteDatabase.OPEN_READWRITE);
         }
 
-        Logger.log(ILoggingLogLevel.ERROR, APIService, "openDatabase: openDatabase() Given database object is null. Please, check code to provide appropiated database object.");
+        Logger.log(ILoggingLogLevel.Error, APIService, "openDatabase: openDatabase() Given database object is null. Please, check code to provide appropiated database object.");
         return null;
     }
 

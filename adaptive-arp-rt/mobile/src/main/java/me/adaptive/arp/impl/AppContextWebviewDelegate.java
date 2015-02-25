@@ -87,14 +87,14 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
             if (mainView != null)
                 mainView.loadUrl("javascript:" + javaScriptText);
         } catch (Exception e) {
-            Logger.log(ILoggingLogLevel.ERROR, "Error on executeJavaScript (" + javaScriptText + ") Error: " +
+            Logger.log(ILoggingLogLevel.Error, "Error on executeJavaScript (" + javaScriptText + ") Error: " +
                     e.getLocalizedMessage());
         }
         /* for(Object view: views){
              try{
                  ((WebView)view).loadUrl("javascript:"+javaScriptText);
              }catch (Exception e){
-                 Logger.log(ILoggingLogLevel.ERROR,"Error on executeJavaScript ("+javaScriptText+" : "+view.toString()+") Error: "+
+                 Logger.log(ILoggingLogLevel.Error,"Error on executeJavaScript ("+javaScriptText+" : "+view.toString()+") Error: "+
                     e.getLocalizedMessage());
              }
          }*/
@@ -110,7 +110,7 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
         try {
             ((WebView) webViewReference).loadUrl("javascript:" + javaScriptText);
         } catch (Exception e) {
-            Logger.log(ILoggingLogLevel.ERROR, "Error on executeJavaScript (" + javaScriptText + " : " + webViewReference.toString() + ") Error: " +
+            Logger.log(ILoggingLogLevel.Error, "Error on executeJavaScript (" + javaScriptText + " : " + webViewReference.toString() + ") Error: " +
                     e.getLocalizedMessage());
         }
     }

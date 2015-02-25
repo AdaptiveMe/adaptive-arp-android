@@ -71,7 +71,7 @@ public class MailDelegate extends BasePIMDelegate implements IMail {
      * @since ARP1.0
      */
     public void sendEmail(final Email data, final IMessagingCallback callback) {
-        AppContextDelegate.getExecutorService().submit(new Runnable() {
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
             public void run() {
                 boolean result = false;
 
@@ -118,11 +118,11 @@ public class MailDelegate extends BasePIMDelegate implements IMail {
 
             }*/
 
-                    Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+                    Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
                     context.startActivity(Intent.createChooser(emailIntent, "Email"));
                     result = true;
                 } catch (Exception ex) {
-                    Logger.log(ILoggingLogLevel.ERROR, APIService, "sendEmail: error " + ex.getLocalizedMessage());
+                    Logger.log(ILoggingLogLevel.Error, APIService, "sendEmail: error " + ex.getLocalizedMessage());
                     callback.onError(IMessagingCallbackError.Unknown);
                 }
 

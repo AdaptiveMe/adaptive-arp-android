@@ -94,7 +94,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
                 is.close();
             }
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "Error closing stream: " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "Error closing stream: " + ex.getLocalizedMessage());
         }
     }
 
@@ -121,11 +121,11 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         Map<String, String> result = null;
         List<Locale> supported = new ArrayList<>();
 
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "getLocaleSupportedDescriptors");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "getLocaleSupportedDescriptors");
 
         BufferedInputStream bis = null;
         try {
-            Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
             AssetManager assetManager = context.getAssets();
             bis = new BufferedInputStream(assetManager.open(I18N_CONFIG_FILE));
             // parse configuration file
@@ -156,7 +156,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
                 event = parser.next();
             }
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "Error: " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "Error: " + ex.getLocalizedMessage());
             return null;
         } finally {
             closeStream(bis);
@@ -192,19 +192,19 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         BufferedInputStream bis = null;
 
         try {
-            Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
             AssetManager assetManager = context.getAssets();
             bis = new BufferedInputStream(assetManager.open(getResourcesFilePath(locale.toString())));
             PList plist = PListParser.parse(bis);
             result = new HashMap<String, String>();
             result.putAll(plist.getValues());
         } catch (IOException ex) {
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "GetResourceLiterals Error: " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "GetResourceLiterals Error: " + ex.getLocalizedMessage());
         } finally {
             closeStream(bis);
 
         }
-        Logger.log(ILoggingLogLevel.ERROR, APIService, "GetResourceLiterals: " + result.toString());
+        Logger.log(ILoggingLogLevel.Error, APIService, "GetResourceLiterals: " + result.toString());
         return fromMap(result);
     }
 

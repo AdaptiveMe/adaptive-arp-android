@@ -34,14 +34,11 @@
 
 package me.adaptive.arp.impl;
 
-import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.view.Window;
-import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,49 +64,66 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
     private SensorManager mSensorManager;
     private Sensor mSensor;
 
-    private float[] gravity = new float[3];
+    private float[] grav = new float[3];
     private float[] geomagnetic = new float[3];
     private float[] orientation = new float[3];
     private float[] rotation = new float[9];
     private float[] linear_acceleration = new float[3];
+    private float[] euler_acceleration = new float[3];
+
+    static final float ALPHA = 0.15f;
+    protected float[] gravSensorVals;
     /**
      * listen to sensor (ACCELEROMETER, MAGNETIC FIELD) changes
      */
+
+    protected float[] lowPass( float[] input, float[] output ) {
+        if ( output == null ) return input;
+
+        for ( int i=0; i<input.length; i++ ) {
+            output[i] = output[i] + ALPHA * (input[i] - output[i]);
+        }
+        return output;
+    }
+
     private SensorEventListener sensorListener = new SensorEventListener() {
 
         @Override
-        public void onSensorChanged(SensorEvent event) {
-            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                final float alpha = 0.8F;// TODO calculate the alpha value
-                gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-                gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-                gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-                linear_acceleration[0] = event.values[0] - gravity[0];
-                linear_acceleration[1] = event.values[1] - gravity[1];
-                linear_acceleration[2] = event.values[2] - gravity[2];
-                // updating the rotation array
-                SensorManager.getRotationMatrix(rotation, null, gravity,
-                        geomagnetic);
-                // updating the orientation array
-                SensorManager.getOrientation(rotation, orientation);
+        public void onSensorChanged(SensorEvent evt) {
+            if (evt.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                if (evt.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                    gravSensorVals = lowPass(evt.values.clone(), gravSensorVals);
+                    grav[0] = gravSensorVals[0];
+                    grav[1] = gravSensorVals[1];
+                    grav[2] = gravSensorVals[2];
 
-                Acceleration acc = new Acceleration(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], new Date().getTime());
+                }
+                if (gravSensorVals != null) {
+                    // updating the rotation array
+                    SensorManager.getRotationMatrix(rotation, null, grav,
+                            geomagnetic);
+                    // updating the orientation array
+                    SensorManager.getOrientation(rotation, orientation);
+                    /*
+                    //azimuth -- Z
+                    euler_acceleration[0] = (float)(((gravSensorVals[0]*180)/Math.PI)+180);
+                    //pitch -- X
+                    euler_acceleration[1] = (float)(((gravSensorVals[1]*180/Math.PI))+90);
+                    //roll -- Y
+                    euler_acceleration[2] = (float)(((gravSensorVals[2]*180/Math.PI)));
+                    */
+                    linear_acceleration[0] = gravSensorVals[0] - grav[0];
+                    linear_acceleration[1] = gravSensorVals[1] - grav[1];
+                    linear_acceleration[2] = gravSensorVals[2] - grav[2];
+                    Acceleration acc = new Acceleration(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], new Date().getTime());
 
-                if (!listeners.isEmpty()) {
-                    for (IAccelerationListener accListener : listeners) {
-                        accListener.onResult(acc);
+                    if (!listeners.isEmpty()) {
+                        for (IAccelerationListener accListener : listeners) {
+                            accListener.onResult(acc);
+                        }
                     }
                 }
-            } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                geomagnetic = event.values.clone();
-            } else if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-                System.out.println("PROXIMITY = " + event.values[0]);
-                if (event.values[0] == 0.0) {
-                    dimScreem();
-                } else {
-                    // TODO make it work!!!!!
-                    wakeScreen();
-                }
+
             }
         }
 
@@ -127,7 +141,7 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
         super();
 
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-        mSensorManager = (SensorManager) AppContextDelegate.getMainActivity()
+        mSensorManager = (SensorManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity()
                 .getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
@@ -141,9 +155,9 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
     public void addAccelerationListener(IAccelerationListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "addAccelerationListener: " + listener.toString() + " Added!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addAccelerationListener: " + listener.toString() + " Added!");
         } else
-            Logger.log(ILoggingLogLevel.WARN, APIService, "addAccelerationListener: " + listener.toString() + " is already added!");
+            Logger.log(ILoggingLogLevel.Warn, APIService, "addAccelerationListener: " + listener.toString() + " is already added!");
         if (!listeners.isEmpty()) {
             mSensorManager.registerListener(sensorListener, mSensor,
                     SensorManager.SENSOR_DELAY_NORMAL);
@@ -159,9 +173,9 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
     public void removeAccelerationListener(IAccelerationListener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeAccelerationListener" + listener.toString() + " Removed!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeAccelerationListener" + listener.toString() + " Removed!");
         } else
-            Logger.log(ILoggingLogLevel.WARN, APIService, "removeAccelerationListener: " + listener.toString() + " is NOT registered");
+            Logger.log(ILoggingLogLevel.Warn, APIService, "removeAccelerationListener: " + listener.toString() + " is NOT registered");
         if (listeners.isEmpty()) mSensorManager.unregisterListener(sensorListener);
     }
 
@@ -172,45 +186,11 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
      */
     public void removeAccelerationListeners() {
         listeners.clear();
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeAccelerationListeners: ALL AccelerationListeners have been removed!");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "removeAccelerationListeners: ALL AccelerationListeners have been removed!");
         mSensorManager.unregisterListener(sensorListener);
     }
 
-    private void setBright(float value) {
 
-        Window mywindow = ((Activity) AppContextDelegate.getMainActivity().getApplicationContext())
-                .getWindow();
-
-        WindowManager.LayoutParams lp = mywindow.getAttributes();
-
-        lp.screenBrightness = value;
-
-        mywindow.setAttributes(lp);
-    }
-
-    private void dimScreem() {
-
-        Runnable task = new Runnable() {
-
-            @Override
-            public void run() {
-                setBright(0.0F);
-            }
-        };
-        ((Activity) AppContextDelegate.getMainActivity().getApplicationContext()).runOnUiThread(task);
-    }
-
-
-    private void wakeScreen() {
-        Runnable task = new Runnable() {
-
-            @Override
-            public void run() {
-                setBright(1.0F);
-            }
-        };
-        ((Activity) AppContextDelegate.getMainActivity().getApplicationContext()).runOnUiThread(task);
-    }
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

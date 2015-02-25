@@ -101,14 +101,14 @@ public class PListParser {
             }
         } catch (Exception ex) {
             plist = null;
-            Logger.log(ILoggingLogLevel.ERROR, APIService, "Parse Error: " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Error, APIService, "Parse Error: " + ex.getLocalizedMessage());
         }
 
 
         if (plist != null) {
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "Parse Result is: " + plist.toString());
+            Logger.log(ILoggingLogLevel.Debug, APIService, "Parse Result is: " + plist.toString());
         } else {
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "Parse Result is null");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "Parse Result is null");
         }
 
 
