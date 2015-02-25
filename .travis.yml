@@ -12,6 +12,7 @@ android:
     - build-tools-21.1.2
 
 before_install:
+  - cd adaptive-arp-rt
   - ./gradlew -v
   - uname -a
   
