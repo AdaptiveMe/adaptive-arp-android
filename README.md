@@ -20,6 +20,28 @@ The Adaptive Runtime Platform (ARP) provides these native "containers" to packag
 
 Please refer to the [project site](http://adaptiveme.github.io) for more information.
 
+## Set-up Environment
+
+### Prerequisites
+
+* You should have JDK 1.7+ installed.
+* You should have Android Studio 1.0.1+ installed.
+
+### Importing the Project
+
+1.	Open Android Studio. :smile:
+2.	Select "Open an existing Android Studio project".
+3.	Select the folder where you checked-out the project, inside you'll find "adaptive-arp-rt" - select build.gradle. `` ./<repo_path>/adaptive-arp-rt/build.gradle``
+4.	Android Studio will show the "Import Project from Gradle" dialog.
+	* Check the box "Create directories for empty content roots automatically".
+	* Select radio button "Use default gradle wrapper".
+	* Project format: we recommend you use **.ipr** file based.
+	* Hit OK and let Android Studio munch through the configuration.
+5. Click "No" on the "Language Level Changes" dialog and wait for gradle to finish downloading dependencies.
+6. After gradle finishes downloading dependencies, you're good to go.
+7. Check everything is ok by running ``gradle assemble build`` on the top level project.  
+	* You can do this within the IDE or from command line.
+
 ## Work Backlog
 
 #### Board: [![Stories in Ready](https://badge.waffle.io/AdaptiveMe/adaptive-arp-android.svg?label=ready&title=Ready)](https://waffle.io/AdaptiveMe/adaptive-arp-android)
