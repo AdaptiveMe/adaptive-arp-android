@@ -13,7 +13,6 @@ android:
 
 before_install:
   - cd adaptive-arp-rt
-  - ./gradlew -v
   - uname -a
   
-script: ./gradlew clean build
+script: gradle assemble build
