@@ -34,9 +34,17 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
+import android.content.res.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ICapabilitiesOrientation;
 import me.adaptive.arp.api.IDisplay;
 import me.adaptive.arp.api.IDisplayOrientationListener;
+import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
  * Interface for Managing the Display operations
@@ -44,11 +52,15 @@ import me.adaptive.arp.api.IDisplayOrientationListener;
  */
 public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
 
+    public String APIService = "display";
+    static LoggingDelegate Logger;
+    public List<IDisplayOrientationListener> listeners = new ArrayList<>();
     /**
      * Default Constructor.
      */
     public DisplayDelegate() {
         super();
+        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
     }
 
     /**
@@ -58,8 +70,11 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * @since v2.0.5
      */
     public void addDisplayOrientationListener(IDisplayOrientationListener listener) {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":addDisplayOrientationListener");
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addDisplayOrientationListener: " + listener.toString() + " Added!");
+        } else
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addDisplayOrientationListener: " + listener.toString() + " is already added!");
     }
 
     /**
@@ -70,10 +85,15 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * @since v2.0.5
      */
     public ICapabilitiesOrientation getOrientationCurrent() {
-        ICapabilitiesOrientation response;
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getOrientationCurrent");
-        // return response;
+        Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getDelegate().getContext());
+        Configuration config = context.getResources().getConfiguration();
+        switch(config.orientation){
+            case Configuration.ORIENTATION_LANDSCAPE:
+                return ICapabilitiesOrientation.PortraitUp;
+            case Configuration.ORIENTATION_PORTRAIT:
+                return ICapabilitiesOrientation.LandscapeLeft;
+        }
+        return ICapabilitiesOrientation.Unknown;
     }
 
     /**
@@ -83,8 +103,11 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * @since v2.0.5
      */
     public void removeDisplayOrientationListener(IDisplayOrientationListener listener) {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":removeDisplayOrientationListener");
+        if (listeners.contains(listener)) {
+            listeners.remove(listener);
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeDisplayOrientationListener: " + listener.toString() + " Removed!");
+        } else
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeDisplayOrientationListener: " + listener.toString() + " is NOT registered");
     }
 
     /**
@@ -93,8 +116,8 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * @since v2.0.5
      */
     public void removeDisplayOrientationListeners() {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":removeDisplayOrientationListeners");
+        listeners.clear();
+        Logger.log(ILoggingLogLevel.Debug, APIService, "removeDisplayOrientationListeners: " + "ALL listeners have been removed!");
     }
 
 }

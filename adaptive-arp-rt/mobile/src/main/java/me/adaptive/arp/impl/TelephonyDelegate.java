@@ -68,11 +68,11 @@ public class TelephonyDelegate extends BaseCommunicationDelegate implements ITel
      */
     public ITelephonyStatus call(String number) {
         try {
-            Logger.log(ILoggingLogLevel.DEBUG, "Calling " + number);
+            Logger.log(ILoggingLogLevel.Debug, "Calling " + number);
             String uri = "tel:" + number.trim();
             Intent intent = new Intent(Intent.ACTION_CALL);
             intent.setData(Uri.parse(uri));
-            AppContextDelegate.getMainActivity().startActivity(intent);
+            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(intent);
         } catch (Exception ex) {
             return ITelephonyStatus.Failed;
         }

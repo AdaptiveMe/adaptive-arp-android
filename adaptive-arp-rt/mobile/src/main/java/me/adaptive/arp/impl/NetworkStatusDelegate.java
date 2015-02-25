@@ -71,9 +71,9 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
     public void addNetworkStatusListener(INetworkStatusListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "addNetworkStatusListener: " + listener.toString() + " Added!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addNetworkStatusListener: " + listener.toString() + " Added!");
         } else
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "addNetworkStatusListener: " + listener.toString() + " is already added!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addNetworkStatusListener: " + listener.toString() + " is already added!");
     }
 
     /**
@@ -85,9 +85,9 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
     public void removeNetworkStatusListener(INetworkStatusListener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeNetworkStatusListener" + listener.toString() + " Removed!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeNetworkStatusListener" + listener.toString() + " Removed!");
         } else
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeNetworkStatusListener: " + listener.toString() + " is NOT registered");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeNetworkStatusListener: " + listener.toString() + " is NOT registered");
     }
 
     /**
@@ -97,7 +97,7 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
      */
     public void removeNetworkStatusListeners() {
         listeners.clear();
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeNetworkStatusListeners: ALL NetworkStatusListeners have been removed!");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "removeNetworkStatusListeners: ALL NetworkStatusListeners have been removed!");
     }
 
 }

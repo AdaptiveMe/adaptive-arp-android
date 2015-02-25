@@ -115,10 +115,10 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
     public void addGeolocationListener(IGeolocationListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "addGeolocationListener: " + listener.toString() + " Added!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addGeolocationListener: " + listener.toString() + " Added!");
             if (!searching) startUpdatingLocation();
         } else
-            Logger.log(ILoggingLogLevel.WARN, APIService, "addGeolocationListener: " + listener.toString() + " is already added!");
+            Logger.log(ILoggingLogLevel.Warn, APIService, "addGeolocationListener: " + listener.toString() + " is already added!");
     }
 
     /**
@@ -130,9 +130,9 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
     public void removeGeolocationListener(IGeolocationListener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeGeolocationListener" + listener.toString() + " Removed!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeGeolocationListener" + listener.toString() + " Removed!");
         } else
-            Logger.log(ILoggingLogLevel.WARN, APIService, "removeGeolocationListener: " + listener.toString() + " is NOT registered");
+            Logger.log(ILoggingLogLevel.Warn, APIService, "removeGeolocationListener: " + listener.toString() + " is NOT registered");
         if (listeners.isEmpty()) stopUpdatingLocation();
     }
 
@@ -144,7 +144,7 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
     public void removeGeolocationListeners() {
         listeners.clear();
         stopUpdatingLocation();
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeGeolocationListeners: ALL GeolocationListeners have been removed!");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "removeGeolocationListeners: ALL GeolocationListeners have been removed!");
     }
 
     private Geolocation toARP(Location location) {
@@ -163,7 +163,7 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
     private boolean startUpdatingLocation() {
 
         if (locationManager == null) {
-            locationManager = (LocationManager) AppContextDelegate.getMainActivity().getSystemService(Service.LOCATION_SERVICE);
+            locationManager = (LocationManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getSystemService(Service.LOCATION_SERVICE);
 
         }
 
@@ -179,8 +179,8 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
                             locationListener);
                 }
             };
-            AppContextDelegate.getExecutorService().submit(rGPS);
-            Logger.log(ILoggingLogLevel.DEBUG, "GPS provider is enabled");
+            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(rGPS);
+            Logger.log(ILoggingLogLevel.Debug, "GPS provider is enabled");
             isGPSRegistered = true;
         }
 
@@ -194,8 +194,8 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
                             0, locationListener);
                 }
             };
-            AppContextDelegate.getExecutorService().submit(rNet);
-            Logger.log(ILoggingLogLevel.DEBUG, "Network provider is enabled");
+            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(rNet);
+            Logger.log(ILoggingLogLevel.Debug, "Network provider is enabled");
             isNetworkRegistered = true;
         }
 
@@ -229,13 +229,13 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
             @Override
             public void run() {
                 if (locationManager == null) {
-                    locationManager = (LocationManager) AppContextDelegate.getMainActivity().getApplicationContext()
+                    locationManager = (LocationManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext()
                             .getSystemService(android.app.Service.LOCATION_SERVICE);
                 }
                 locationManager.removeUpdates(locationListener);
             }
         };
-        AppContextDelegate.getExecutorService().submit(rRemove);
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(rRemove);
 
         return true;
     }

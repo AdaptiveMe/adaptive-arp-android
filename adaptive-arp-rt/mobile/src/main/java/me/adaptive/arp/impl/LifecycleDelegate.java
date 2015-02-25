@@ -56,6 +56,10 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
     static LoggingDelegate Logger;
     public List<ILifecycleListener> listeners = new ArrayList<ILifecycleListener>();
 
+    public List<ILifecycleListener> getListeners() {
+        return listeners;
+    }
+
     /**
      * Default Constructor.
      */
@@ -74,9 +78,9 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
     public void addLifecycleListener(ILifecycleListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "addLifecycleListener: " + listener.toString() + " Added!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "addLifecycleListener: " + listener.toString() + " Added!");
         } else
-            Logger.log(ILoggingLogLevel.WARN, APIService, "addLifecycleListener: " + listener.toString() + " is already added!");
+            Logger.log(ILoggingLogLevel.Warn, APIService, "addLifecycleListener: " + listener.toString() + " is already added!");
     }
 
     /**
@@ -88,16 +92,13 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
     public boolean isBackground() {
         // check with the first task(task in the foreground)
         // in the returned list of tasks
-        Context context = AppContextDelegate.getMainActivity().getApplicationContext();
+        Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
         ActivityManager activityManager = (ActivityManager) context
                 .getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> services = activityManager
                 .getRunningTasks(Integer.MAX_VALUE);
-        if (services.get(0).topActivity.getPackageName().toString()
-                .equalsIgnoreCase(context.getPackageName().toString())) {
-            return false;
-        }
-        return true;
+        return !services.get(0).topActivity.getPackageName().toString()
+                .equalsIgnoreCase(context.getPackageName().toString());
     }
 
     /**
@@ -109,9 +110,9 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
     public void removeLifecycleListener(ILifecycleListener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeLifecycleListener" + listener.toString() + " Removed!");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "removeLifecycleListener" + listener.toString() + " Removed!");
         } else
-            Logger.log(ILoggingLogLevel.WARN, APIService, "removeLifecycleListener: " + listener.toString() + " is NOT registered");
+            Logger.log(ILoggingLogLevel.Warn, APIService, "removeLifecycleListener: " + listener.toString() + " is NOT registered");
 
     }
 
@@ -122,7 +123,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
      */
     public void removeLifecycleListeners() {
         listeners.clear();
-        Logger.log(ILoggingLogLevel.DEBUG, APIService, "removeLifecycleListeners: ALL LifecycleListener have been removed!");
+        Logger.log(ILoggingLogLevel.Debug, APIService, "removeLifecycleListeners: ALL LifecycleListener have been removed!");
     }
 
 }

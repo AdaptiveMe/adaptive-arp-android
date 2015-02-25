@@ -48,7 +48,7 @@ import me.adaptive.arp.api.ILoggingLogLevel;
 public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
 
     public static String APIService = "logging";
-    final boolean isDebuggable = (0 != (AppContextDelegate.getMainActivity().getApplicationContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+    final boolean isDebuggable;
 
     /**
      * Default Constructor.
@@ -56,6 +56,8 @@ public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
     public LoggingDelegate() {
         super();
         AppRegistryBridge.getInstance().getLoggingBridge().setDelegate(this);
+        isDebuggable = (0 != (((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+
     }
 
     /**
@@ -66,18 +68,7 @@ public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
      * @since ARP1.0
      */
     public void log(ILoggingLogLevel level, String message) {
-        if (isDebuggable && level == ILoggingLogLevel.DEBUG) {
-            Log.d(APIService, message);
-        }
-        if (isDebuggable && level == ILoggingLogLevel.ERROR) {
-            Log.e(APIService, message);
-        }
-        if (isDebuggable && level == ILoggingLogLevel.INFO) {
-            Log.i(APIService, message);
-        }
-        if (isDebuggable && level == ILoggingLogLevel.WARN) {
-            Log.w(APIService, message);
-        }
+       log(level,APIService, message);
     }
 
     /**
@@ -89,16 +80,16 @@ public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
      * @since ARP1.0
      */
     public void log(ILoggingLogLevel level, String category, String message) {
-        if (isDebuggable && level == ILoggingLogLevel.DEBUG) {
+        if (isDebuggable && level == ILoggingLogLevel.Debug) {
             Log.d("Adaptive: " + category, message);
         }
-        if (isDebuggable && level == ILoggingLogLevel.ERROR) {
+        if (level == ILoggingLogLevel.Error) {
             Log.e("Adaptive: " + category, message);
         }
-        if (isDebuggable && level == ILoggingLogLevel.INFO) {
+        if (isDebuggable && level == ILoggingLogLevel.Info) {
             Log.i("Adaptive: " + category, message);
         }
-        if (isDebuggable && level == ILoggingLogLevel.WARN) {
+        if (level == ILoggingLogLevel.Warn) {
             Log.w("Adaptive: " + category, message);
         }
     }

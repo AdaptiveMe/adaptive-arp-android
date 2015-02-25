@@ -41,6 +41,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.provider.MediaStore;
 
+import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ICapabilities;
 import me.adaptive.arp.api.ICapabilitiesButton;
 import me.adaptive.arp.api.ICapabilitiesCommunication;
@@ -59,19 +60,19 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
 
 
     public String APIService = "capabilities";
-    private boolean tvDevice;
+    private final boolean tvDevice;
 
     /**
      * Default Constructor.
      */
     public CapabilitiesDelegate() {
         super();
-        UiModeManager uiModeManager = (UiModeManager) AppContextDelegate.getMainActivity().getApplicationContext().getSystemService(AppContextDelegate.getMainActivity().getApplicationContext().UI_MODE_SERVICE);
-        if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
-            tvDevice = true;
-        } else {
-            tvDevice = false;
-        }
+        UiModeManager uiModeManager = (UiModeManager) ((AppContextDelegate)
+                AppRegistryBridge.getInstance().getPlatformContext().getDelegate())
+                .getMainActivity().getApplicationContext()
+                .getSystemService(((AppContextDelegate) AppRegistryBridge.getInstance()
+                        .getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().UI_MODE_SERVICE);
+        tvDevice = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
 
     }
 
@@ -85,10 +86,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      */
     @Override
     public ICapabilitiesOrientation getOrientationDefault() {
-        ICapabilitiesOrientation response;
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getOrientationDefault");
-        // return response;
+        return ICapabilitiesOrientation.PortraitUp;
     }
 
     /**
@@ -100,10 +98,12 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      */
     @Override
     public ICapabilitiesOrientation[] getOrientationsSupported() {
-        ICapabilitiesOrientation[] response;
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getOrientationsSupported");
-        // return response;
+        if(tvDevice) {
+            return new ICapabilitiesOrientation[]{ICapabilitiesOrientation.PortraitUp};
+        }else{
+            return new ICapabilitiesOrientation[]{ICapabilitiesOrientation.PortraitUp,ICapabilitiesOrientation.LandscapeLeft,
+                ICapabilitiesOrientation.LandscapeRight,ICapabilitiesOrientation.PortraitDown};
+        }
     }
 
     /**
@@ -135,9 +135,9 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
     public boolean hasCommunicationSupport(ICapabilitiesCommunication type) {
         String capability = null;
         boolean supported = false;
-        ActivityInfo activityInfo = null;
-        Intent intent = null;
-        PackageManager pm = AppContextDelegate.getMainActivity().getApplicationContext().getPackageManager();
+        ActivityInfo activityInfo;
+        Intent intent;
+        PackageManager pm = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager();
         //TODO CHECK LIVE CONNECTIVITY?
         switch (type) {
             case Calendar:
@@ -178,7 +178,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                 break;
 
         }
-        if (!capability.isEmpty())
+        if (capability != null && !capability.isEmpty())
             supported = pm.hasSystemFeature(capability);
         return supported;
     }
@@ -213,11 +213,11 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
     public boolean hasMediaSupport(ICapabilitiesMedia type) {
         String capability = null;
         boolean supported = false;
-        ActivityInfo activityInfo = null;
+        ActivityInfo activityInfo;
         Intent intent = null;
-        PackageManager pm = AppContextDelegate.getMainActivity().getApplicationContext().getPackageManager();
+        PackageManager pm = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager();
         switch (type) {
-            case Audio_Playback:
+            case AudioPlayback:
                 //Whether has something to handle the request
                 intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_APP_MUSIC);
@@ -228,7 +228,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                 //Can output audio
                 capability = PackageManager.FEATURE_AUDIO_OUTPUT;
                 break;
-            case Audio_Recording:
+            case AudioRecording:
                 //Whether has something to handle the request
                 intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
@@ -248,7 +248,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                 //Can output audio
                 capability = PackageManager.FEATURE_CAMERA_ANY;
                 break;
-            case Video_Playback:
+            case VideoPlayback:
                 intent = intent.setAction(Intent.ACTION_VIEW);
                 //TODO CHECK CRASH URI NULL
                 intent.setType("video/*");
@@ -257,7 +257,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                     supported = true;
                 }
                 break;
-            case Video_Recording:
+            case VideoRecording:
                 intent = new Intent();
                 intent.addCategory(MediaStore.ACTION_VIDEO_CAPTURE);
                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
@@ -269,7 +269,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
             default:
 
         }
-        if (!capability.isEmpty())
+        if (capability != null && !capability.isEmpty())
             supported = pm.hasSystemFeature(capability);
         return supported;
     }
@@ -285,7 +285,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         //TODO CHECK LIVE? is this is network connected?
         String capability = null;
         boolean supported = false;
-        PackageManager pm = AppContextDelegate.getMainActivity().getApplicationContext().getPackageManager();
+        PackageManager pm = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager();
         switch (type) {
             case GPRS:
             case GSM:
@@ -296,7 +296,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
             case WIFI:
                 capability = PackageManager.FEATURE_WIFI;
         }
-        if (!capability.isEmpty())
+        if (capability != null && !capability.isEmpty())
             supported = pm.hasSystemFeature(capability);
         return supported;
     }
@@ -322,10 +322,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      */
     @Override
     public boolean hasOrientationSupport(ICapabilitiesOrientation orientation) {
-        boolean response;
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":hasOrientationSupport");
-        // return response;
+        return !tvDevice;
     }
 
     /**
@@ -339,7 +336,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
     public boolean hasSensorSupport(ICapabilitiesSensor type) {
         String capability = null;
         boolean supported = false;
-        PackageManager pm = AppContextDelegate.getMainActivity().getApplicationContext().getPackageManager();
+        PackageManager pm = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager();
         switch (type) {
             case Accelerometer:
                 capability = PackageManager.FEATURE_SENSOR_ACCELEROMETER;
@@ -363,7 +360,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                 capability = PackageManager.FEATURE_SENSOR_PROXIMITY;
                 break;
         }
-        if (!capability.isEmpty())
+        if (capability != null && !capability.isEmpty())
             supported = pm.hasSystemFeature(capability);
         return supported;
     }

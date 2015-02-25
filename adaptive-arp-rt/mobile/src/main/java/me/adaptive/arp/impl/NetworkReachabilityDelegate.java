@@ -78,7 +78,7 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
      * @since ARP1.0
      */
     public void isNetworkReachable(final String host, final INetworkReachabilityCallback callback) {
-        AppContextDelegate.getExecutorService().submit(new Runnable() {
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
             public void run() {
                 checkHttpConnection(host, callback);
             }
@@ -103,7 +103,7 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
             testUrl = HTTP_SCHEME + testUrl;
         }
 
-        ConnectivityManager cm = (ConnectivityManager) AppContextDelegate.getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnected()) {
             try {
@@ -112,26 +112,26 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
                 urlc.setConnectTimeout(10 * 1000);          // 10 s.
                 urlc.connect();
                 if (urlc.getResponseCode() == 200) {        // 200 = "OK" code (http connection is fine).
-                    Logger.log(ILoggingLogLevel.DEBUG, APIService, "Connection: Success !");
+                    Logger.log(ILoggingLogLevel.Debug, APIService, "Connection: Success !");
                     //return true;
                     cb.onResult(true);
                 } else {
-                    Logger.log(ILoggingLogLevel.ERROR, APIService, "Connection: Failure ! response code " + urlc.getResponseCode());
+                    Logger.log(ILoggingLogLevel.Error, APIService, "Connection: Failure ! response code " + urlc.getResponseCode());
                     cb.onError(INetworkReachabilityCallbackError.NoResponse);
                     //return false;
                 }
             } catch (MalformedURLException e) {
-                Logger.log(ILoggingLogLevel.ERROR, APIService, "Connection: Failure ! MalformedURLException");
+                Logger.log(ILoggingLogLevel.Error, APIService, "Connection: Failure ! MalformedURLException");
                 e.printStackTrace();
-                cb.onError(INetworkReachabilityCallbackError.Wrong_Params);
+                cb.onError(INetworkReachabilityCallbackError.WrongParams);
                 //return false;
             } catch (IOException e) {
                 cb.onError(INetworkReachabilityCallbackError.NotAllowed);
-                Logger.log(ILoggingLogLevel.ERROR, APIService, "Connection: Failure ! IOException");
+                Logger.log(ILoggingLogLevel.Error, APIService, "Connection: Failure ! IOException");
                 e.printStackTrace();
             }
         }
-        Logger.log(ILoggingLogLevel.ERROR, APIService, "Connection: Failure !");
+        Logger.log(ILoggingLogLevel.Error, APIService, "Connection: Failure !");
         //return false;
 
     }
@@ -139,7 +139,7 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
     private boolean isNetworkAvailable() {
 
         ConnectivityManager connectivityManager
-                = (ConnectivityManager) AppContextDelegate.getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                = (ConnectivityManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 
@@ -147,21 +147,21 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
     }
 
     public boolean NetworkAvailable() {
-        ConnectivityManager conMgr = (ConnectivityManager) AppContextDelegate.getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager conMgr = (ConnectivityManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
                 || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING) {
 
             // notify user you are online
             //ServiceLocator.getLogger().log(ILogging.LogLevel.DEBUG, APIService, "NETWORK AVAILABLE");
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "NETWORK AVAILABLE");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "NETWORK AVAILABLE");
             return true;
         } else if (conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
                 || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
 
             // notify user you are not online
             //ServiceLocator.getLogger().log(ILogging.LogLevel.DEBUG, APIService, "NETWORK IS NOT AVAILABLE");
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "NETWORK IS NOT AVAILABLE");
+            Logger.log(ILoggingLogLevel.Debug, APIService, "NETWORK IS NOT AVAILABLE");
             return false;
         }
         return false;

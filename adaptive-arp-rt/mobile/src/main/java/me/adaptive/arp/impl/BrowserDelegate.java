@@ -106,7 +106,7 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
             AppContextDelegate.getMainActivity().startActivity(intent);
             result = true;
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.DEBUG, APIService, "tryConnection error " + ex.getLocalizedMessage());
+            Logger.log(ILoggingLogLevel.Debug, APIService, "tryConnection error " + ex.getLocalizedMessage());
         }
         return result;
     }

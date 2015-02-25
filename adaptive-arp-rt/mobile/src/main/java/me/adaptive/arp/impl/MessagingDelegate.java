@@ -72,7 +72,7 @@ public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
      * @since ARP1.0
      */
     public void sendSMS(final String number, final String text, final IMessagingCallback callback) {
-        AppContextDelegate.getExecutorService().submit(new Runnable() {
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
             public void run() {
                 boolean result = false;
 
@@ -82,12 +82,12 @@ public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
                         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
                         sendIntent.setData(Uri.parse("sms:" + number));
                         sendIntent.putExtra("sms_body", text);
-                        AppContextDelegate.getMainActivity().startActivity(sendIntent);
+                        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(sendIntent);
 
                         result = true;
                     }
                 } catch (Exception ex) {
-                    Logger.log(ILoggingLogLevel.ERROR, APIService,
+                    Logger.log(ILoggingLogLevel.Error, APIService,
                             "sendMessageSMS: Error [" + text + "] to phone ["
                                     + number + "]" + ex.getLocalizedMessage()
                     );
