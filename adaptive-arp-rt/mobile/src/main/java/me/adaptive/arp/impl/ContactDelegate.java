@@ -249,6 +249,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      */
     private void nativeToAdaptive(final IContactResultCallback callback, final ContactUid contact, final String term, final IContactFieldGroup[] fields, final IContactFilter[] filter) {
         ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
+
             public void run() {
                 Logger.log(ILoggingLogLevel.Debug, APIService, "androidContactToAdaptive contactID[" + (contact == null ? "NO_ID" : contact.getContactId()) + "] - term[" + (term == null ? "NO_TERM" : term) + "] - fields[" + (fields == null ? "NO_FILTER" : fields.toString()) + "] - filter[" + (filter == null ? "NO_FILTER" : filter.toString()) + "]");
                 Date ini = new Date();
@@ -260,16 +261,14 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                 List<Contact> contactList = null;
                 String selection = null;
                 String[] args = null;
-                String[] projection = projectionFromFieldGroup(fields);
 
                 Map<String, Contact> contactsIDs = new HashMap<>();
                 Uri uri = null;
                 Cursor cursorID = null;
                 int cursorLength = 0;
-                boolean addressRequired = false, mailRequired = false, phoneRequired = false, error = false;
+                boolean addressRequired = false, mailRequired = false, phoneRequired = false, address = false,personalInfo = false, professionalInfo = false, socials = false, websites = false, email = false, phones = false, error = false;
                 String sortOrder = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
                 try {
-
 
                     if (term != null && filter != null) {
                         //throw new UnsupportedOperationException(this.getClass().getName() + ": androidContactToAdaptive");
@@ -284,60 +283,19 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                     } else if (term != null) {
                         selection = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME + " LIKE ?";
                         args = new String[]{"%" + term + "%"};
-                    } else if(fields != null){
-
-                    }else if (filter != null) {
-                        for (IContactFilter aFilter : filter) {
-                            if (aFilter.equals(IContactFilter.HasAddress)) {
-                                Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HAS_ADDRESS");
-                                selection = (selection == null ? "" : " AND ") + ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS + " IS NOT NULL ";
-                                addressRequired = true;
-                            }
-                            if (aFilter.equals(IContactFilter.HasEmail)) {
-                                Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HAS_EMAIL");
-                                selection = (selection == null ? "" : " AND ") + ContactsContract.CommonDataKinds.Email.ADDRESS + " NOT LIKE ''";
-
-                                mailRequired = true;
-                            }
-                            if (aFilter.equals(IContactFilter.HasPhone)) {
-                                Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HAS_PHONE");
-                                selection = (selection == null ? "" : " AND ") + ContactsContract.CommonDataKinds.Phone.NUMBER + " IS NOT NULL ";
-                                phoneRequired = true;
-                            }
-
-
-                        }
                     }
-                    //THIS PRESELECTION JUST ADD OVERLOAD
-            /*uri = ContactsContract.Contacts.CONTENT_URI;
-
-            cursorID = cr.query(uri, new String[]{
-                    ContactsContract.Contacts._ID,
-                    ContactsContract.Contacts.DISPLAY_NAME}, selection, args, sortOrder);
-            cursorID.moveToFirst();
-            cursorLength = cursorID.getCount();
-            //Map<String, Contact> contactsIDs = new HashMap<>();
-            String contactsIDsString = "";
-            while (!cursorID.isAfterLast()) {
-                Long id = cursorID.getLong(cursorID.getColumnIndex(ContactsContract.Contacts._ID));
-                contactsIDsString += (contactsIDsString.length() > 0 ? "," : "") + "'" + id + "'";
-                cursorID.moveToNext();
-            }
-            String selectionMultiple = ContactsContract.RawContactsEntity.CONTACT_ID + " IN (" + contactsIDsString + ") ";
-            */
 
                     uri = ContactsContract.RawContactsEntity.CONTENT_URI;
 
                     // querying the content resolver for all contacts
-
-                    cursorID = cr.query(uri, projection,
+                    cursorID = cr.query(uri, null,
                             selection, args, sortOrder);
                     cursorID.moveToFirst();
                     while (!cursorID.isAfterLast()) {
-                        ContactPhone phones = null;
-                        ContactWebsite websites = null;
-                        ContactAddress addresses = null;
-                        ContactEmail emails = null;
+                        ContactPhone contactPhones = null;
+                        ContactWebsite contactWebsites = null;
+                        ContactAddress contactAddresses = null;
+                        ContactEmail contactEmails = null;
                         String WEBSITE,
                                 FAMILY_NAME = null,
                                 MIDDLE_NAME = null,
@@ -374,7 +332,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                                     default:
                                         break;
                                 }
-                                phones = new ContactPhone(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)), contactPhoneType);
+                                contactPhones = new ContactPhone(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)), contactPhoneType);
                                 break;
                             case ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE:
                                 ContactAddressType contactAddressType = null;
@@ -393,7 +351,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                                     default:
                                         break;
                                 }
-                                addresses = new ContactAddress(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS)), contactAddressType);
+                                contactAddresses = new ContactAddress(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS)), contactAddressType);
                                 break;
                             case ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE:
                                 ContactEmailType contactEmailType = null;
@@ -414,13 +372,13 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                                     default:
                                         break;
                                 }
-                                emails = new ContactEmail(contactEmailType,
+                                contactEmails = new ContactEmail(contactEmailType,
                                         Boolean.valueOf(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.IS_PRIMARY))),
                                         cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS)));
                                 break;
                             case ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE:
                                 WEBSITE = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Website.URL));
-                                websites = new ContactWebsite(WEBSITE);
+                                contactWebsites = new ContactWebsite(WEBSITE);
                                 break;
                             case ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE:
                                 DISPLAY_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
@@ -443,36 +401,36 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                         if (contactBean != null) {
 
                             //Emails
-                            if (emails != null) {
+                            if (contactEmails != null) {
                                 ContactEmail[] array = contactBean.getContactEmails();
                                 if (array == null) {
                                     array = new ContactEmail[0];
                                 }
-                                contactBean.setContactEmails(addElement(array, emails));
+                                contactBean.setContactEmails(addElement(array, contactEmails));
                             }
                             //Phones
-                            if (phones != null) {
+                            if (contactPhones != null) {
                                 ContactPhone[] array = contactBean.getContactPhones();
                                 if (array == null) {
                                     array = new ContactPhone[0];
                                 }
-                                contactBean.setContactPhones(addElement(array, phones));
+                                contactBean.setContactPhones(addElement(array, contactPhones));
                             }
                             //Addresses
-                            if (addresses != null) {
+                            if (contactAddresses != null) {
                                 ContactAddress[] array = contactBean.getContactAddresses();
                                 if (array == null) {
                                     array = new ContactAddress[0];
                                 }
-                                contactBean.setContactAddresses(addElement(array, addresses));
+                                contactBean.setContactAddresses(addElement(array, contactAddresses));
                             }
                             //Websites/social
-                            if (websites != null) {
+                            if (contactWebsites != null) {
                                 ContactWebsite[] array = contactBean.getContactWebsites();
                                 if (array == null) {
                                     array = new ContactWebsite[0];
                                 }
-                                contactBean.setContactWebsites(addElement(array, websites));
+                                contactBean.setContactWebsites(addElement(array, contactWebsites));
                             }
 
                             //PersonalInfo
@@ -532,6 +490,71 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                     }
                 }
 
+                if (filter != null) {
+                    for (IContactFilter aFilter : filter) {
+                        contactList = new ArrayList<>(contactsIDs.values());
+                        Date test1 = new Date();
+                        Logger.log(ILoggingLogLevel.Debug,"Prefilter: "+contactsIDs.size());
+
+                        for(Contact contact: contactList){
+                            if(aFilter.equals(IContactFilter.HasEmail) && contact.getContactEmails() == null){
+                                Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HasEmail");
+                                contactsIDs.remove(contact.getContactId());
+                            }
+                            if(aFilter.equals(IContactFilter.HasAddress) && contact.getContactAddresses() == null){
+                                Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HasAddress");
+                                contactsIDs.remove(contact.getContactId());
+                            }
+                            if(aFilter.equals(IContactFilter.HasPhone) && contact.getContactPhones() == null){
+                                Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HasPhone");
+                                contactsIDs.remove(contact.getContactId());
+                            }
+                        }
+                        Logger.log(ILoggingLogLevel.Debug,(new Date().getTime()-test1.getTime())+"ms - Postfilter: "+contactsIDs.size());
+                    }
+                }
+
+                if(fields != null){
+                    contactList = new ArrayList<>(contactsIDs.values());
+                    Date test1 = new Date();
+                    Logger.log(ILoggingLogLevel.Debug,"Prefilter: "+contactsIDs.size());
+
+                    for(Contact contact: contactList) {
+
+                        if (Arrays.binarySearch(fields, IContactFieldGroup.Addresses) < 0) {
+                            //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Addresses");
+                            contact.setContactAddresses(null);
+                        }
+                        if (Arrays.binarySearch(fields, IContactFieldGroup.Emails) < 0) {
+                            //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Emails");
+                            contact.setContactEmails(null);
+                        }
+                        if (Arrays.binarySearch(fields, IContactFieldGroup.PersonalInfo) < 0) {
+                            //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: PersonalInfo");
+                            contact.setPersonalInfo(null);
+                        }
+                        if (Arrays.binarySearch(fields, IContactFieldGroup.Phones) < 0) {
+                            //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Phones");
+                            contact.setContactPhones(null);
+                        }
+                        if (Arrays.binarySearch(fields, IContactFieldGroup.ProfessionalInfo) < 0) {
+                            //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: ProfessionalInfo");
+                            contact.setProfessionalInfo(null);
+                        }
+                        if (Arrays.binarySearch(fields, IContactFieldGroup.Socials) < 0) {
+                            //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Socials");
+                            contact.setContactSocials(null);
+                        }
+                        if (Arrays.binarySearch(fields, IContactFieldGroup.Websites) < 0) {
+                            //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Websites");
+                            contact.setContactWebsites(null);
+                        }
+                        contactsIDs.put(contact.getContactId(),contact);
+                    }
+
+                    Logger.log(ILoggingLogLevel.Debug,(new Date().getTime()-test1.getTime())+"ms - Postfields: "+contactsIDs.size());
+                }
+
 
                 contactList = new ArrayList<>(contactsIDs.values());
 
@@ -559,102 +582,6 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
         return a;
     }
 
-
-    /**
-     * Create a projection from selected fields
-     *
-     * @param fields to search
-     * @return string generated
-     */
-    private String[] projectionFromFieldGroup(IContactFieldGroup[] fields) {
-        List<String> projection = new ArrayList<>();
-
-        String CONTACT_ID = ContactsContract.Contacts._ID;
-        String MIMETYPE = ContactsContract.Data.MIMETYPE;
-
-        String PHONE_NUMBER = ContactsContract.CommonDataKinds.Phone.NUMBER;
-        String PHONETYPE = ContactsContract.CommonDataKinds.Phone.TYPE;
-
-        String ADDRESS = ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS;
-        String ADDRESSTYPE = ContactsContract.CommonDataKinds.StructuredPostal.TYPE;
-
-        String EMAIL_DATA = ContactsContract.CommonDataKinds.Email.ADDRESS;
-        String EMAILPRIMARY = ContactsContract.CommonDataKinds.Email.IS_PRIMARY;
-        String EMAILTYPE = ContactsContract.CommonDataKinds.Email.TYPE;
-
-        String WEBSITE = ContactsContract.CommonDataKinds.Website.URL;
-
-        String DISPLAY_NAME = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME;
-        String MIDDLE_NAME = ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME;
-        String FAMILY_NAME = ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME;
-
-        String JOB = ContactsContract.CommonDataKinds.Organization.JOB_DESCRIPTION;
-        String COMPANY = ContactsContract.CommonDataKinds.Organization.COMPANY;
-        String JOBTITLE = ContactsContract.CommonDataKinds.Organization.TITLE;
-
-        projection.add(CONTACT_ID);
-        projection.add(MIMETYPE);
-
-        if (fields != null) {
-            for (IContactFieldGroup field : fields) {
-                switch (field) {
-                    case Addresses:
-                        projection.add(ADDRESS);
-                        projection.add(ADDRESSTYPE);
-                        break;
-                    case PersonalInfo:
-                        projection.add(DISPLAY_NAME);
-                        projection.add(MIDDLE_NAME);
-                        projection.add(FAMILY_NAME);
-                        break;
-                    case Emails:
-                        projection.add(EMAIL_DATA);
-                        projection.add(EMAILPRIMARY);
-                        projection.add(EMAILTYPE);
-                        break;
-                    case Phones:
-                        projection.add(PHONETYPE);
-                        projection.add(PHONE_NUMBER);
-                        break;
-                    case ProfessionalInfo:
-                        projection.add(JOB);
-                        projection.add(JOBTITLE);
-                        projection.add(COMPANY);
-                    case Socials:
-                        break;
-                    case Tags:
-                        break;
-                    case Websites:
-                        projection.add(WEBSITE);
-                        break;
-                }
-            }
-        } else {
-
-            projection.add(PHONE_NUMBER);
-            projection.add(PHONETYPE);
-
-            projection.add(ADDRESS);
-            projection.add(ADDRESSTYPE);
-
-            projection.add(EMAIL_DATA);
-            projection.add(EMAILPRIMARY);
-            projection.add(EMAILTYPE);
-
-            projection.add(WEBSITE);
-
-            projection.add(DISPLAY_NAME);
-            projection.add(MIDDLE_NAME);
-            projection.add(FAMILY_NAME);
-
-            projection.add(JOB);
-            projection.add(COMPANY);
-            projection.add(JOBTITLE);
-
-        }
-
-        return (String[]) projection.toArray(new String[projection.size()]);
-    }
 
     /**
      * @param prefix

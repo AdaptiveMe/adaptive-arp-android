@@ -34,7 +34,6 @@
 
 package me.adaptive.arp.impl;
 
-import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
 import me.adaptive.arp.api.AppRegistryBridge;
@@ -48,7 +47,7 @@ import me.adaptive.arp.api.ILoggingLogLevel;
 public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
 
     public static String APIService = "logging";
-    final boolean isDebuggable;
+    final boolean isDebuggable =true;
 
     /**
      * Default Constructor.
@@ -56,7 +55,7 @@ public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
     public LoggingDelegate() {
         super();
         AppRegistryBridge.getInstance().getLoggingBridge().setDelegate(this);
-        isDebuggable = (0 != (((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+        //isDebuggable = (0 != (((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
 
     }
 

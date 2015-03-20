@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <meta name="viewport" content="width=device-width,height=device-height,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+
+    <!-- build:css style.min.css -->
+    <link rel="stylesheet" href="www/css/jquery.mobile/flat-theme/jquery.mobile.flatui.min.css"/>
+    <link rel="stylesheet" href="www/css/jquery.mobile.iscrollview/jquery.mobile.iscrollview.css"/>
+    <link rel="stylesheet" href="www/css/jquery.mobile.iscrollview/jquery.mobile.iscrollview-pull.css"/>
+    <link rel="stylesheet" href="css/showcase.css"/>
+    <!-- /build -->
+
+    <!-- build:js app.min.js -->
+    <script type="text/javascript" src="www/js/jquery/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="www/js/jquery.mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript" src="www/js/jquery.mobile.iscrollview/iscroll.js"></script>
+    <script type="text/javascript" src="www/js/jquery.mobile.iscrollview/jquery.mobile.iscrollview.js"></script>
+    <script type="text/javascript" src="www/js/adaptive/Adaptive.js"></script>
+
+
+    <!-- /build -->
+
+</head>
+<body>
+
+<div id="home" data-role="page">
+    <div data-role="header" data-theme="a" data-position="fixed" data-id="header" data-tap-toggle="false"
+         data-transition="none">
+        <h1 class="">Adaptive RT Showcase<span class="adaptive-version"></span></h1>
+        <a href="#left-panel" data-theme="a" data-icon="carat-r" data-iconpos="notext" data-shadow="false"
+           data-iconshadow="false" class="ui-nodisc-icon">Open left panel</a>
+        <a href="#info" data-transition="slide" data-theme="a" data-icon="info" data-iconpos="notext"
+           data-shadow="false" data-iconshadow="false" class="ui-nodisc-icon">Info</a>
+    </div>
+    <!-- /header -->
+
+    <div data-iscroll="" data-role="content" class="ui-mini ui-content" role="main">
+
+        <h3 class="ui-bar ui-bar-b">Asynchronous Methods (listener)</h3>
+
+        <div class="ui-body">
+
+            <div id="lifecycle-error" class="alert-panel ui-bar ui-bar-d ui-corner-all"></div>
+            <div id="lifecycle-warning" class="alert-panel ui-bar ui-bar-e ui-corner-all"></div>
+            <button id="Browser">Browser</button>
+            <button id="Video">Video</button>
+            <button id="test">Test</button>
+            <p id="showcase"></p>
+        </div>
+
+    </div>
+    <!-- /content -->
+
+
+    <div data-role="footer" data-theme="a" data-position="fixed" data-id="footer" data-tap-toggle="false"
+         data-transition="none" class="ui-footer">
+        <h4 class="footer-text">&copy; 2015 Adaptive.me Forged with <span style="color: red">&hearts;</span> in Barcelona</h4>
+    </div>
+    <!-- /footer -->
+<!-- /page -->
+</body>
+<script type="text/javascript" src="showcase.js"></script>
+</html>

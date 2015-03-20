@@ -34,15 +34,10 @@
 
 package me.adaptive.arp.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.adaptive.arp.api.AppRegistryBridge;
-import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IService;
 import me.adaptive.arp.api.IServiceMethod;
 import me.adaptive.arp.api.IServiceResultCallback;
-import me.adaptive.arp.api.Service;
 import me.adaptive.arp.api.ServiceRequest;
 import me.adaptive.arp.api.ServiceToken;
 
@@ -55,7 +50,6 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
 
     public static String APIService = "service";
     static LoggingDelegate Logger;
-    private List<Service> services = new ArrayList<Service>();
 
     /**
      * Default Constructor.
@@ -65,100 +59,6 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
 
     }
-
-    /**
-     * Get a reference to a registered service by name.
-     *
-     * @param serviceName Name of service.
-     * @return A service, if registered, or null of the service does not exist.
-     * @since ARP1.0
-     */
-    public Service getService(String serviceName) {
-        Service response = null;
-        for (Service service : services) {
-            if (service.getName().equals(serviceName))
-                response = service;
-        }
-        return response;
-    }
-
-    /**
-     * Request async a service for an Url
-     *
-     * @param serviceRequest Service Request to invoke
-     * @param service        Service to call
-     * @param callback       Callback to execute with the result
-     * @since ARP1.0
-     */
-    public void invokeService(ServiceRequest serviceRequest, Service service, IServiceResultCallback callback) {
-
-    }
-
-    /**
-     * Check whether a service by the given service is already registered.
-     *
-     * @param service Service to check
-     * @return True if the service is registered, false otherwise.
-     * @since ARP1.0
-     */
-    public boolean isRegistered(Service service) {
-        return services.contains(service);
-    }
-
-    /**
-     * Check whether a service by the given name is registered.
-     *
-     * @param serviceName Name of service.
-     * @return True if the service is registered, false otherwise.
-     * @since ARP1.0
-     */
-    public boolean isRegistered(String serviceName) {
-        for (Service service : services) {
-            if (service.getName().equals(serviceName))
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Register a new service
-     *
-     * @param service to register
-     * @since ARP1.0
-     */
-    public void registerService(Service service) {
-        if (!services.contains(service)) {
-            services.add(service);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "registerService: " + service.toString() + " Added!");
-        } else
-            Logger.log(ILoggingLogLevel.Warn, APIService, "registerService: " + service.toString() + " is already added!");
-
-    }
-
-    /**
-     * Unregister a service
-     *
-     * @param service to unregister
-     * @since ARP1.0
-     */
-    public void unregisterService(Service service) {
-        if (services.contains(service)) {
-            services.remove(service);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "unregisterService" + service.toString() + " Removed!");
-        } else
-            Logger.log(ILoggingLogLevel.Warn, APIService, "unregisterService: " + service.toString() + " is NOT registered");
-    }
-
-    /**
-     * Unregister all services.
-     *
-     * @since ARP1.0
-     */
-    public void unregisterServices() {
-        services.clear();
-        Logger.log(ILoggingLogLevel.Debug, APIService, "unregisterServices: ALL Services have been removed!");
-    }
-
 
     /**
      Obtains a Service token by a concrete uri (http://domain.com/path). This method would be useful when

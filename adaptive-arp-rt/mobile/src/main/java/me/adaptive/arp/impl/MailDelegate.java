@@ -34,15 +34,20 @@
 
 package me.adaptive.arp.impl;
 
-import android.content.Context;
 import android.content.Intent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.Email;
+import me.adaptive.arp.api.EmailAddress;
+import me.adaptive.arp.api.EmailAttachmentData;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IMail;
 import me.adaptive.arp.api.IMessagingCallback;
 import me.adaptive.arp.api.IMessagingCallbackError;
+import me.adaptive.arp.api.IMessagingCallbackWarning;
 
 /**
  * Interface for Managing the Mail operations
@@ -70,65 +75,57 @@ public class MailDelegate extends BasePIMDelegate implements IMail {
      * @param callback Result callback of the operation
      * @since ARP1.0
      */
-    public void sendEmail(final Email data, final IMessagingCallback callback) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
-            public void run() {
-                boolean result = false;
+    public void sendEmail(Email data, IMessagingCallback callback) {
 
-                try {
-                    Intent emailIntent;
-                    boolean hasAttachment = data.getEmailAttachmentData() != null
-                            && data.getEmailAttachmentData().length > 0;
-                    boolean isMultiple = hasAttachment
-                            && data.getEmailAttachmentData().length > 1;
+        List<String> intermediate = new ArrayList<>();
+        for(EmailAddress to:data.getToRecipients()){
+            intermediate.add(to.getAddress());
+        }
+        String[] TO = (String[]) intermediate.toArray();
+        intermediate.clear();
+        for(EmailAddress cc:data.getCcRecipients()){
+            intermediate.add(cc.getAddress());
+        }
+        String[] CC = (String[]) intermediate.toArray();
+        intermediate.clear();
+        for(EmailAddress bcc:data.getBccRecipients()){
+            intermediate.add(bcc.getAddress());
+        }
+        String[] BCC = (String[]) intermediate.toArray();
+        intermediate.clear();
 
-                    if (isMultiple) {
-                        emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                    } else {
-                        emailIntent = new Intent(Intent.ACTION_SEND);
-                    }
-                    emailIntent
-                            .setType(data.getMessageBodyMimeType() != null ? data
-                                    .getMessageBodyMimeType() : "text/html");
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, data.getSubject());
-                    emailIntent.putExtra(Intent.EXTRA_TEXT, data.getMessageBody());
-                    emailIntent.putExtra(Intent.EXTRA_EMAIL,
-                            data.getToRecipients());
-                    emailIntent.putExtra(Intent.EXTRA_BCC,
-                            data.getBccRecipients());
-                    emailIntent.putExtra(Intent.EXTRA_CC,
-                            data.getCcRecipients());
 
-            /*if (hasAttachment) {
-                if (isMultiple) {
-                    ArrayList<Uri> uris = new ArrayList<Uri>();
-                    for (AttachmentData att : data.getAttachmentData()) {
-                        File attFile = createFileFromAttachment(att);
-                        if (attFile != null) {
-                            Uri u = Uri.fromFile(attFile);
-                            uris.add(u);
-                        }
-                    }
-                    emailIntent.putParcelableArrayListExtra(
-                            Intent.EXTRA_STREAM, uris);
-                }
-                Uri u = Uri.fromFile(createFileFromAttachment(data
-                        .getAttachmentData()[0]));
-                emailIntent.putExtra(Intent.EXTRA_STREAM, u);
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        //emailIntent.setData(Uri.parse("mailto:"));
+        //emailIntent.setType("text/plain");
+        // set the type to 'email'
+        emailIntent.setType("vnd.android.cursor.dir/email");
 
-            }*/
 
-                    Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
-                    context.startActivity(Intent.createChooser(emailIntent, "Email"));
-                    result = true;
-                } catch (Exception ex) {
-                    Logger.log(ILoggingLogLevel.Error, APIService, "sendEmail: error " + ex.getLocalizedMessage());
-                    callback.onError(IMessagingCallbackError.Unknown);
-                }
 
-                callback.onResult(result);
-            }
-        });
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+        emailIntent.putExtra(Intent.EXTRA_CC, CC);
+        emailIntent.putExtra(Intent.EXTRA_BCC, BCC);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, data.getSubject());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, data.getMessageBody());
+        emailIntent.putExtra(Intent.EXTRA_MIME_TYPES, data.getMessageBodyMimeType());
+        for(EmailAttachmentData attachmentData:data.getEmailAttachmentData()){
+            emailIntent .putExtra(Intent.EXTRA_STREAM, attachmentData.getReferenceUrl());
+        }
+
+
+
+
+        try {
+            ((AppContextDelegate)AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            callback.onResult(true);
+            Logger.log(ILoggingLogLevel.Debug,"Finished sending email...", "");
+        } catch (android.content.ActivityNotFoundException ex) {
+            Logger.log(ILoggingLogLevel.Error,"Unable to find activity");
+            callback.onError(IMessagingCallbackError.EmailAccountNotFound);
+        }catch (Exception ex){
+            callback.onWarning(false, IMessagingCallbackWarning.Unknown);
+        }
     }
 
 }

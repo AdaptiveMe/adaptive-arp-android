@@ -68,6 +68,12 @@ public class AppContextDelegate implements IAppContext {
         executor = Executors.newFixedThreadPool(50);
     }
 
+    public AppContextDelegate(Activity activity, ExecutorService executors) {
+        super();
+        mainActivity = activity;
+        executor = executors;
+    }
+
     public static Activity getMainActivity() {
         return mainActivity;
     }

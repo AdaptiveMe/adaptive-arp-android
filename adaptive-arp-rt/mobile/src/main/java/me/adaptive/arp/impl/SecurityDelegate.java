@@ -62,7 +62,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
     public String APIService = "security";
     private String SHARED_PACKAGE_NAME = null;
     private String PREFERENCES_FILE_NAME = "AdaptiveSettings"; // default value
-    private String[] foldersToCheckWriteAccess = {
+    private static String[] foldersToCheckWriteAccess = {
             "/data",
             "/",
             "/system",
@@ -76,16 +76,26 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
             "/proc",
             "/dev"
     };
-    private String[] foldersToCheckReadAccess = {
+    private static String[] foldersToCheckReadAccess = {
             "/data"
     };
-    private String[] forbiddenInstalledPackages = {
+    private static String[] forbiddenInstalledPackages = {
             "com.noshufou.android.su",
             "com.thirdparty.superuser",
             "eu.chainfire.supersu",
             "com.koushikdutta.superuser",
             "com.zachspong.temprootremovejb",
             "com.ramdroid.appquarantine"
+    };
+    private static String[] SULocation = {
+            "/sbin/",
+            "/system/bin/",
+            "/system/xbin/",
+            "/data/local/xbin/",
+            "/data/local/bin/",
+            "/system/sd/xbin/",
+            "/system/bin/failsafe/",
+            "/data/local/"
     };
 
     /**
@@ -213,6 +223,15 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
             return true;
         }
 
+        if (checkRootMethod3_2()) {
+            Logger.log(ILoggingLogLevel.Debug, APIService, "isDeviceModified: Detected by checkRootMethod3_2");
+            return true;
+        }
+
+        if(findBinary("su")){
+            return true;
+        }
+
         return false;
     }
 
@@ -303,6 +322,29 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         }
         return false;
     }
+
+
+    /**
+     * Searches in possible su binary locations
+     * @param binaryName filename
+     * @return true if found; false otherwise
+     */
+    public static boolean findBinary(String binaryName) {
+        boolean found = false;
+        if (!found) {
+
+            for (String where : SULocation) {
+                if (new File(where + binaryName).exists()) {
+                    found = true;
+
+                    break;
+                }
+            }
+        }
+        return found;
+    }
+
+
 
 
     /**

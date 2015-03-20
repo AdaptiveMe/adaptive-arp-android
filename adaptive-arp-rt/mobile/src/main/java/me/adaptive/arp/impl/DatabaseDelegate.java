@@ -373,43 +373,6 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
     }
 
 
-    //TODO @Override
-    /**
-     * Execute a query
-     *
-     * @param database     Adaptive database
-     * @param query        String
-     * @param replacements values
-     * @param callback     Adaptive callback to send the results
-     */
-    public void executeSqlQuery(Database database, String query, String[] replacements, IDatabaseTableResultCallback callback) {
-
-        String sql = getFormattedSQL(query, replacements);
-        Logger.log(ILoggingLogLevel.Debug, APIService, "executeSqlQuery: Query: " + sql);
-        Cursor cursor = null;
-        DatabaseTable result = null;
-        try {
-            SQLiteDatabase sqlDB = openDatabase(database);
-            cursor = sqlDB.rawQuery(sql, null);
-            if (cursor.getCount() > 0) {
-                result = cursorToTable(cursor);
-            } else {
-                callback.onError(IDatabaseTableResultCallbackError.NoTableFound);
-                return;
-            }
-        } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "executeSqlQuery: Error" + ex.getLocalizedMessage());
-            callback.onError(IDatabaseTableResultCallbackError.SqlException);
-            return;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        Logger.log(ILoggingLogLevel.Debug, APIService, "executeSqlQuery: " + sql + " executed!");
-        callback.onResult(result);
-    }
-
     /**
      * Cast a native Cursor to Adaptive Database Object
      *

@@ -37,9 +37,13 @@ package me.adaptive.arp.impl;
 import android.content.Intent;
 import android.net.Uri;
 
+import arp.adaptive.me.externalbrowser.ExternalBrowser;
+import me.adaptive.arp.R;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.IBrowser;
 import me.adaptive.arp.api.ILoggingLogLevel;
+
+import static me.adaptive.arp.impl.AppContextDelegate.getMainActivity;
 
 /**
  * Interface for Managing the browser operations
@@ -97,13 +101,12 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
     public boolean openInternalBrowser(String url, String title, String backButtonText) {
         boolean result = false;
         try {
-            Intent intent = new Intent(AppContextDelegate.getMainActivity().getApplicationContext()
-                    .getPackageName() + ACTION_SHOW_BROWSER);
-            intent.putExtra(EXTRA_URL, url);
-            intent.putExtra(EXTRA_BROWSER_TITLE, title);
-            intent.putExtra(EXTRA_BUTTON_TEXT, backButtonText);
-
-            AppContextDelegate.getMainActivity().startActivity(intent);
+            Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), ExternalBrowser.class);
+            intent.putExtra("url",url);
+            intent.putExtra("backButtonText",backButtonText);
+            intent.putExtra("title",title);
+            getMainActivity().startActivity(intent);
+            getMainActivity().overridePendingTransition  (R.anim.slide_down, R.anim.slide_up);
             result = true;
         } catch (Exception ex) {
             Logger.log(ILoggingLogLevel.Debug, APIService, "tryConnection error " + ex.getLocalizedMessage());
