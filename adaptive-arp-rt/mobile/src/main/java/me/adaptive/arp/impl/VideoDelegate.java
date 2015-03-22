@@ -39,13 +39,16 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.webkit.MimeTypeMap;
 
 import java.util.List;
 
+import arp.adaptive.me.videoplayer.VideoActivity;
+import me.adaptive.arp.R;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IVideo;
+
+import static me.adaptive.arp.impl.AppContextDelegate.getMainActivity;
 
 /**
  * Interface for Managing the Video operations
@@ -56,7 +59,7 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
 
     public static String APIService = "media";
     static LoggingDelegate Logger;
-    private MediaPlayer mp;
+    private MediaPlayer mediaPlayer;
 
     /**
      * Default Constructor.
@@ -67,15 +70,6 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
 
     }
 
-    private static String getMimeType(String url) {
-        String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        if (extension != null) {
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            type = mime.getMimeTypeFromExtension(extension);
-        }
-        return type;
-    }
 
     /**
      * Play url video stream
@@ -87,31 +81,47 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
         boolean result = false;
 
         Logger.log(ILoggingLogLevel.Debug, APIService, "playStream: url: " + url);
-
+        Uri uri = Uri.parse(url);
         try {
-            String mimeType = getMimeType(url);
-            if (mimeType.startsWith("video/")) {
+            /*Intent intent = new Intent(Intent.ACTION_VIEW);
+            //intent.setType("video/*");
+            //intent.setData(uri);
+            intent.setDataAndType(uri, "video/mp4");
+            if(isCallable(intent)){
+                ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(Intent.createChooser(intent, "Complete action using"));
+            }else {
+            mediaPlayer =  MediaPlayer.create((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getDelegate().getContext(), uri);
 
-                // start activity
-                Uri uri = Uri.parse(url);
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setDataAndType(uri, "video/mp4");
+                    mediaPlayer.setOnCompletionListener(onCompleteListener);
+            mediaPlayer.setOnPreparedListener(onPrepareListener);
+            mediaPlayer.setOnErrorListener(onErrorListener);
+            mediaPlayer.setScreenOnWhilePlaying(true);
 
-                if (isCallable(intent)) {
-                    ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(intent);
-                } else {
-                    Logger.log(ILoggingLogLevel.Error, APIService, "NOT callable");
-                }
-            } else {
-                Uri uri = Uri.parse(url);
+            mediaPlayer.prepareAsync(); // prepare async to not block main thread
 
-                createMediaPlayer(uri);
-                mp.prepareAsync();
-                mp.start();
-
-                result = true;
             }
+
+            final VideoView videoView = (VideoView) getMainActivity().findViewById(R.id.adaptivevideo);
+            videoView.setVisibility(View.VISIBLE);
+            videoView.bringToFront();
+            videoView.setVideoURI(uri);
+            MediaController mc = new MediaController(getMainActivity());
+            videoView.setMediaController(mc);
+            mc.show(0);
+            videoView.requestFocus();
+            videoView.start();
+            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    Logger.log(ILoggingLogLevel.Debug,"onCompletion");
+                    videoView.setVisibility(View.GONE);
+                    //videoView.invalidate();
+                }
+            });*/
+            Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(),VideoActivity.class);
+            intent.putExtra("url",url);
+            getMainActivity().startActivity(intent);
+            getMainActivity().overridePendingTransition  (R.anim.right_slide_in, R.anim.right_slide_out);
 
         } catch (Exception ex) {
             Logger.log(ILoggingLogLevel.Error, APIService, "playStream: Error " + ex.getLocalizedMessage());
@@ -120,21 +130,14 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
         }
     }
 
+
     private boolean isCallable(Intent intent) {
-        List<ResolveInfo> list = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getPackageManager().queryIntentActivities(intent,
+        List<ResolveInfo> list = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager().queryIntentActivities(intent,
                 PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }
 
-    private void createMediaPlayer(Uri uri) {
-        if (uri == null) {
-            mp = new MediaPlayer();
-        } else {
-            mp = MediaPlayer.create(((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext(), uri);
-        }
-    }
-
 }
 /**
- ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+ ------------------------------------| Engineered with ? in Barcelona, Catalonia |--------------------------------------
  */

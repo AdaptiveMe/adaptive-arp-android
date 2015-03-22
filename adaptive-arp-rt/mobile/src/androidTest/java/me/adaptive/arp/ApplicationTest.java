@@ -9,5 +9,11 @@ import android.test.ApplicationTestCase;
 public class ApplicationTest extends ApplicationTestCase<Application> {
     public ApplicationTest() {
         super(Application.class);
+        setName("MainActivity");
+    }
+
+    public void testName() throws Exception {
+        assertTrue("test",true);
+
     }
 }

@@ -21,16 +21,9 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    wearApp project(':wear')
+    //wearApp project(':wear')
     compile 'com.google.android.gms:play-services:6.5.87'
     compile 'com.google.code.gson:gson:2.3.1'
-    /*compile 'com.madgag.spongycastle:core:1.51.0.0'
-    compile 'com.madgag.spongycastle:prov:1.51.0.0'
-    compile 'com.madgag.spongycastle:pkix:1.51.0.0'
-    compile 'com.madgag.spongycastle:pg:1.51.0.0'
-
-    /*compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.51.0', ext: 'jar')
-    compile(group: 'com.madgag.spongycastle', name: 'prov', version: '1.51.0', ext: 'jar')
-    compile(group: 'com.madgag.spongycastle', name: 'pkix', version: '1.51.0', ext: 'jar')
-    compile(group: 'com.madgag.spongycastle', name: 'pg', version: '1.51.0', ext: 'jar')*/
+    compile project(':videoplayer')
+    compile project(':externalbrowser')
 }

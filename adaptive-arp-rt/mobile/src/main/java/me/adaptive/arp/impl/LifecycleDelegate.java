@@ -34,9 +34,6 @@
 
 package me.adaptive.arp.impl;
 
-import android.app.ActivityManager;
-import android.content.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +79,11 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
         } else
             Logger.log(ILoggingLogLevel.Warn, APIService, "addLifecycleListener: " + listener.toString() + " is already added!");
     }
+    private boolean isBackground;
+
+    public void setBackground(boolean isBackground) {
+        this.isBackground = isBackground;
+    }
 
     /**
      * Whether the application is in background or not
@@ -90,7 +92,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
      * @since ARP1.0
      */
     public boolean isBackground() {
-        // check with the first task(task in the foreground)
+        /* check with the first task(task in the foreground)
         // in the returned list of tasks
         Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
         ActivityManager activityManager = (ActivityManager) context
@@ -99,6 +101,8 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
                 .getRunningTasks(Integer.MAX_VALUE);
         return !services.get(0).topActivity.getPackageName().toString()
                 .equalsIgnoreCase(context.getPackageName().toString());
+                */
+        return this.isBackground;
     }
 
     /**
