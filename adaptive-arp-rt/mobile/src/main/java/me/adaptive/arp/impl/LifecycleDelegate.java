@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseApplicationDelegate;
 import me.adaptive.arp.api.ILifecycle;
 import me.adaptive.arp.api.ILifecycleListener;
 import me.adaptive.arp.api.ILoggingLogLevel;
@@ -52,10 +53,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
     public static String APIService = "lifecycle";
     static LoggingDelegate Logger;
     public List<ILifecycleListener> listeners = new ArrayList<ILifecycleListener>();
-
-    public List<ILifecycleListener> getListeners() {
-        return listeners;
-    }
+    private boolean isBackground;
 
     /**
      * Default Constructor.
@@ -64,6 +62,10 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
         super();
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
 
+    }
+
+    public List<ILifecycleListener> getListeners() {
+        return listeners;
     }
 
     /**
@@ -78,11 +80,6 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
             Logger.log(ILoggingLogLevel.Debug, APIService, "addLifecycleListener: " + listener.toString() + " Added!");
         } else
             Logger.log(ILoggingLogLevel.Warn, APIService, "addLifecycleListener: " + listener.toString() + " is already added!");
-    }
-    private boolean isBackground;
-
-    public void setBackground(boolean isBackground) {
-        this.isBackground = isBackground;
     }
 
     /**
@@ -103,6 +100,10 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
                 .equalsIgnoreCase(context.getPackageName().toString());
                 */
         return this.isBackground;
+    }
+
+    public void setBackground(boolean isBackground) {
+        this.isBackground = isBackground;
     }
 
     /**

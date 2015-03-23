@@ -63,9 +63,6 @@ import java.util.List;
  */
 public class PlaybackOverlayFragment extends android.support.v17.leanback.app.PlaybackOverlayFragment {
     private static final String TAG = "PlaybackControlsFragment";
-
-    private static Context sContext;
-
     private static final boolean SHOW_DETAIL = true;
     private static final boolean HIDE_MORE_ACTIONS = false;
     private static final int PRIMARY_CONTROLS = 5;
@@ -76,7 +73,8 @@ public class PlaybackOverlayFragment extends android.support.v17.leanback.app.Pl
     private static final int DEFAULT_UPDATE_PERIOD = 1000;
     private static final int UPDATE_PERIOD = 16;
     private static final int SIMULATED_BUFFERED_TIME = 10000;
-
+    private static Context sContext;
+    OnPlayPauseClickedListener mCallback;
     private ArrayObjectAdapter mRowsAdapter;
     private ArrayObjectAdapter mPrimaryActionsAdapter;
     private ArrayObjectAdapter mSecondaryActionsAdapter;
@@ -96,13 +94,6 @@ public class PlaybackOverlayFragment extends android.support.v17.leanback.app.Pl
     private Runnable mRunnable;
     private Movie mSelectedMovie;
     private PicassoPlaybackControlsRowTarget mPlaybackControlsRowTarget;
-
-    OnPlayPauseClickedListener mCallback;
-
-    // Container Activity must implement this interface
-    public interface OnPlayPauseClickedListener {
-        public void onFragmentPlayPause(Movie movie, int position, Boolean playPause);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -381,6 +372,19 @@ public class PlaybackOverlayFragment extends android.support.v17.leanback.app.Pl
         super.onStop();
     }
 
+    protected void updateVideoImage(URI uri) {
+        Picasso.with(sContext)
+                .load(uri.toString())
+                .resize(Utils.convertDpToPixel(sContext, CARD_WIDTH),
+                        Utils.convertDpToPixel(sContext, CARD_HEIGHT))
+                .into(mPlaybackControlsRowTarget);
+    }
+
+    // Container Activity must implement this interface
+    public interface OnPlayPauseClickedListener {
+        public void onFragmentPlayPause(Movie movie, int position, Boolean playPause);
+    }
+
     static class DescriptionPresenter extends AbstractDetailsDescriptionPresenter {
         @Override
         protected void onBindDescription(ViewHolder viewHolder, Object item) {
@@ -411,14 +415,6 @@ public class PlaybackOverlayFragment extends android.support.v17.leanback.app.Pl
         public void onPrepareLoad(Drawable drawable) {
             // Do nothing, default_background manager has its own transitions
         }
-    }
-
-    protected void updateVideoImage(URI uri) {
-        Picasso.with(sContext)
-                .load(uri.toString())
-                .resize(Utils.convertDpToPixel(sContext, CARD_WIDTH),
-                        Utils.convertDpToPixel(sContext, CARD_HEIGHT))
-                .into(mPlaybackControlsRowTarget);
     }
 
 }

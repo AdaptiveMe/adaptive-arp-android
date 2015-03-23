@@ -82,9 +82,9 @@ public class VideoActivity extends Activity {
         finishVideo();
     }
 
-    private void finishVideo(){
+    private void finishVideo() {
         finish();
-        overridePendingTransition  (R.anim.right_slide_out, R.anim.right_slide_in);
+        overridePendingTransition(R.anim.right_slide_out, R.anim.right_slide_in);
     }
 
 }

@@ -26,5 +26,5 @@ dependencies {
     compile 'com.android.support:leanback-v17:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.squareup.picasso:picasso:2.3.2'
-    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'me.adaptive:adaptive-arp-lib:2.2.1'
 }

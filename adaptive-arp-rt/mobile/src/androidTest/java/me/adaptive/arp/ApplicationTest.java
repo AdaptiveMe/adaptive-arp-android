@@ -13,7 +13,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     }
 
     public void testName() throws Exception {
-        assertTrue("test",true);
+        assertTrue("test", true);
 
     }
 }

@@ -46,10 +46,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseCommunicationDelegate;
 import me.adaptive.arp.api.ICapabilitiesNet;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.INetworkStatus;
 import me.adaptive.arp.api.INetworkStatusListener;
+import me.adaptive.arp.api.NetworkEvent;
 
 /**
  * Interface for Managing the Network status
@@ -115,31 +117,30 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();
             if (extras != null) {
-                for (String key: extras.keySet()) {
+                for (String key : extras.keySet()) {
                     Logger.log(ILoggingLogLevel.Debug, APIService, "key [" + key + "]: " + extras.get(key));
                 }
-            }
-            else {
+            } else {
                 Logger.log(ILoggingLogLevel.Debug, APIService, "no extras");
             }
 
             ConnectivityManager cm =
-                    (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
             boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
             ICapabilitiesNet NetworkType = ICapabilitiesNet.Unavailable;
-            if(isConnected)
-                switch(activeNetwork.getType()){
+            if (isConnected)
+                switch (activeNetwork.getType()) {
                     case ConnectivityManager.TYPE_WIMAX:
                     case ConnectivityManager.TYPE_WIFI:
-                        Logger.log(ILoggingLogLevel.Debug,APIService,"WIFI");
+                        Logger.log(ILoggingLogLevel.Debug, APIService, "WIFI");
                         NetworkType = ICapabilitiesNet.WIFI;
                         break;
                     case ConnectivityManager.TYPE_MOBILE:
-                        Logger.log(ILoggingLogLevel.Debug,APIService,"MOBILE");
+                        Logger.log(ILoggingLogLevel.Debug, APIService, "MOBILE");
                         int networkType = activeNetwork.getSubtype();
-                        switch(networkType){
+                        switch (networkType) {
                             case TelephonyManager.NETWORK_TYPE_GPRS:
                             case TelephonyManager.NETWORK_TYPE_EDGE:
                                 NetworkType = ICapabilitiesNet.GSM;
@@ -169,9 +170,11 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
                         }
                         break;
                 }
+            final NetworkEvent networkEvent = new NetworkEvent(NetworkType, System.currentTimeMillis());
+            for (INetworkStatusListener listener : listeners) {
 
-            for(INetworkStatusListener listener: listeners){
-                listener.onResult(NetworkType);
+                listener.onResult(networkEvent);
+
             }
         }
     }

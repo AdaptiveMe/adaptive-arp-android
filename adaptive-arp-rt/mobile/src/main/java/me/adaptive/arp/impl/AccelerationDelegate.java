@@ -46,6 +46,7 @@ import java.util.List;
 
 import me.adaptive.arp.api.Acceleration;
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseSensorDelegate;
 import me.adaptive.arp.api.IAcceleration;
 import me.adaptive.arp.api.IAccelerationListener;
 import me.adaptive.arp.api.ILoggingLogLevel;
@@ -57,35 +58,18 @@ import me.adaptive.arp.api.ILoggingLogLevel;
 public class AccelerationDelegate extends BaseSensorDelegate implements IAcceleration {
 
 
+    static final float ALPHA = 0.15f;
     static LoggingDelegate Logger;
     public String APIService = "accelerometer";
+    protected float[] gravSensorVals;
     private List<IAccelerationListener> listeners = new ArrayList<IAccelerationListener>();
-
     private SensorManager mSensorManager;
     private Sensor mSensor;
-
     private float[] grav = new float[3];
     private float[] geomagnetic = new float[3];
     private float[] orientation = new float[3];
     private float[] rotation = new float[9];
     private float[] linear_acceleration = new float[3];
-    private float[] euler_acceleration = new float[3];
-
-    static final float ALPHA = 0.15f;
-    protected float[] gravSensorVals;
-    /**
-     * listen to sensor (ACCELEROMETER, MAGNETIC FIELD) changes
-     */
-
-    protected float[] lowPass( float[] input, float[] output ) {
-        if ( output == null ) return input;
-
-        for ( int i=0; i<input.length; i++ ) {
-            output[i] = output[i] + ALPHA * (input[i] - output[i]);
-        }
-        return output;
-    }
-
     private SensorEventListener sensorListener = new SensorEventListener() {
 
         @Override
@@ -132,6 +116,7 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
             // has nothing to do
         }
     };
+    private float[] euler_acceleration = new float[3];
     private boolean searching = false;
 
     /**
@@ -144,6 +129,19 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
         mSensorManager = (SensorManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity()
                 .getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    /**
+     * listen to sensor (ACCELEROMETER, MAGNETIC FIELD) changes
+     */
+
+    protected float[] lowPass(float[] input, float[] output) {
+        if (output == null) return input;
+
+        for (int i = 0; i < input.length; i++) {
+            output[i] = output[i] + ALPHA * (input[i] - output[i]);
+        }
+        return output;
     }
 
     /**

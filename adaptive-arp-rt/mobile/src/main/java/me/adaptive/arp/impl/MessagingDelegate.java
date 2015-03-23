@@ -39,6 +39,7 @@ import android.net.Uri;
 import android.telephony.PhoneNumberUtils;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BasePIMDelegate;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IMessaging;
 import me.adaptive.arp.api.IMessagingCallback;

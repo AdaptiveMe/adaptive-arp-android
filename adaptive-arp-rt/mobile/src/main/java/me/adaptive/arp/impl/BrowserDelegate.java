@@ -40,6 +40,7 @@ import android.net.Uri;
 import arp.adaptive.me.externalbrowser.ExternalBrowser;
 import me.adaptive.arp.R;
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseUIDelegate;
 import me.adaptive.arp.api.IBrowser;
 import me.adaptive.arp.api.ILoggingLogLevel;
 
@@ -102,11 +103,11 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
         boolean result = false;
         try {
             Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), ExternalBrowser.class);
-            intent.putExtra("url",url);
-            intent.putExtra("backButtonText",backButtonText);
-            intent.putExtra("title",title);
+            intent.putExtra("url", url);
+            intent.putExtra("backButtonText", backButtonText);
+            intent.putExtra("title", title);
             getMainActivity().startActivity(intent);
-            getMainActivity().overridePendingTransition  (R.anim.slide_down, R.anim.slide_up);
+            getMainActivity().overridePendingTransition(R.anim.slide_down, R.anim.slide_up);
             result = true;
         } catch (Exception ex) {
             Logger.log(ILoggingLogLevel.Debug, APIService, "tryConnection error " + ex.getLocalizedMessage());

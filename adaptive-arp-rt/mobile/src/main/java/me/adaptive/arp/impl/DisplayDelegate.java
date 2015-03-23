@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseSystemDelegate;
 import me.adaptive.arp.api.ICapabilitiesOrientation;
 import me.adaptive.arp.api.IDisplay;
 import me.adaptive.arp.api.IDisplayOrientationListener;
@@ -52,9 +53,10 @@ import me.adaptive.arp.api.ILoggingLogLevel;
  */
 public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
 
-    public String APIService = "display";
     static LoggingDelegate Logger;
+    public String APIService = "display";
     public List<IDisplayOrientationListener> listeners = new ArrayList<>();
+
     /**
      * Default Constructor.
      */
@@ -85,9 +87,9 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * @since v2.0.5
      */
     public ICapabilitiesOrientation getOrientationCurrent() {
-        Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getDelegate().getContext());
+        Context context = ((Context) AppRegistryBridge.getInstance().getPlatformContext().getDelegate().getContext());
         Configuration config = context.getResources().getConfiguration();
-        switch(config.orientation){
+        switch (config.orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 return ICapabilitiesOrientation.PortraitUp;
             case Configuration.ORIENTATION_PORTRAIT:

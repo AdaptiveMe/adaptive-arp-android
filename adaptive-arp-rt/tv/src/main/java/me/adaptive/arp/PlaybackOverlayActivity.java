@@ -17,7 +17,6 @@ import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
 

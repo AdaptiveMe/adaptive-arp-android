@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseSecurityDelegate;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.ISecurity;
 import me.adaptive.arp.api.ISecurityResultCallback;
@@ -59,9 +60,6 @@ import me.adaptive.arp.api.SecureKeyPair;
 public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity {
 
     static LoggingDelegate Logger;
-    public String APIService = "security";
-    private String SHARED_PACKAGE_NAME = null;
-    private String PREFERENCES_FILE_NAME = "AdaptiveSettings"; // default value
     private static String[] foldersToCheckWriteAccess = {
             "/data",
             "/",
@@ -97,6 +95,9 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
             "/system/bin/failsafe/",
             "/data/local/"
     };
+    public String APIService = "security";
+    private String SHARED_PACKAGE_NAME = null;
+    private String PREFERENCES_FILE_NAME = "AdaptiveSettings"; // default value
 
     /**
      * Default Constructor.
@@ -105,6 +106,27 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         super();
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
 
+    }
+
+    /**
+     * Searches in possible su binary locations
+     *
+     * @param binaryName filename
+     * @return true if found; false otherwise
+     */
+    public static boolean findBinary(String binaryName) {
+        boolean found = false;
+        if (!found) {
+
+            for (String where : SULocation) {
+                if (new File(where + binaryName).exists()) {
+                    found = true;
+
+                    break;
+                }
+            }
+        }
+        return found;
     }
 
     /**
@@ -228,13 +250,12 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
             return true;
         }
 
-        if(findBinary("su")){
+        if (findBinary("su")) {
             return true;
         }
 
         return false;
     }
-
 
     /**
      * Whether Rooted keys are present
@@ -246,7 +267,6 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
 
         return buildTags != null && buildTags.contains("test-keys");
     }
-
 
     /**
      * Whether SU apk is present
@@ -322,30 +342,6 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         }
         return false;
     }
-
-
-    /**
-     * Searches in possible su binary locations
-     * @param binaryName filename
-     * @return true if found; false otherwise
-     */
-    public static boolean findBinary(String binaryName) {
-        boolean found = false;
-        if (!found) {
-
-            for (String where : SULocation) {
-                if (new File(where + binaryName).exists()) {
-                    found = true;
-
-                    break;
-                }
-            }
-        }
-        return found;
-    }
-
-
-
 
     /**
      * Get the SharedPreferences Object

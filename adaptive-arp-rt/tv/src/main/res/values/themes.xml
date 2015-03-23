@@ -1,4 +1,5 @@
 <resources>
+
     <style name="Theme.Example.Leanback" parent="Theme.Leanback">
         <item name="android:windowEnterTransition">@android:transition/fade</item>
         <item name="android:windowExitTransition">@android:transition/fade</item>

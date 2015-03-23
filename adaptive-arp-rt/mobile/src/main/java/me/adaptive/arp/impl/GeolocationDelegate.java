@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseSensorDelegate;
 import me.adaptive.arp.api.Geolocation;
 import me.adaptive.arp.api.IGeolocation;
 import me.adaptive.arp.api.IGeolocationListener;

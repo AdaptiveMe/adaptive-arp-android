@@ -6,8 +6,8 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <!--Network*|Video-->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <!--Video-->
@@ -15,8 +15,8 @@
 
 
     <application
-        android:hardwareAccelerated="true"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
@@ -32,15 +32,14 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".impl.NetworkStatusDelegate$NetworkStatusReceiver" android:enabled="true">
+        <receiver
+            android:name=".impl.NetworkStatusDelegate$NetworkStatusReceiver"
+            android:enabled="true">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
     </application>
-
-
-
 
 
 </manifest>

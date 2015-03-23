@@ -35,6 +35,7 @@
 package me.adaptive.arp.impl;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseSystemDelegate;
 import me.adaptive.arp.api.IRuntime;
 
 /**

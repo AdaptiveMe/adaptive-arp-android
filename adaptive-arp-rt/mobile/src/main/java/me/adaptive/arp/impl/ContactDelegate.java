@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BasePIMDelegate;
 import me.adaptive.arp.api.Contact;
 import me.adaptive.arp.api.ContactAddress;
 import me.adaptive.arp.api.ContactAddressType;
@@ -93,6 +94,27 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
     public ContactDelegate() {
         super();
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+    }
+
+    /**
+     * Cast from InputStream to byte[]
+     *
+     * @param is InputStream
+     * @return byte[]
+     */
+    public static byte[] getBytesFromInputStream(InputStream is) {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream();) {
+            byte[] buffer = new byte[0xFFFF];
+
+            for (int len; (len = is.read(buffer)) != -1; )
+                os.write(buffer, 0, len);
+
+            os.flush();
+
+            return os.toByteArray();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     /**
@@ -163,11 +185,9 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
         nativeToAdaptive(callback, null, term, null, filter);
     }
 
-
-
     @Override
     public void getContactPhoto(ContactUid contact, IContactPhotoResultCallback callback) {
-        if(contact == null){
+        if (contact == null) {
             callback.onError(IContactPhotoResultCallbackError.WrongParams);
             return;
         }
@@ -179,40 +199,15 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                     getContentResolver().openAssetFileDescriptor(displayPhotoUri, "r");
             InputStream image = fd.createInputStream();
             byte[] bytes = getBytesFromInputStream(image);
-            if(bytes == null) {
+            if (bytes == null) {
                 callback.onResult(bytes);
                 return;
             }
         } catch (IOException e) {
-            Logger.log(ILoggingLogLevel.Error,"Error getting the photo: "+Log.getStackTraceString(e));
+            Logger.log(ILoggingLogLevel.Error, "Error getting the photo: " + Log.getStackTraceString(e));
             callback.onError(IContactPhotoResultCallbackError.Unknown);
         }
         callback.onError(IContactPhotoResultCallbackError.Unknown);
-    }
-
-
-    /**
-     * Cast from InputStream to byte[]
-     * @param is InputStream
-     * @return byte[]
-     */
-    public static byte[] getBytesFromInputStream(InputStream is)
-    {
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream();)
-        {
-            byte[] buffer = new byte[0xFFFF];
-
-            for (int len; (len = is.read(buffer)) != -1;)
-                os.write(buffer, 0, len);
-
-            os.flush();
-
-            return os.toByteArray();
-        }
-        catch (IOException e)
-        {
-            return null;
-        }
     }
 
     /**
@@ -266,7 +261,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                 Uri uri = null;
                 Cursor cursorID = null;
                 int cursorLength = 0;
-                boolean addressRequired = false, mailRequired = false, phoneRequired = false, address = false,personalInfo = false, professionalInfo = false, socials = false, websites = false, email = false, phones = false, error = false;
+                boolean addressRequired = false, mailRequired = false, phoneRequired = false, address = false, personalInfo = false, professionalInfo = false, socials = false, websites = false, email = false, phones = false, error = false;
                 String sortOrder = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
                 try {
 
@@ -494,32 +489,32 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                     for (IContactFilter aFilter : filter) {
                         contactList = new ArrayList<>(contactsIDs.values());
                         Date test1 = new Date();
-                        Logger.log(ILoggingLogLevel.Debug,"Prefilter: "+contactsIDs.size());
+                        Logger.log(ILoggingLogLevel.Debug, "Prefilter: " + contactsIDs.size());
 
-                        for(Contact contact: contactList){
-                            if(aFilter.equals(IContactFilter.HasEmail) && contact.getContactEmails() == null){
+                        for (Contact contact : contactList) {
+                            if (aFilter.equals(IContactFilter.HasEmail) && contact.getContactEmails() == null) {
                                 Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HasEmail");
                                 contactsIDs.remove(contact.getContactId());
                             }
-                            if(aFilter.equals(IContactFilter.HasAddress) && contact.getContactAddresses() == null){
+                            if (aFilter.equals(IContactFilter.HasAddress) && contact.getContactAddresses() == null) {
                                 Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HasAddress");
                                 contactsIDs.remove(contact.getContactId());
                             }
-                            if(aFilter.equals(IContactFilter.HasPhone) && contact.getContactPhones() == null){
+                            if (aFilter.equals(IContactFilter.HasPhone) && contact.getContactPhones() == null) {
                                 Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HasPhone");
                                 contactsIDs.remove(contact.getContactId());
                             }
                         }
-                        Logger.log(ILoggingLogLevel.Debug,(new Date().getTime()-test1.getTime())+"ms - Postfilter: "+contactsIDs.size());
+                        Logger.log(ILoggingLogLevel.Debug, (new Date().getTime() - test1.getTime()) + "ms - Postfilter: " + contactsIDs.size());
                     }
                 }
 
-                if(fields != null){
+                if (fields != null) {
                     contactList = new ArrayList<>(contactsIDs.values());
                     Date test1 = new Date();
-                    Logger.log(ILoggingLogLevel.Debug,"Prefilter: "+contactsIDs.size());
+                    Logger.log(ILoggingLogLevel.Debug, "Prefilter: " + contactsIDs.size());
 
-                    for(Contact contact: contactList) {
+                    for (Contact contact : contactList) {
 
                         if (Arrays.binarySearch(fields, IContactFieldGroup.Addresses) < 0) {
                             //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Addresses");
@@ -549,10 +544,10 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                             //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Websites");
                             contact.setContactWebsites(null);
                         }
-                        contactsIDs.put(contact.getContactId(),contact);
+                        contactsIDs.put(contact.getContactId(), contact);
                     }
 
-                    Logger.log(ILoggingLogLevel.Debug,(new Date().getTime()-test1.getTime())+"ms - Postfields: "+contactsIDs.size());
+                    Logger.log(ILoggingLogLevel.Debug, (new Date().getTime() - test1.getTime()) + "ms - Postfields: " + contactsIDs.size());
                 }
 
 
