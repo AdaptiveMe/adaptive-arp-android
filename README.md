@@ -10,7 +10,7 @@
 
 ### About This Project
 
-Todo :smile:
+This is the Adaptive Runtime Platform for Android. :smile:
 
 ### About Adaptive Runtime Platform
 
