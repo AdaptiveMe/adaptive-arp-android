@@ -28,7 +28,7 @@
  * =====================================================================================================================
  */
 
-package me.adaptive.arp.impl;
+package me.adaptive.arp.impl.util;
 
 
 import org.xmlpull.v1.XmlPullParser;
@@ -42,6 +42,8 @@ import java.util.Map;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.impl.LoggingDelegate;
+import me.adaptive.arp.impl.util.PList;
 
 
 public class PListParser {

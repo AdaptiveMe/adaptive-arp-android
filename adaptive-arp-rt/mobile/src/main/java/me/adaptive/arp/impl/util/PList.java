@@ -39,7 +39,7 @@
  * /
  */
 
-package me.adaptive.arp.impl;
+package me.adaptive.arp.impl.util;
 
 import java.util.HashMap;
 import java.util.Map;
