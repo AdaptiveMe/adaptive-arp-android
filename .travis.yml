@@ -16,8 +16,6 @@ before_install:
   - cd adaptive-arp-rt
   - uname -a
   
-script: ./gradlew assemble build
-
 cache:
   directories:
   - $HOME/.gradle/wrapper/
