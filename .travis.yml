@@ -16,4 +16,4 @@ before_install:
   - cd adaptive-arp-rt
   - uname -a
   
-script: gradlew assemble build check
+script: ./gradlew assemble build check
