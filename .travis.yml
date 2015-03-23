@@ -17,3 +17,8 @@ before_install:
   - uname -a
   
 script: ./gradlew assemble build check
+
+cache:
+  directories:
+  - $HOME/.gradle/wrapper/
+  - $HOME/.gradle/caches/
