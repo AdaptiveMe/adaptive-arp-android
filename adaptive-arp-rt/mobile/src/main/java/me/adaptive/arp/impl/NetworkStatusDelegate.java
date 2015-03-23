@@ -60,9 +60,9 @@ import me.adaptive.arp.api.NetworkEvent;
 public class NetworkStatusDelegate extends BaseCommunicationDelegate implements INetworkStatus {
 
 
-    public static String APIService = "networkStatus";
+    private static String APIService = "networkStatus";
     static LoggingDelegate Logger;
-    public List<INetworkStatusListener> listeners = new ArrayList<INetworkStatusListener>();
+    private static List<INetworkStatusListener> listeners = new ArrayList<INetworkStatusListener>();
 
     /**
      * Default Constructor.
@@ -112,7 +112,7 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
     }
 
 
-    public class NetworkStatusReceiver extends BroadcastReceiver {
+    public static class NetworkStatusReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();

@@ -1,5 +1,12 @@
 apply plugin: 'com.android.application'
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
 
 android {
     compileSdkVersion 21
@@ -26,5 +33,5 @@ dependencies {
     compile 'com.android.support:leanback-v17:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.squareup.picasso:picasso:2.3.2'
-    compile 'me.adaptive:adaptive-arp-lib:2.2.1'
+    compile 'me.adaptive:adaptive-arp-lib:2.2.3'
 }

@@ -3,6 +3,11 @@ apply plugin: 'com.android.application'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -22,11 +27,13 @@ android {
     }
 }
 
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     //wearApp project(':wear')
     compile 'com.google.android.gms:play-services:6.5.87'
-    compile 'me.adaptive:adaptive-arp-lib:2.2.1'
+    compile 'me.adaptive:adaptive-arp-lib:2.2.3'
     compile project(':videoplayer')
     compile project(':externalbrowser')
 }

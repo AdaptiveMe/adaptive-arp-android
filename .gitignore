@@ -1,12 +1,9 @@
 *.java.new
+
 update.bat
 
 adaptive-arp-rt/.idea/
-adaptive-arp-rt/adaptive-arp-rt.iml
+
 adaptive-arp-rt/local.properties
-adaptive-arp-rt/mobile/mobile.iml
-adaptive-arp-rt/tv/tv.iml
-adaptive-arp-rt/wear/wear.iml
-adaptive-arp-rt/settings.gradle
-adaptive-arp-rt/settings.gradle
-adaptive-arp-rt/settings.gradle
+
+
