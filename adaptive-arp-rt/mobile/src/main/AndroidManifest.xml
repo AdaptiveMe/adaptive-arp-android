@@ -49,6 +49,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="me.adaptive.arp.MainActivity" />
         </activity>
+        <activity
+            android:name=".BrowserActivity"
+            android:label="@string/title_activity_browser"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="me.adaptive.arp.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
