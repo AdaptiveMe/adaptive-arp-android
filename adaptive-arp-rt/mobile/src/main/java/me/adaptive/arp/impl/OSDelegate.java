@@ -36,6 +36,7 @@ package me.adaptive.arp.impl;
 
 import android.os.Build;
 
+import me.adaptive.arp.api.BaseSystemDelegate;
 import me.adaptive.arp.api.IOS;
 import me.adaptive.arp.api.IOSType;
 import me.adaptive.arp.api.OSInfo;

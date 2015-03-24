@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BasePIMDelegate;
 import me.adaptive.arp.api.Email;
 import me.adaptive.arp.api.EmailAddress;
 import me.adaptive.arp.api.EmailAttachmentData;
@@ -78,17 +79,17 @@ public class MailDelegate extends BasePIMDelegate implements IMail {
     public void sendEmail(Email data, IMessagingCallback callback) {
 
         List<String> intermediate = new ArrayList<>();
-        for(EmailAddress to:data.getToRecipients()){
+        for (EmailAddress to : data.getToRecipients()) {
             intermediate.add(to.getAddress());
         }
         String[] TO = (String[]) intermediate.toArray();
         intermediate.clear();
-        for(EmailAddress cc:data.getCcRecipients()){
+        for (EmailAddress cc : data.getCcRecipients()) {
             intermediate.add(cc.getAddress());
         }
         String[] CC = (String[]) intermediate.toArray();
         intermediate.clear();
-        for(EmailAddress bcc:data.getBccRecipients()){
+        for (EmailAddress bcc : data.getBccRecipients()) {
             intermediate.add(bcc.getAddress());
         }
         String[] BCC = (String[]) intermediate.toArray();
@@ -102,28 +103,25 @@ public class MailDelegate extends BasePIMDelegate implements IMail {
         emailIntent.setType("vnd.android.cursor.dir/email");
 
 
-
         emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
         emailIntent.putExtra(Intent.EXTRA_CC, CC);
         emailIntent.putExtra(Intent.EXTRA_BCC, BCC);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, data.getSubject());
         emailIntent.putExtra(Intent.EXTRA_TEXT, data.getMessageBody());
         emailIntent.putExtra(Intent.EXTRA_MIME_TYPES, data.getMessageBodyMimeType());
-        for(EmailAttachmentData attachmentData:data.getEmailAttachmentData()){
-            emailIntent .putExtra(Intent.EXTRA_STREAM, attachmentData.getReferenceUrl());
+        for (EmailAttachmentData attachmentData : data.getEmailAttachmentData()) {
+            emailIntent.putExtra(Intent.EXTRA_STREAM, attachmentData.getReferenceUrl());
         }
 
 
-
-
         try {
-            ((AppContextDelegate)AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(Intent.createChooser(emailIntent, "Send mail..."));
             callback.onResult(true);
-            Logger.log(ILoggingLogLevel.Debug,"Finished sending email...", "");
+            Logger.log(ILoggingLogLevel.Debug, "Finished sending email...", "");
         } catch (android.content.ActivityNotFoundException ex) {
-            Logger.log(ILoggingLogLevel.Error,"Unable to find activity");
+            Logger.log(ILoggingLogLevel.Error, "Unable to find activity");
             callback.onError(IMessagingCallbackError.EmailAccountNotFound);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             callback.onWarning(false, IMessagingCallbackWarning.Unknown);
         }
     }

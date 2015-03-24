@@ -53,7 +53,8 @@ public class ContactTest extends InstrumentationTestCase {
     private MainActivity activity;
 
     private LoggingBridge Logger = AppRegistryBridge.getInstance().getLoggingBridge();
-    private ContactBridge contactBridge  = AppRegistryBridge.getInstance().getContactBridge();
+    private ContactBridge contactBridge = AppRegistryBridge.getInstance().getContactBridge();
+
     public ContactTest() {
         setName("MainActivity");
 
@@ -72,43 +73,11 @@ public class ContactTest extends InstrumentationTestCase {
         ContactTestCallback cb = new ContactTestCallback(0);
         contactBridge.getContacts(cb);
         Logger.log(ILoggingLogLevel.Debug, "TESTING", " Hello contacts");
-       System.out.println("Hello contacts");
+        System.out.println("Hello contacts");
         //assertTrue("fail ffs",false);
     }
 
-    private class ContactTestCallback extends BaseCallbackImpl implements IContactResultCallback {
-
-        private ContactTestCallback(long id) {
-            super(id);
-        }
-
-        @Override
-        public void onError(IContactResultCallbackError error) {
-
-            Logger.log(ILoggingLogLevel.Error, "TESTING", error.toString());
-            assertTrue("There is an error getting contacts: " + error.toString(), false);
-        }
-
-        @Override
-        public void onResult(Contact[] contacts) {
-            //assertEquals(contacts.length,1031);
-            assertTrue("fail ffs",false);
-            //assertNotNull(contacts);
-            Logger.log(ILoggingLogLevel.Debug, "TESTING", String.valueOf(contacts.length)+" contacts");
-            assertTrue("There are no contacts", contacts.length < 0);
-        }
-
-        @Override
-        public void onWarning(Contact[] contacts, IContactResultCallbackWarning warning) {
-            Logger.log(ILoggingLogLevel.Warn, "TESTING", warning.toString());
-            //assertNotNull(contacts);
-            Logger.log(ILoggingLogLevel.Debug, "TESTING", String.valueOf(contacts.length)+" contacts");
-            //assertTrue("There are no contacts", contacts.length < 0);
-
-        }
-    }
-
-    public void testSearchContacts() throws Exception,Throwable {
+    public void testSearchContacts() throws Exception, Throwable {
         runTestOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -125,7 +94,7 @@ public class ContactTest extends InstrumentationTestCase {
 
                     @Override
                     public void onResult(Contact[] contacts) {
-                        assertEquals(2,contacts.length);
+                        assertEquals(2, contacts.length);
                     }
 
                     @Override
@@ -143,16 +112,16 @@ public class ContactTest extends InstrumentationTestCase {
         });
 
 
-
     }
 
     /**
      * This demonstrates how to test AsyncTasks in android JUnit. Below I used
      * an in line implementation of a asyncTask, but in real life you would want
      * to replace that with some task in your application.
+     *
      * @throws Throwable
      */
-    public void testSomeAsynTask () throws Throwable {
+    public void testSomeAsynTask() throws Throwable {
         // create  a signal to let us know when our task is done.
         final CountDownLatch signal = new CountDownLatch(1);
 
@@ -198,5 +167,37 @@ public class ContactTest extends InstrumentationTestCase {
 
         // The task is done, and now you can assert some things!
         assertTrue("Happiness", true);
+    }
+
+    private class ContactTestCallback extends BaseCallbackImpl implements IContactResultCallback {
+
+        private ContactTestCallback(long id) {
+            super(id);
+        }
+
+        @Override
+        public void onError(IContactResultCallbackError error) {
+
+            Logger.log(ILoggingLogLevel.Error, "TESTING", error.toString());
+            assertTrue("There is an error getting contacts: " + error.toString(), false);
+        }
+
+        @Override
+        public void onResult(Contact[] contacts) {
+            //assertEquals(contacts.length,1031);
+            assertTrue("fail ffs", false);
+            //assertNotNull(contacts);
+            Logger.log(ILoggingLogLevel.Debug, "TESTING", String.valueOf(contacts.length) + " contacts");
+            assertTrue("There are no contacts", contacts.length < 0);
+        }
+
+        @Override
+        public void onWarning(Contact[] contacts, IContactResultCallbackWarning warning) {
+            Logger.log(ILoggingLogLevel.Warn, "TESTING", warning.toString());
+            //assertNotNull(contacts);
+            Logger.log(ILoggingLogLevel.Debug, "TESTING", String.valueOf(contacts.length) + " contacts");
+            //assertTrue("There are no contacts", contacts.length < 0);
+
+        }
     }
 }

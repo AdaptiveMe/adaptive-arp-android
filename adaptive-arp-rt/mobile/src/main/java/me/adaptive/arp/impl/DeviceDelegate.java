@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseSystemDelegate;
 import me.adaptive.arp.api.DeviceInfo;
 import me.adaptive.arp.api.IButtonListener;
 import me.adaptive.arp.api.ICapabilitiesOrientation;
@@ -64,20 +65,20 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
     public List<IDeviceOrientationListener> listenersOrientation = new ArrayList<IDeviceOrientationListener>();
 
 
-    public List<IButtonListener> getListeners() {
-        return listeners;
-    }
-
-    public List<IDeviceOrientationListener> getListenersOrientation() {
-        return listenersOrientation;
-    }
-
     /**
      * Default Constructor.
      */
     public DeviceDelegate() {
         super();
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+    }
+
+    public List<IButtonListener> getListeners() {
+        return listeners;
+    }
+
+    public List<IDeviceOrientationListener> getListenersOrientation() {
+        return listenersOrientation;
     }
 
     /**
@@ -142,7 +143,7 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
      */
     @Override
     public ICapabilitiesOrientation getOrientationCurrent() {
-        Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getDelegate().getContext());
+        Context context = ((Context) AppRegistryBridge.getInstance().getPlatformContext().getDelegate().getContext());
         /*Configuration config = context.getResources().getConfiguration();
         switch(config.orientation){
             case Configuration.ORIENTATION_LANDSCAPE:

@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+    elementFormDefault="qualified">
     <xs:element name="io-config">
         <xs:complexType>
             <xs:sequence>
@@ -9,40 +10,53 @@
                             <xs:element name="service" maxOccurs="unbounded" minOccurs="0">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="end-point" maxOccurs="unbounded" minOccurs="1">
+                                        <xs:element name="end-point" maxOccurs="unbounded"
+                                            minOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element name="path" maxOccurs="unbounded" minOccurs="1">
+                                                    <xs:element name="path" maxOccurs="unbounded"
+                                                        minOccurs="1">
                                                         <xs:complexType>
                                                             <xs:sequence>
-                                                                <xs:element name="method" maxOccurs="unbounded" minOccurs="1">
+                                                                <xs:element name="method"
+                                                                    maxOccurs="unbounded"
+                                                                    minOccurs="1">
                                                                     <xs:complexType>
                                                                         <xs:simpleContent>
-                                                                            <xs:extension base="xs:string">
-                                                                                <xs:attribute type="method" name="method" use="required"/>
+                                                                            <xs:extension
+                                                                                base="xs:string">
+                                                                                <xs:attribute
+                                                                                    name="method"
+                                                                                    type="method"
+                                                                                    use="required" />
                                                                             </xs:extension>
                                                                         </xs:simpleContent>
                                                                     </xs:complexType>
                                                                 </xs:element>
                                                             </xs:sequence>
-                                                            <xs:attribute type="path" name="path" use="required"/>
-                                                            <xs:attribute type="servicetype" name="type" use="required"/>
+                                                            <xs:attribute name="path" type="path"
+                                                                use="required" />
+                                                            <xs:attribute name="type"
+                                                                type="servicetype" use="required" />
                                                         </xs:complexType>
                                                     </xs:element>
                                                 </xs:sequence>
-                                                <xs:attribute type="url" name="host" use="required"/>
-                                                <xs:attribute type="validation" name="validation" use="required"/>
+                                                <xs:attribute name="host" type="url"
+                                                    use="required" />
+                                                <xs:attribute name="validation" type="validation"
+                                                    use="required" />
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
-                                    <xs:attribute type="NonEmptyString" name="name" use="required" />
+                                    <xs:attribute name="name" type="NonEmptyString"
+                                        use="required" />
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
                     </xs:complexType>
                     <xs:unique name="oneCustomerOrdersforEachCustomerID">
-                        <xs:selector xpath="service"/>
-                        <xs:field xpath="@name"/>
+                        <xs:selector xpath="service" />
+                        <xs:field xpath="@name" />
                     </xs:unique>
                 </xs:element>
                 <xs:element name="resources">
@@ -52,7 +66,8 @@
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
-                                            <xs:attribute type="xs:string" name="url" use="required"/>
+                                            <xs:attribute name="url" type="xs:string"
+                                                use="required" />
                                         </xs:extension>
                                     </xs:simpleContent>
                                 </xs:complexType>
@@ -63,7 +78,7 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
+
     <xs:simpleType name="servicetype">
         <xs:restriction base="xs:string">
             <xs:enumeration value="OctetBinary" />
@@ -72,14 +87,15 @@
             <xs:enumeration value="SoapXml" />
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="url">
         <xs:restriction base="xs:string">
             <xs:minLength value="1" />
-            <xs:pattern value="(http|https)://((\w)*|([0-9]*)|([-|_])*)+([\.|/]((\w)*|([0-9]*)|([-|_])*))+" />
+            <xs:pattern
+                value="(http|https)://((\w)*|([0-9]*)|([-|_])*)+([\.|/]((\w)*|([0-9]*)|([-|_])*))+" />
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="method">
         <xs:restriction base="xs:string">
             <xs:enumeration value="Get" />
@@ -87,7 +103,7 @@
             <xs:enumeration value="Head" />
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="validation">
         <xs:restriction base="xs:string">
             <xs:enumeration value="Extreme" />
@@ -96,14 +112,14 @@
             <xs:enumeration value="None" />
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="NonEmptyString">
         <xs:restriction base="xs:string">
             <xs:minLength value="1" />
             <xs:pattern value=".*[^\s].*" />
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="path">
         <xs:restriction base="xs:string">
             <xs:pattern value="/(.*)" />

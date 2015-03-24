@@ -49,10 +49,13 @@ import java.util.List;
 import java.util.Map;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseApplicationDelegate;
 import me.adaptive.arp.api.IGlobalization;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.KeyPair;
 import me.adaptive.arp.api.Locale;
+import me.adaptive.arp.impl.util.PList;
+import me.adaptive.arp.impl.util.PListParser;
 
 /**
  * Interface for Managing the Globalization results

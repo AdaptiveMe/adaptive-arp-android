@@ -44,6 +44,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseCommunicationDelegate;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.INetworkReachability;
 import me.adaptive.arp.api.INetworkReachabilityCallback;

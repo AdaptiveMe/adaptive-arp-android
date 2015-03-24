@@ -41,8 +41,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseDataDelegate;
 import me.adaptive.arp.api.Database;
 import me.adaptive.arp.api.DatabaseColumn;
 import me.adaptive.arp.api.DatabaseRow;
@@ -227,10 +229,10 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
 
                 Cursor c;
 
-                if(statement.toLowerCase().startsWith("select ")){
+                if (statement.toLowerCase(Locale.getDefault()).startsWith("select ")) {
                     c = sqlDB.rawQuery(statement, replacements);
                     result = cursorToTable(c);
-                }else {
+                } else {
                     if ((replacements != null) && (replacements.length > 0)) {
                         formatedStatement = getFormattedSQL(statement, replacements);
                     }

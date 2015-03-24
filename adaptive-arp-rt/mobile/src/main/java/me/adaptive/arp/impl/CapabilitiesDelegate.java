@@ -42,6 +42,7 @@ import android.content.res.Configuration;
 import android.provider.MediaStore;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseSystemDelegate;
 import me.adaptive.arp.api.ICapabilities;
 import me.adaptive.arp.api.ICapabilitiesButton;
 import me.adaptive.arp.api.ICapabilitiesCommunication;
@@ -59,8 +60,8 @@ import me.adaptive.arp.api.ICapabilitiesSensor;
 public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabilities {
 
 
-    public String APIService = "capabilities";
     private final boolean tvDevice;
+    public String APIService = "capabilities";
 
     /**
      * Default Constructor.
@@ -98,11 +99,11 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      */
     @Override
     public ICapabilitiesOrientation[] getOrientationsSupported() {
-        if(tvDevice) {
+        if (tvDevice) {
             return new ICapabilitiesOrientation[]{ICapabilitiesOrientation.PortraitUp};
-        }else{
-            return new ICapabilitiesOrientation[]{ICapabilitiesOrientation.PortraitUp,ICapabilitiesOrientation.LandscapeLeft,
-                ICapabilitiesOrientation.LandscapeRight,ICapabilitiesOrientation.PortraitDown};
+        } else {
+            return new ICapabilitiesOrientation[]{ICapabilitiesOrientation.PortraitUp, ICapabilitiesOrientation.LandscapeLeft,
+                    ICapabilitiesOrientation.LandscapeRight, ICapabilitiesOrientation.PortraitDown};
         }
     }
 

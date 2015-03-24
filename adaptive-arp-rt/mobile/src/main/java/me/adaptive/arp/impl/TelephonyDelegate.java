@@ -38,6 +38,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.BaseCommunicationDelegate;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.ITelephony;
 import me.adaptive.arp.api.ITelephonyStatus;

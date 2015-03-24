@@ -75,7 +75,6 @@ public class MainActivity extends Activity {
     LifecycleBridge lifecycle = AppRegistryBridge.getInstance().getLifecycleBridge();
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,8 +108,9 @@ public class MainActivity extends Activity {
         AppRegistryBridge.getInstance().getVideoBridge().setDelegate(new VideoDelegate());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (0 != (getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE))
-            { WebView.setWebContentsDebuggingEnabled(true); }
+            if (0 != (getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE)) {
+                WebView.setWebContentsDebuggingEnabled(true);
+            }
         }
 
         WebView webView = (WebView) findViewById(R.id.webview);
@@ -124,7 +124,7 @@ public class MainActivity extends Activity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 Toast.makeText(getApplicationContext(), "onProgressChanged", Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onProgressChanged");
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onProgressChanged");
                 super.onProgressChanged(view, newProgress);
             }
 
@@ -142,8 +142,8 @@ public class MainActivity extends Activity {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
 
-                Toast.makeText(getApplicationContext(), "onJsAlert url["+url+"] - Message["+message+"]", Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onJsAlert");
+                Toast.makeText(getApplicationContext(), "onJsAlert url[" + url + "] - Message[" + message + "]", Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsAlert");
                 return super.onJsAlert(view, url, message, result);
             }
 
@@ -163,8 +163,8 @@ public class MainActivity extends Activity {
              */
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-                Toast.makeText(getApplicationContext(), "onJsConfirm url["+url+"] - Message["+message+"]", Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onJsConfirm");
+                Toast.makeText(getApplicationContext(), "onJsConfirm url[" + url + "] - Message[" + message + "]", Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsConfirm");
                 return super.onJsConfirm(view, url, message, result);
             }
 
@@ -185,8 +185,8 @@ public class MainActivity extends Activity {
              */
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                Toast.makeText(getApplicationContext(), "onJsPrompt url["+url+"] - Message["+message+"]", Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onJsPrompt");
+                Toast.makeText(getApplicationContext(), "onJsPrompt url[" + url + "] - Message[" + message + "]", Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsPrompt");
                 return super.onJsPrompt(view, url, message, defaultValue, result);
             }
 
@@ -203,8 +203,8 @@ public class MainActivity extends Activity {
              */
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                Toast.makeText(getApplicationContext(), "onGeolocationPermissionsShowPrompt origin["+origin+"]", Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onGeolocationPermissionsShowPrompt");
+                Toast.makeText(getApplicationContext(), "onGeolocationPermissionsShowPrompt origin[" + origin + "]", Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onGeolocationPermissionsShowPrompt");
                 super.onGeolocationPermissionsShowPrompt(origin, callback);
             }
 
@@ -217,8 +217,8 @@ public class MainActivity extends Activity {
              */
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Toast.makeText(getApplicationContext(), "consoleMessage ["+consoleMessage.message()+"]", Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onConsoleMessage");
+                Toast.makeText(getApplicationContext(), "consoleMessage [" + consoleMessage.message() + "]", Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onConsoleMessage");
                 return super.onConsoleMessage(consoleMessage);
             }
         });
@@ -226,7 +226,7 @@ public class MainActivity extends Activity {
         webView.setWebViewClient(new WebViewClient() {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 Toast.makeText(getApplicationContext(), description, Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onJsConfirm");
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsConfirm");
             }
 
             /**
@@ -246,7 +246,7 @@ public class MainActivity extends Activity {
              */
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","shouldInterceptRequest");
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "shouldInterceptRequest");
                 return super.shouldInterceptRequest(view, request);
             }
 
@@ -261,8 +261,8 @@ public class MainActivity extends Activity {
              */
             @Override
             public void onPageFinished(WebView view, String url) {
-                Toast.makeText(getApplicationContext(), "Loaded: "+url, Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onPageFinished");
+                Toast.makeText(getApplicationContext(), "Loaded: " + url, Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onPageFinished");
                 super.onPageFinished(view, url);
 
             }
@@ -280,8 +280,8 @@ public class MainActivity extends Activity {
              */
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                Toast.makeText(getApplicationContext(), "Loading: "+url, Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onPageStarted");
+                Toast.makeText(getApplicationContext(), "Loading: " + url, Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onPageStarted");
                 super.onPageStarted(view, url, favicon);
             }
 
@@ -299,16 +299,16 @@ public class MainActivity extends Activity {
              */
             @Override
             public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
-                Toast.makeText(getApplicationContext(), "Pressed: "+event.getKeyCode(), Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","shouldOverrideKeyEvent");
+                Toast.makeText(getApplicationContext(), "Pressed: " + event.getKeyCode(), Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "shouldOverrideKeyEvent");
                 return super.shouldOverrideKeyEvent(view, event);
 
             }
 
             @Override
             public void onLoadResource(WebView view, String url) {
-                Toast.makeText(getApplicationContext(), "Load: "+url, Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","onJsConfirm");
+                Toast.makeText(getApplicationContext(), "Load: " + url, Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsConfirm");
                 super.onLoadResource(view, url);
             }
 
@@ -318,8 +318,8 @@ public class MainActivity extends Activity {
                     return false;
                 }
                 view.loadUrl(url);*/
-                Toast.makeText(getApplicationContext(), "shouldOverrideUrlLoading: "+url, Toast.LENGTH_SHORT).show();
-                Logger.log(ILoggingLogLevel.Debug,"MainActivity","shouldOverrideUrlLoading");
+                Toast.makeText(getApplicationContext(), "shouldOverrideUrlLoading: " + url, Toast.LENGTH_SHORT).show();
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity", "shouldOverrideUrlLoading");
                 return true;
             }
 
@@ -345,10 +345,10 @@ public class MainActivity extends Activity {
         Logger.log(ILoggingLogLevel.Debug, "URL: " + url + " - file:///android_asset");
         webView.loadUrl(url);
 
-        Logger.log(ILoggingLogLevel.Debug, "MainActivity", "TEST "+url);
+        Logger.log(ILoggingLogLevel.Debug, "MainActivity", "TEST " + url);
 
 
-        AppRegistryBridge.getInstance().getBrowserBridge().openInternalBrowser("http://www.google.com","Google","Adaptive.me!");
+        AppRegistryBridge.getInstance().getBrowserBridge().openInternalBrowser("http://www.google.com", "Google", "Adaptive.me!");
 
         orientationEventListener = new OrientationEventListener(getApplicationContext(), SensorManager.SENSOR_DELAY_UI) {
             public void onOrientationChanged(int orientation) {
@@ -356,7 +356,7 @@ public class MainActivity extends Activity {
                 if (AppRegistryBridge.getInstance().getDisplayBridge().getDelegate() != null) {
                     for (IDisplayOrientationListener listener : ((DisplayDelegate) AppRegistryBridge
                             .getInstance().getDisplayBridge().getDelegate()).listeners) {
-                        listener.onResult(new RotationEvent(ICapabilitiesOrientation.Unknown, getOrientation(orientation), RotationEventState.Unknown,new Date().getTime()));
+                        listener.onResult(new RotationEvent(ICapabilitiesOrientation.Unknown, getOrientation(orientation), RotationEventState.Unknown, new Date().getTime()));
                     }
                 }
 
@@ -374,14 +374,14 @@ public class MainActivity extends Activity {
                     default:
                         state = ICapabilitiesOrientation.Unknown;
                 }
-                if(AppRegistryBridge.getInstance().getDeviceBridge().getDelegate() != null){
-                    for(IDeviceOrientationListener listener : ((DeviceDelegate)AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).listenersOrientation){
-                        listener.onResult(new RotationEvent(null, state,RotationEventState.DidFinishRotation,new Date().getTime()));
+                if (AppRegistryBridge.getInstance().getDeviceBridge().getDelegate() != null) {
+                    for (IDeviceOrientationListener listener : ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).listenersOrientation) {
+                        listener.onResult(new RotationEvent(null, state, RotationEventState.DidFinishRotation, new Date().getTime()));
                     }
                 }
             }
         };
-        if(orientationEventListener.canDetectOrientation()) orientationEventListener.enable();
+        if (orientationEventListener.canDetectOrientation()) orientationEventListener.enable();
 
         LifecicleUpdate(LifecycleState.Started);
         LifecicleUpdate(LifecycleState.Running);
@@ -395,9 +395,9 @@ public class MainActivity extends Activity {
     }
 
     private void LifecicleUpdate(LifecycleState state) {
-        if(lifecycle.getDelegate() != null){
-            for(ILifecycleListener listener : ((LifecycleDelegate)AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).listeners){
-                listener.onResult(new Lifecycle(state));
+        if (lifecycle.getDelegate() != null) {
+            for (ILifecycleListener listener : ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).listeners) {
+                listener.onResult(new Lifecycle(state, System.currentTimeMillis()));
             }
         }
     }
@@ -412,16 +412,16 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public void onResume(){
-        ((LifecycleDelegate)lifecycle.getDelegate()).setBackground(false);
+    public void onResume() {
+        ((LifecycleDelegate) lifecycle.getDelegate()).setBackground(false);
         super.onResume();
-        if(orientationEventListener.canDetectOrientation()) orientationEventListener.enable();
+        if (orientationEventListener.canDetectOrientation()) orientationEventListener.enable();
         LifecicleUpdate(LifecycleState.Resuming);
     }
 
     @Override
     public void onPause() {
-        ((LifecycleDelegate)lifecycle.getDelegate()).setBackground(true);
+        ((LifecycleDelegate) lifecycle.getDelegate()).setBackground(true);
         super.onPause();  // Always call the superclass method first
 
         LifecicleUpdate(LifecycleState.Pausing);
@@ -465,7 +465,7 @@ public class MainActivity extends Activity {
     }
 
     private ICapabilitiesOrientation getOrientation(int orientation) {
-        switch(orientation){
+        switch (orientation) {
             case ORIENTATION_LANDSCAPE:
                 return ICapabilitiesOrientation.PortraitUp;
             case ORIENTATION_PORTRAIT:
@@ -473,7 +473,6 @@ public class MainActivity extends Activity {
         }
         return ICapabilitiesOrientation.Unknown;
     }
-
 
 
     @Override
@@ -486,7 +485,6 @@ public class MainActivity extends Activity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
 
 
     }

@@ -40,41 +40,6 @@ public class CardPresenter extends Presenter {
     private static int CARD_WIDTH = 313;
     private static int CARD_HEIGHT = 176;
 
-    static class ViewHolder extends Presenter.ViewHolder {
-        private Movie mMovie;
-        private ImageCardView mCardView;
-        private Drawable mDefaultCardImage;
-        private PicassoImageCardViewTarget mImageCardViewTarget;
-
-        public ViewHolder(View view) {
-            super(view);
-            mCardView = (ImageCardView) view;
-            mImageCardViewTarget = new PicassoImageCardViewTarget(mCardView);
-            mDefaultCardImage = mContext.getResources().getDrawable(R.drawable.movie);
-        }
-
-        public void setMovie(Movie m) {
-            mMovie = m;
-        }
-
-        public Movie getMovie() {
-            return mMovie;
-        }
-
-        public ImageCardView getCardView() {
-            return mCardView;
-        }
-
-        protected void updateCardViewImage(URI uri) {
-            Picasso.with(mContext)
-                    .load(uri.toString())
-                    .resize(Utils.convertDpToPixel(mContext, CARD_WIDTH),
-                            Utils.convertDpToPixel(mContext, CARD_HEIGHT))
-                    .error(mDefaultCardImage)
-                    .into(mImageCardViewTarget);
-        }
-    }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         Log.d(TAG, "onCreateViewHolder");
@@ -109,6 +74,41 @@ public class CardPresenter extends Presenter {
     @Override
     public void onViewAttachedToWindow(Presenter.ViewHolder viewHolder) {
         // TO DO
+    }
+
+    static class ViewHolder extends Presenter.ViewHolder {
+        private Movie mMovie;
+        private ImageCardView mCardView;
+        private Drawable mDefaultCardImage;
+        private PicassoImageCardViewTarget mImageCardViewTarget;
+
+        public ViewHolder(View view) {
+            super(view);
+            mCardView = (ImageCardView) view;
+            mImageCardViewTarget = new PicassoImageCardViewTarget(mCardView);
+            mDefaultCardImage = mContext.getResources().getDrawable(R.drawable.movie);
+        }
+
+        public Movie getMovie() {
+            return mMovie;
+        }
+
+        public void setMovie(Movie m) {
+            mMovie = m;
+        }
+
+        public ImageCardView getCardView() {
+            return mCardView;
+        }
+
+        protected void updateCardViewImage(URI uri) {
+            Picasso.with(mContext)
+                    .load(uri.toString())
+                    .resize(Utils.convertDpToPixel(mContext, CARD_WIDTH),
+                            Utils.convertDpToPixel(mContext, CARD_HEIGHT))
+                    .error(mDefaultCardImage)
+                    .into(mImageCardViewTarget);
+        }
     }
 
     public static class PicassoImageCardViewTarget implements Target {

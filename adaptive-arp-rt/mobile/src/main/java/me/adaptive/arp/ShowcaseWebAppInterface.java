@@ -47,36 +47,22 @@ import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.LoggingBridge;
 
 public class ShowcaseWebAppInterface {
-        Context mContext;
+    Context mContext;
 
-        LoggingBridge Logger = AppRegistryBridge.getInstance().getLoggingBridge();
-
-        /** Instantiate the interface and set the context */
-        ShowcaseWebAppInterface(Context c) {
-            mContext = c;
+    LoggingBridge Logger = AppRegistryBridge.getInstance().getLoggingBridge();
+    IContactResultCallback cb = new IContactResultCallback() {
+        @Override
+        public void onError(IContactResultCallbackError error) {
+            Logger.log(ILoggingLogLevel.Error, error.toString());
         }
 
-        /** Show a toast from the web page */
-        @JavascriptInterface
-        public void showToast(String toast) {
-            Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
-        }
-
-        ContactBridge contactBridge = AppRegistryBridge.getInstance().getContactBridge();
-
-        IContactResultCallback cb = new IContactResultCallback() {
-            @Override
-            public void onError(IContactResultCallbackError error) {
-                Logger.log(ILoggingLogLevel.Error, error.toString());
-            }
-
-            @Override
-            public void onResult(Contact[] contacts) {
-                if(Logger != null) {
-                    Log.d("Native", contacts.length + " contacts");
-                    Logger.log(ILoggingLogLevel.Debug, "MainActivity Size: " + contacts.length);
-                    for (Contact contact : contacts) {
-                        Logger.log(ILoggingLogLevel.Debug, "MainActivity ID RETURNED: " + contact.getContactId());
+        @Override
+        public void onResult(Contact[] contacts) {
+            if (Logger != null) {
+                Log.d("Native", contacts.length + " contacts");
+                Logger.log(ILoggingLogLevel.Debug, "MainActivity Size: " + contacts.length);
+                for (Contact contact : contacts) {
+                    Logger.log(ILoggingLogLevel.Debug, "MainActivity ID RETURNED: " + contact.getContactId());
                                 /*ContactPhone[] phone = contact.getContactPhones();
                                 if(phone != null && phone.length> 0){
                                     for (ContactPhone phon : contact.getContactPhones()) {
@@ -90,61 +76,82 @@ public class ShowcaseWebAppInterface {
                                     }
                                 }*/
 
-                    }
-                }else{
-                    Log.e("Native","no log "+ contacts.length +" contacts");
                 }
-
+            } else {
+                Log.e("Native", "no log " + contacts.length + " contacts");
             }
 
-            @Override
-            public void onWarning(Contact[] contacts, IContactResultCallbackWarning warning) {
-                AppRegistryBridge.getInstance().getLoggingBridge().log(ILoggingLogLevel.Warn, warning.toString());
-            }
-
-            @Override
-            public IAdaptiveRPGroup getAPIGroup() {
-                return null;
-            }
-
-            @Override
-            public String getAPIVersion() {
-                return null;
-            }
-        };
-
-        @JavascriptInterface
-        public void getContacts() {
-            contactBridge.getContacts(cb);
-        }
-        @JavascriptInterface
-        public void searchContacts(String term) {
-            if(term.isEmpty()) term = "Kmail";
-            contactBridge.searchContacts(term,cb);
-        }
-        @JavascriptInterface
-        public void getContact(String id) {
-            if(id.isEmpty()) id = "4331";
-            AppRegistryBridge.getInstance().getContactBridge().getContact(new ContactUid(id), cb);
-        }
-        @JavascriptInterface
-        public void getContactsWithFilter(IContactFilter[] filters) {
-            if(filters.length == 0) filters = new IContactFilter[]{IContactFilter.HasEmail};
-            AppRegistryBridge.getInstance().getContactBridge().getContactsWithFilter(cb, null, filters);
-        }
-        @JavascriptInterface
-        public void getContactsForFields(IContactFieldGroup[] fieldGroups) {
-            if(fieldGroups.length == 0) fieldGroups = new IContactFieldGroup[]{IContactFieldGroup.PersonalInfo,IContactFieldGroup.Emails};
-            AppRegistryBridge.getInstance().getContactBridge().getContactsForFields(cb, fieldGroups);
         }
 
-        @JavascriptInterface
-        public void playVideo(){
-            AppRegistryBridge.getInstance().getVideoBridge().playStream("http://www.w3schools.com/tags/movie.mp4");
+        @Override
+        public void onWarning(Contact[] contacts, IContactResultCallbackWarning warning) {
+            AppRegistryBridge.getInstance().getLoggingBridge().log(ILoggingLogLevel.Warn, warning.toString());
         }
 
-        public void externalBrowser(String url, String title, String back) {
-            AppRegistryBridge.getInstance().getBrowserBridge().openInternalBrowser("http://www.google.com","Google","Adaptive.me!");
-
+        @Override
+        public IAdaptiveRPGroup getAPIGroup() {
+            return null;
         }
+
+        @Override
+        public String getAPIVersion() {
+            return null;
+        }
+    };
+    ContactBridge contactBridge = AppRegistryBridge.getInstance().getContactBridge();
+
+    /**
+     * Instantiate the interface and set the context
+     */
+    ShowcaseWebAppInterface(Context c) {
+        mContext = c;
+    }
+
+    /**
+     * Show a toast from the web page
+     */
+    @JavascriptInterface
+    public void showToast(String toast) {
+        Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
+    }
+
+    @JavascriptInterface
+    public void getContacts() {
+        contactBridge.getContacts(cb);
+    }
+
+    @JavascriptInterface
+    public void searchContacts(String term) {
+        if (term.isEmpty()) term = "Kmail";
+        contactBridge.searchContacts(term, cb);
+    }
+
+    @JavascriptInterface
+    public void getContact(String id) {
+        if (id.isEmpty()) id = "4331";
+        AppRegistryBridge.getInstance().getContactBridge().getContact(new ContactUid(id), cb);
+    }
+
+    @JavascriptInterface
+    public void getContactsWithFilter(IContactFilter[] filters) {
+        if (filters.length == 0) filters = new IContactFilter[]{IContactFilter.HasEmail};
+        AppRegistryBridge.getInstance().getContactBridge().getContactsWithFilter(cb, null, filters);
+    }
+
+    @JavascriptInterface
+    public void getContactsForFields(IContactFieldGroup[] fieldGroups) {
+        if (fieldGroups.length == 0)
+            fieldGroups = new IContactFieldGroup[]{IContactFieldGroup.PersonalInfo, IContactFieldGroup.Emails};
+        AppRegistryBridge.getInstance().getContactBridge().getContactsForFields(cb, fieldGroups);
+    }
+
+    @JavascriptInterface
+    public void playVideo() {
+        AppRegistryBridge.getInstance().getVideoBridge().playStream("http://www.w3schools.com/tags/movie.mp4");
+    }
+
+    public void externalBrowser(String url, String title, String back) {
+        AppRegistryBridge.getInstance().getBrowserBridge().openInternalBrowser("http://www.google.com", "Google", "Adaptive.me!");
+
+    }
 }
