@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- TODO: remove this -->
+    <issue id="SetJavaScriptEnabled" severity="ignore" />
+    <issue id="UnusedResources" severity="ignore"/>
+    <issue id="IconMissingDensityFolder" severity="ignore" />
+</lint>
