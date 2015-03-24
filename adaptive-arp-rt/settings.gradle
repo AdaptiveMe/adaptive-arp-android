@@ -1,1 +1,1 @@
-include ':mobile', ':videoplayer', ':externalbrowser', ':tv', ':wear'
+include ':mobile'//, ':tv', ':wear'

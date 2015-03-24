@@ -4,4 +4,6 @@
     <string name="app_name">Adaptive Runtime Platform</string>
     <string name="action_settings">Settings</string>
 
+    <string name="title_activity_video">Video Player</string>
+
 </resources>
