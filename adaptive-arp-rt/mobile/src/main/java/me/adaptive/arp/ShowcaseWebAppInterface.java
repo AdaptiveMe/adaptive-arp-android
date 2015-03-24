@@ -146,12 +146,13 @@ public class ShowcaseWebAppInterface {
     }
 
     @JavascriptInterface
-    public void playVideo() {
-        AppRegistryBridge.getInstance().getVideoBridge().playStream("http://www.w3schools.com/tags/movie.mp4");
+    public void playVideo(String url) {
+        AppRegistryBridge.getInstance().getVideoBridge().playStream(url);
     }
 
+    @JavascriptInterface
     public void externalBrowser(String url, String title, String back) {
-        AppRegistryBridge.getInstance().getBrowserBridge().openInternalBrowser("http://www.google.com", "Google", "Adaptive.me!");
+        AppRegistryBridge.getInstance().getBrowserBridge().getDelegate().openInternalBrowser(url, title, back);
 
     }
 }

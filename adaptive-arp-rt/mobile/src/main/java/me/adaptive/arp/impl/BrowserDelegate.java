@@ -37,9 +37,11 @@ package me.adaptive.arp.impl;
 import android.content.Intent;
 import android.net.Uri;
 
+import me.adaptive.arp.BrowserActivity;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseUIDelegate;
 import me.adaptive.arp.api.IBrowser;
+import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
  * Interface for Managing the browser operations
@@ -90,24 +92,36 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
      *
      * @param url            Url to open
      * @param title          Title of the Navigation bar
+     * @return The result of the operation
+     * @since ARP1.0
+     */
+    public boolean openInternalBrowser(String url, String title) {
+        boolean result = false;
+        try {
+            Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), BrowserActivity.class);
+            intent.putExtra("url", url);
+            intent.putExtra("title", title);
+            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(intent);
+            //((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().overridePendingTransition(R.anim.fade_out, R.anim.slide_up);
+            result = true;
+        } catch (Exception ex) {
+            Logger.log(ILoggingLogLevel.Debug, APIService, "tryConnection error " + ex.getLocalizedMessage());
+        }
+        return result;
+    }
+
+
+    /**
+     * Method for opening a browser embedded into the application
+     *
+     * @param url            Url to open
+     * @param title          Title of the Navigation bar
      * @param backButtonText Title of the Back button bar
      * @return The result of the operation
      * @since ARP1.0
      */
     public boolean openInternalBrowser(String url, String title, String backButtonText) {
-        boolean result = false;
-        /*try {
-            Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), ExternalBrowser.class);
-            intent.putExtra("url", url);
-            intent.putExtra("backButtonText", backButtonText);
-            intent.putExtra("title", title);
-            getMainActivity().startActivity(intent);
-            getMainActivity().overridePendingTransition(R.anim.slide_down, R.anim.slide_up);
-            result = true;
-        } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "tryConnection error " + ex.getLocalizedMessage());
-        }*/
-        return result;
+        return openInternalBrowser(url,title);
     }
 
     /**

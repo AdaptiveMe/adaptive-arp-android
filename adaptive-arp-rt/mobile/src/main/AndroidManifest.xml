@@ -44,15 +44,19 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_video"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/FullscreenTheme" >
+            android:theme="@android:style/Theme.Material"
+            android:exported="false" ><!--NoTitleBar.Fullscreen-->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="me.adaptive.arp.MainActivity" />
         </activity>
         <activity
             android:name=".BrowserActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_browser"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:theme="@android:style/Theme.Material"
+            android:exported="false">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="me.adaptive.arp.MainActivity" />

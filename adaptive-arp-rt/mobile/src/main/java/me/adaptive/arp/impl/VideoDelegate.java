@@ -42,6 +42,7 @@ import android.net.Uri;
 
 import java.util.List;
 
+import me.adaptive.arp.VideoActivity;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseMediaDelegate;
 import me.adaptive.arp.api.ILoggingLogLevel;
@@ -119,10 +120,10 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
 
 
 
-            /*Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), VideoActivity.class);
+            Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), VideoActivity.class);
             intent.putExtra("url", url);
-            getMainActivity().startActivity(intent);
-            getMainActivity().overridePendingTransition(R.anim.right_slide_in, R.anim.right_slide_out);*/
+            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(intent);
+           // ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().overridePendingTransition(R.anim.right_slide_in, R.anim.right_slide_out);
 
         } catch (Exception ex) {
             Logger.log(ILoggingLogLevel.Error, APIService, "playStream: Error " + ex.getLocalizedMessage());

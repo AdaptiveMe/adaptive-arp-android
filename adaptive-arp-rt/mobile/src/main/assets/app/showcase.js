@@ -5,18 +5,17 @@ $(function() {
 
         AdaptiveShowcase.getContacts();
 
+        $('#showcase').text("test1");
+
     });
 
     $("#Video").click(function(){
-
-            AdaptiveShowcase.playVideo();
-
+            AdaptiveShowcase.playVideo("http://html5demos.com/assets/dizzy.mp4");
         });
 
     $("#Browser").click(function(){
-            AdaptiveShowcase.externalBrowser("http://www.google.com","Google","Adaptive.me!")
+            AdaptiveShowcase.externalBrowser("http://www.google.com","Google","Adaptive.me!");
         });
-
 
     $('#showcase').text("test");
 });
