@@ -2,9 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="me.adaptive.arp" >
 
-    <!-- Contact -->
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-
     <!-- Network*|Video -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -12,6 +9,32 @@
 
     <!-- Video -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Allows an application to access coarse (e.g., Cell-ID, WiFi) location-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- Allows an application to access fine (e.g., GPS) location -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <!-- Phone Call -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <!-- Sends SMS -->
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+
+    <!-- Phone state -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <!-- Contacts -->
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+
+
+    <!--uses-feature android:name="android.hardware.telephony" android:required="false"/-->
+    <!--uses-feature android:name="android.hardware.camera" android:required="false"/-->
+    <!--uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/-->
+    <!--uses-feature android:name="android.hardware.location" android:required="false"/-->
+    <!--uses-feature android:name="android.hardware.location.network" android:required="false"/-->
+    <!--uses-feature android:name="android.hardware.location.gps" android:required="false"/-->
 
     <application
         android:allowBackup="true"
@@ -30,14 +53,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <receiver
-            android:name=".impl.NetworkStatusDelegate$NetworkStatusReceiver"
-            android:enabled="true" >
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
 
         <activity
             android:name=".VideoActivity"
@@ -61,6 +76,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="me.adaptive.arp.MainActivity" />
         </activity>
+
+
+
+        <receiver
+            android:name=".impl.NetworkStatusReceiver"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+
     </application>
 
 </manifest>

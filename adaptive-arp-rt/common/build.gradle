@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -13,7 +13,6 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "me.adaptive.arp"
         minSdkVersion 21
         targetSdkVersion 21
         versionCode 1
@@ -27,14 +26,11 @@ android {
     }
 }
 
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    //wearApp project(':wear')
-    compile 'com.google.android.gms:play-services:7.0.0'
+
 
     compile 'me.adaptive:adaptive-arp-lib:2.2.3'
-    compile 'com.android.support:support-v4:22.0.0'
-
-    compile project(':common')
+    //compile 'net.sf.kxml:kxml2:2.3.0'
+    //compile 'xerces:xercesImpl:2.11.0'
 }

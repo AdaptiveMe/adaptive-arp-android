@@ -34,24 +34,14 @@
 
 package me.adaptive.arp.impl;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Bundle;
-import android.telephony.TelephonyManager;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseCommunicationDelegate;
-import me.adaptive.arp.api.ICapabilitiesNet;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.INetworkStatus;
 import me.adaptive.arp.api.INetworkStatusListener;
-import me.adaptive.arp.api.NetworkEvent;
 
 /**
  * Interface for Managing the Network status
@@ -71,6 +61,10 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
         super();
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
 
+    }
+
+    public static List<INetworkStatusListener> getListeners() {
+        return listeners;
     }
 
     /**
@@ -109,74 +103,6 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
     public void removeNetworkStatusListeners() {
         listeners.clear();
         Logger.log(ILoggingLogLevel.Debug, APIService, "removeNetworkStatusListeners: ALL NetworkStatusListeners have been removed!");
-    }
-
-
-    public static class NetworkStatusReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                for (String key : extras.keySet()) {
-                    Logger.log(ILoggingLogLevel.Debug, APIService, "key [" + key + "]: " + extras.get(key));
-                }
-            } else {
-                Logger.log(ILoggingLogLevel.Debug, APIService, "no extras");
-            }
-
-            ConnectivityManager cm =
-                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-            ICapabilitiesNet NetworkType = ICapabilitiesNet.Unavailable;
-            if (isConnected)
-                switch (activeNetwork.getType()) {
-                    case ConnectivityManager.TYPE_WIMAX:
-                    case ConnectivityManager.TYPE_WIFI:
-                        Logger.log(ILoggingLogLevel.Debug, APIService, "WIFI");
-                        NetworkType = ICapabilitiesNet.WIFI;
-                        break;
-                    case ConnectivityManager.TYPE_MOBILE:
-                        Logger.log(ILoggingLogLevel.Debug, APIService, "MOBILE");
-                        int networkType = activeNetwork.getSubtype();
-                        switch (networkType) {
-                            case TelephonyManager.NETWORK_TYPE_GPRS:
-                            case TelephonyManager.NETWORK_TYPE_EDGE:
-                                NetworkType = ICapabilitiesNet.GSM;
-                                break;
-                            case TelephonyManager.NETWORK_TYPE_CDMA:
-                            case TelephonyManager.NETWORK_TYPE_1xRTT:
-                            case TelephonyManager.NETWORK_TYPE_IDEN:
-                                NetworkType = ICapabilitiesNet.GPRS;
-                                break;
-                            case TelephonyManager.NETWORK_TYPE_UMTS:
-                            case TelephonyManager.NETWORK_TYPE_EVDO_0:
-                            case TelephonyManager.NETWORK_TYPE_EVDO_A:
-                            case TelephonyManager.NETWORK_TYPE_HSDPA:
-                            case TelephonyManager.NETWORK_TYPE_HSUPA:
-                            case TelephonyManager.NETWORK_TYPE_HSPA:
-                            case TelephonyManager.NETWORK_TYPE_EVDO_B:
-                            case TelephonyManager.NETWORK_TYPE_EHRPD:
-                            case TelephonyManager.NETWORK_TYPE_HSPAP:
-                                NetworkType = ICapabilitiesNet.HSDPA;
-                                break;
-                            case TelephonyManager.NETWORK_TYPE_LTE:
-                                NetworkType = ICapabilitiesNet.LTE;
-                                break;
-                            case TelephonyManager.NETWORK_TYPE_UNKNOWN:
-                            default:
-                                NetworkType = ICapabilitiesNet.Unknown;
-                        }
-                        break;
-                }
-            final NetworkEvent networkEvent = new NetworkEvent(NetworkType, System.currentTimeMillis());
-            for (INetworkStatusListener listener : listeners) {
-
-                listener.onResult(networkEvent);
-
-            }
-        }
     }
 
 }

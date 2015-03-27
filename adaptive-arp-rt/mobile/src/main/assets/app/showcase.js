@@ -1,21 +1,26 @@
 $(function() {
-    $("#test").click(function(){
-
-        //$('#showcase').text(1)
-
+    $("#Contacts").click(function(){
         AdaptiveShowcase.getContacts();
-
-        $('#showcase').text("test1");
-
     });
 
-    $("#Video").click(function(){
-            AdaptiveShowcase.playVideo("http://html5demos.com/assets/dizzy.mp4");
-        });
-
     $("#Browser").click(function(){
-            AdaptiveShowcase.externalBrowser("http://www.google.com","Google","Adaptive.me!");
-        });
+        AdaptiveShowcase.externalBrowser("http://www.google.com","Google","Adaptive.me!");
+    });
+    $("#Video").click(function(){
+        AdaptiveShowcase.playVideo("http://html5demos.com/assets/dizzy.mp4");
+    });
+    $("#Globalization").click(function(){
+        updateFeed(AdaptiveShowcase.getDefaultLocale())
+    });
+    $("#Globalization1").click(function(){
+        updateFeed(AdaptiveShowcase.getI18nKey("hello-world","en-EN"))
+    });
 
-    $('#showcase').text("test");
+
+    updateFeed("Loaded!");
+
 });
+
+var updateFeed = function(text){
+    $('#showcase').html($('#showcase').html()+"<div>" + text + "</div>");
+}
