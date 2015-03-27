@@ -37,10 +37,9 @@ package me.adaptive.arp.impl;
 import android.content.Context;
 import android.content.res.AssetManager;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -48,14 +47,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseApplicationDelegate;
 import me.adaptive.arp.api.IGlobalization;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.KeyPair;
 import me.adaptive.arp.api.Locale;
-import me.adaptive.arp.impl.util.PList;
-import me.adaptive.arp.impl.util.PListParser;
+import me.adaptive.arp.common.parser.plist.PList;
+import me.adaptive.arp.common.parser.plist.PListParser;
+import me.adaptive.arp.common.parser.xml.XmlParser;
 
 /**
  * Interface for Managing the Globalization results
@@ -63,19 +65,26 @@ import me.adaptive.arp.impl.util.PListParser;
  */
 public class GlobalizationDelegate extends BaseApplicationDelegate implements IGlobalization {
 
-    protected static final String I18N_CONFIG_FILE = "config/i18n-config.xml";
-    protected static final String APP_CONFIG_PATH = "config";
+
+    protected static final String APP_CONFIG_PATH = "app/config/";
+    protected static final String APP_DEFINITIONS_CONFIG_PATH = "definitions/";
+    protected static final String I18N_CONFIG_FILENAME = "i18n-config.xml";
+    protected static final String I18N_CONFIG_FILE = APP_CONFIG_PATH+I18N_CONFIG_FILENAME;
+    protected static final String I18N_DEFINITIONS_CONFIG_FILENAME = "i18n-config.xsd";
+    protected static final String I18N_CONFIG_VALIDATOR_FILE = APP_CONFIG_PATH+APP_DEFINITIONS_CONFIG_PATH+I18N_DEFINITIONS_CONFIG_FILENAME;
+
+
     protected static final String PLIST_EXTENSION = ".plist";
-    protected static final String ENCODING = "UTF-8";
     protected static final String DEFAULT_LOCALE_TAG = "default";
     protected static final String SUPPORTED_LOCALE_TAG = "supportedLanguage";
-    protected static final String SUPPORTED_LOCALES_TAG = "supportedLanguages";
-    protected static final String LANGUAGE_ATTR = "language";
-    protected static final String COUNTRY_ATTR = "country";
 
     public static String APIService = "globalization";
     static LoggingDelegate Logger;
 
+
+    private Locale defaultLocale;
+    private List<Locale> supportedLocale = null;
+    private Map<String,PList> i18nData = null;
     /**
      * Default Constructor.
      */
@@ -84,6 +93,116 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
 
     }
+
+    /**
+     * Initialize all the relate objects
+     */
+    private void initialize(){
+        supportedLocale = new ArrayList<>();
+        i18nData = new HashMap<String, PList>();
+        InputStream plistIS = null, origin = null ,validator = null;
+        Context context;
+        AssetManager assetManager;
+        try {
+            context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+            assetManager = context.getAssets();
+
+            origin = assetManager.open(I18N_CONFIG_FILE);
+            validator = assetManager.open(I18N_CONFIG_VALIDATOR_FILE);
+
+            Document document = XmlParser.getInstance().parseXml(origin,validator);
+            defaultLocale = XmlParser.getInstance().getLocaleData(document, DEFAULT_LOCALE_TAG).get(0);
+            supportedLocale = XmlParser.getInstance().getLocaleData(document,SUPPORTED_LOCALE_TAG);
+
+
+            for(Locale locale: supportedLocale){
+                plistIS = assetManager.open(getResourcesFilePath(locale));
+                PList plist = PListParser.getInstance().parse(plistIS);
+                i18nData.put(localeToString(locale),plist);
+            }
+        } catch (IOException e) {
+            Logger.log(ILoggingLogLevel.Error, APIService, "Error Opening xml - Error: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            Logger.log(ILoggingLogLevel.Error, APIService, "Error Parsing xml - Error: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        } catch (SAXException e) {
+            Logger.log(ILoggingLogLevel.Error, APIService, "Error Validating xml - Error: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            closeStream(plistIS);
+
+        }
+    }
+
+
+
+    /**
+     * Returns the default locale of the application defined in the configuration file
+     *
+     * @return Default Locale of the application
+     * @since ARP1.0
+     */
+    public Locale getDefaultLocale() {
+        if(defaultLocale == null)
+            initialize();
+        return defaultLocale;
+    }
+
+    /**
+     * List of supported locales for the application defined in the configuration file
+     *
+     * @return List of locales
+     * @since ARP1.0
+     */
+    public Locale[] getLocaleSupportedDescriptors() {
+        if(supportedLocale == null)
+            initialize();
+        return supportedLocale.toArray(new Locale[supportedLocale.size()]);
+    }
+
+    /**
+     * Gets the text/message corresponding to the given key and locale.
+     *
+     * @param key    to match text
+     * @param locale The locale object to get localized message, or the locale desciptor ("language" or "language-country" two-letters ISO codes.
+     * @return Localized text.
+     * @since ARP1.0
+     */
+    public String getResourceLiteral(String key, Locale locale) {
+        if(i18nData == null)
+            initialize();
+        PList plist = i18nData.get(localeToString(locale));
+        if(plist != null){
+            return plist.getKey(key);
+        }
+        return null;
+
+    }
+
+    /**
+     * Gets the full application configured literals (key/message pairs) corresponding to the given locale.
+     *
+     * @param locale The locale object to get localized message, or the locale desciptor ("language" or "language-country" two-letters ISO codes.
+     * @return Localized texts in the form of an object.
+     * @since ARP1.0
+     */
+    public KeyPair[] getResourceLiterals(Locale locale) {
+        if(i18nData == null)
+            initialize();
+        return i18nData.get(locale).getKeyPair();
+    }
+
+    /**
+     * get the absolute path for resources
+     *
+     * @param locale data
+     * @return The string with the path
+     */
+    private String getResourcesFilePath(Locale locale) {
+        return APP_CONFIG_PATH + localeToString(locale) + PLIST_EXTENSION;
+    }
+
 
     /**
      * Close given InputStream
@@ -101,142 +220,15 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         }
     }
 
-    /**
-     * Returns the default locale of the application defined in the configuration file
-     *
-     * @return Default Locale of the application
-     * @since ARP1.0
-     */
-    public Locale getDefaultLocale() {
-        Locale response;
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getDefaultLocale");
-        // return response;
-    }
 
     /**
-     * List of supported locales for the application defined in the configuration file
-     *
-     * @return List of locales
-     * @since ARP1.0
+     * Return the String representation of the Locale
+     * @param locale object
+     * @return String
      */
-    public Locale[] getLocaleSupportedDescriptors() {
-        Map<String, String> result = null;
-        List<Locale> supported = new ArrayList<>();
-
-        Logger.log(ILoggingLogLevel.Debug, APIService, "getLocaleSupportedDescriptors");
-
-        BufferedInputStream bis = null;
-        try {
-            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
-            AssetManager assetManager = context.getAssets();
-            bis = new BufferedInputStream(assetManager.open(I18N_CONFIG_FILE));
-            // parse configuration file
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            XmlPullParser parser = factory.newPullParser();
-            parser.setInput(bis, ENCODING);
-            int event = parser.getEventType();
-            while (event != XmlPullParser.END_DOCUMENT) {
-
-                if (event == XmlPullParser.START_TAG) {
-                    if (DEFAULT_LOCALE_TAG.equalsIgnoreCase(parser.getName())) {
-                        // default locale
-                        String defaultLanguage = parser.getAttributeValue(null,
-                                LANGUAGE_ATTR);
-                        String defaultCountry = parser.getAttributeValue(null,
-                                COUNTRY_ATTR);
-                    } else if (SUPPORTED_LOCALE_TAG.equalsIgnoreCase(parser
-                            .getName())) {
-                        // supported locale
-                        String language = parser.getAttributeValue(null,
-                                LANGUAGE_ATTR);
-                        String country = parser.getAttributeValue(null,
-                                COUNTRY_ATTR);
-
-                        supported.add(new Locale(language, (country != null ? country : "")));
-                    }
-                }
-                event = parser.next();
-            }
-        } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "Error: " + ex.getLocalizedMessage());
-            return null;
-        } finally {
-            closeStream(bis);
-        }
-
-        return supported.toArray(new Locale[supported.size()]);
+    private String localeToString(Locale locale) {
+        return locale.getLanguage() + "-" + locale.getCountry();
     }
-
-    /**
-     * Gets the text/message corresponding to the given key and locale.
-     *
-     * @param key    to match text
-     * @param locale The locale object to get localized message, or the locale desciptor ("language" or "language-country" two-letters ISO codes.
-     * @return Localized text.
-     * @since ARP1.0
-     */
-    public String getResourceLiteral(String key, Locale locale) {
-        String response;
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getResourceLiteral");
-        // return response;
-    }
-
-    /**
-     * Gets the full application configured literals (key/message pairs) corresponding to the given locale.
-     *
-     * @param locale The locale object to get localized message, or the locale desciptor ("language" or "language-country" two-letters ISO codes.
-     * @return Localized texts in the form of an object.
-     * @since ARP1.0
-     */
-    public KeyPair[] getResourceLiterals(Locale locale) {
-        Map<String, String> result = null;
-        BufferedInputStream bis = null;
-
-        try {
-            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
-            AssetManager assetManager = context.getAssets();
-            bis = new BufferedInputStream(assetManager.open(getResourcesFilePath(locale.toString())));
-            PList plist = PListParser.parse(bis);
-            result = new HashMap<String, String>();
-            result.putAll(plist.getValues());
-        } catch (IOException ex) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "GetResourceLiterals Error: " + ex.getLocalizedMessage());
-        } finally {
-            closeStream(bis);
-
-        }
-        Logger.log(ILoggingLogLevel.Error, APIService, "GetResourceLiterals: " + result.toString());
-        return fromMap(result);
-    }
-
-    /**
-     * get the absolute path for resources
-     *
-     * @param localeDescriptor language
-     * @return The string with the path
-     */
-    private String getResourcesFilePath(String localeDescriptor) {
-        return APP_CONFIG_PATH + "/" + localeDescriptor + PLIST_EXTENSION;
-    }
-
-    /**
-     * Convert a Map object to KeyPair[]
-     *
-     * @param p Map object
-     * @return The resulting KeyPair[]
-     */
-    private KeyPair[] fromMap(Map<String, String> p) {
-        List<KeyPair> result = new ArrayList<KeyPair>();
-        for (Map.Entry<String, String> entry : p.entrySet()) {
-            result.add(new KeyPair(entry.getKey(), entry.getValue()));
-        }
-
-        return result.toArray(new KeyPair[result.size()]);
-
-    }
-
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

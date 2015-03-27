@@ -9,8 +9,6 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.WindowManager;
@@ -24,7 +22,6 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import java.util.Date;
 
@@ -123,7 +120,7 @@ public class MainActivity extends Activity {
              */
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                Toast.makeText(getApplicationContext(), "onProgressChanged", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "onProgressChanged", //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onProgressChanged");
                 super.onProgressChanged(view, newProgress);
             }
@@ -142,7 +139,7 @@ public class MainActivity extends Activity {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
 
-                Toast.makeText(getApplicationContext(), "onJsAlert url[" + url + "] - Message[" + message + "]", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "onJsAlert url[" + url + "] - Message[" + message + "]", //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsAlert");
                 return super.onJsAlert(view, url, message, result);
             }
@@ -163,7 +160,7 @@ public class MainActivity extends Activity {
              */
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-                Toast.makeText(getApplicationContext(), "onJsConfirm url[" + url + "] - Message[" + message + "]", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "onJsConfirm url[" + url + "] - Message[" + message + "]", //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsConfirm");
                 return super.onJsConfirm(view, url, message, result);
             }
@@ -185,7 +182,7 @@ public class MainActivity extends Activity {
              */
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                Toast.makeText(getApplicationContext(), "onJsPrompt url[" + url + "] - Message[" + message + "]", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "onJsPrompt url[" + url + "] - Message[" + message + "]", //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsPrompt");
                 return super.onJsPrompt(view, url, message, defaultValue, result);
             }
@@ -203,7 +200,7 @@ public class MainActivity extends Activity {
              */
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                Toast.makeText(getApplicationContext(), "onGeolocationPermissionsShowPrompt origin[" + origin + "]", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "onGeolocationPermissionsShowPrompt origin[" + origin + "]", //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onGeolocationPermissionsShowPrompt");
                 super.onGeolocationPermissionsShowPrompt(origin, callback);
             }
@@ -217,7 +214,7 @@ public class MainActivity extends Activity {
              */
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Toast.makeText(getApplicationContext(), "consoleMessage [" + consoleMessage.message() + "]", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "consoleMessage [" + consoleMessage.message() + "]", //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onConsoleMessage");
                 return super.onConsoleMessage(consoleMessage);
             }
@@ -225,7 +222,7 @@ public class MainActivity extends Activity {
 
         webView.setWebViewClient(new WebViewClient() {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Toast.makeText(getApplicationContext(), description, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), description, //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsConfirm");
             }
 
@@ -261,7 +258,7 @@ public class MainActivity extends Activity {
              */
             @Override
             public void onPageFinished(WebView view, String url) {
-                Toast.makeText(getApplicationContext(), "Loaded: " + url, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Loaded: " + url, //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onPageFinished");
                 super.onPageFinished(view, url);
 
@@ -280,7 +277,7 @@ public class MainActivity extends Activity {
              */
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                Toast.makeText(getApplicationContext(), "Loading: " + url, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Loading: " + url, //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onPageStarted");
                 super.onPageStarted(view, url, favicon);
             }
@@ -299,7 +296,7 @@ public class MainActivity extends Activity {
              */
             @Override
             public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
-                Toast.makeText(getApplicationContext(), "Pressed: " + event.getKeyCode(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Pressed: " + event.getKeyCode(), //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "shouldOverrideKeyEvent");
                 return super.shouldOverrideKeyEvent(view, event);
 
@@ -307,7 +304,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onLoadResource(WebView view, String url) {
-                Toast.makeText(getApplicationContext(), "Load: " + url, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Load: " + url, //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "onJsConfirm");
                 super.onLoadResource(view, url);
             }
@@ -318,7 +315,7 @@ public class MainActivity extends Activity {
                     return false;
                 }
                 view.loadUrl(url);*/
-                Toast.makeText(getApplicationContext(), "shouldOverrideUrlLoading: " + url, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "shouldOverrideUrlLoading: " + url, //Toast.LENGTH_SHORT).show();
                 Logger.log(ILoggingLogLevel.Debug, "MainActivity", "shouldOverrideUrlLoading");
                 return true;
             }
@@ -339,7 +336,7 @@ public class MainActivity extends Activity {
         webSettings.setGeolocationEnabled(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setSupportZoom(false);
-        webView.addJavascriptInterface(new ShowcaseWebAppInterface(this), "AdaptiveShowcase");
+        webView.addJavascriptInterface(new ShowcaseWebAppInterface(this,webView), "AdaptiveShowcase");
 
         String url = "file:///android_asset/app/showcase.html";
         Logger.log(ILoggingLogLevel.Debug, "URL: " + url + " - file:///android_asset");
@@ -348,7 +345,7 @@ public class MainActivity extends Activity {
         Logger.log(ILoggingLogLevel.Debug, "MainActivity", "TEST " + url);
 
 
-        AppRegistryBridge.getInstance().getBrowserBridge().openInternalBrowser("http://www.google.com", "Google", "Adaptive.me!");
+        //AppRegistryBridge.getInstance().getBrowserBridge().openInternalBrowser("http://www.google.com", "Google", "Adaptive.me!");
 
         orientationEventListener = new OrientationEventListener(getApplicationContext(), SensorManager.SENSOR_DELAY_UI) {
             public void onOrientationChanged(int orientation) {
@@ -475,12 +472,6 @@ public class MainActivity extends Activity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -489,18 +480,4 @@ public class MainActivity extends Activity {
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }

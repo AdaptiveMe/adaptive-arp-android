@@ -31,6 +31,7 @@ package me.adaptive.arp;/*
 import android.content.Context;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import me.adaptive.arp.api.AppRegistryBridge;
@@ -44,10 +45,30 @@ import me.adaptive.arp.api.IContactResultCallback;
 import me.adaptive.arp.api.IContactResultCallbackError;
 import me.adaptive.arp.api.IContactResultCallbackWarning;
 import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.api.Locale;
 import me.adaptive.arp.api.LoggingBridge;
 
 public class ShowcaseWebAppInterface {
-    Context mContext;
+
+    public String APIService = "ShowcaseWebAppInterface";
+    private Context mContext;
+    private WebView mWebview;
+
+    public ShowcaseWebAppInterface(Context mContext, WebView mWebview) {
+        this.mContext = mContext;
+        this.mWebview = mWebview;
+    }
+
+    public void callbackFn(String callback, String someData) {
+        //when I log callback, it is "undefined"
+        String js =
+                "javascript:(function() { "
+                        + "var callback = " + callback + ";"
+                        + "callback('" + someData + "');"
+                        + "})()";
+        Logger.log(ILoggingLogLevel.Debug, "JS Callback: "+js);
+        mWebview.loadUrl(js);
+    }
 
     LoggingBridge Logger = AppRegistryBridge.getInstance().getLoggingBridge();
     IContactResultCallback cb = new IContactResultCallback() {
@@ -60,9 +81,9 @@ public class ShowcaseWebAppInterface {
         public void onResult(Contact[] contacts) {
             if (Logger != null) {
                 Log.d("Native", contacts.length + " contacts");
-                Logger.log(ILoggingLogLevel.Debug, "MainActivity Size: " + contacts.length);
+                Logger.log(ILoggingLogLevel.Debug, APIService, "ShowcaseWebAppInterface Size: " + contacts.length);
                 for (Contact contact : contacts) {
-                    Logger.log(ILoggingLogLevel.Debug, "MainActivity ID RETURNED: " + contact.getContactId());
+                    Logger.log(ILoggingLogLevel.Debug, APIService, "ShowcaseWebAppInterface ID RETURNED: " + contact.getContactId());
                                 /*ContactPhone[] phone = contact.getContactPhones();
                                 if(phone != null && phone.length> 0){
                                     for (ContactPhone phon : contact.getContactPhones()) {
@@ -76,6 +97,8 @@ public class ShowcaseWebAppInterface {
                                     }
                                 }*/
 
+
+                    callbackFn("updateFeed","contact ID: "+contact.getContactId());
                 }
             } else {
                 Log.e("Native", "no log " + contacts.length + " contacts");
@@ -146,12 +169,27 @@ public class ShowcaseWebAppInterface {
     }
 
     @JavascriptInterface
-    public void playVideo() {
-        AppRegistryBridge.getInstance().getVideoBridge().playStream("http://www.w3schools.com/tags/movie.mp4");
+    public void playVideo(String url) {
+        AppRegistryBridge.getInstance().getVideoBridge().playStream(url);
     }
 
+    @JavascriptInterface
     public void externalBrowser(String url, String title, String back) {
-        AppRegistryBridge.getInstance().getBrowserBridge().openInternalBrowser("http://www.google.com", "Google", "Adaptive.me!");
+        AppRegistryBridge.getInstance().getBrowserBridge().getDelegate().openInternalBrowser(url, title, back);
 
+    }
+
+    @JavascriptInterface
+    public String getI18nKey(String key, String localeString){
+        Locale locale = new Locale(localeString.split("-")[0],localeString.split("-")[1]);
+        return AppRegistryBridge.getInstance().getGlobalizationBridge().getResourceLiteral(key, locale);
+
+    }
+
+    @JavascriptInterface
+    public String getDefaultLocale(){
+        Locale locale = AppRegistryBridge.getInstance().getGlobalizationBridge().getDefaultLocale();
+        Logger.log(ILoggingLogLevel.Debug, APIService, "ShowcaseWebAppInterface Locale: " + locale.toString());
+        return locale.getLanguage()+"-"+locale.getCountry();
     }
 }

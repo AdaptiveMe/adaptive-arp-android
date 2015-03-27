@@ -34,13 +34,29 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseCommunicationDelegate;
+import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IService;
 import me.adaptive.arp.api.IServiceMethod;
 import me.adaptive.arp.api.IServiceResultCallback;
+import me.adaptive.arp.api.Service;
 import me.adaptive.arp.api.ServiceRequest;
 import me.adaptive.arp.api.ServiceToken;
+import me.adaptive.arp.common.parser.xml.XmlParser;
 
 /**
  * Interface for Managing the Services operations
@@ -48,9 +64,19 @@ import me.adaptive.arp.api.ServiceToken;
  */
 public class ServiceDelegate extends BaseCommunicationDelegate implements IService {
 
+    protected static final String APP_CONFIG_PATH = "app/config/";
+    protected static final String APP_DEFINITIONS_CONFIG_PATH = "definitions/";
+    protected static final String IO_CONFIG_FILENAME = "io-config.xml";
+    protected static final String IO_CONFIG_FILE = APP_CONFIG_PATH+IO_CONFIG_FILENAME;
+    protected static final String IO_CONFIG_DEFINITION_FILENAME = "/i18n-config.xsd";
+    protected static final String IO_CONFIG_DEFINITION_FILE = APP_CONFIG_PATH+APP_DEFINITIONS_CONFIG_PATH+IO_CONFIG_DEFINITION_FILENAME;
 
     public static String APIService = "service";
     static LoggingDelegate Logger;
+
+
+    private List<String> resources = null;
+    private List<Service> service = null;
 
     /**
      * Default Constructor.
@@ -58,7 +84,39 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     public ServiceDelegate() {
         super();
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+    }
 
+    /**
+     * Initialize all the relate objects
+     */
+    private void initialize(){
+        Context context;
+        AssetManager assetManager;
+        service = new ArrayList<>();
+        resources = new ArrayList<>();
+        InputStream plistIS = null, origin = null ,validator = null;
+        try {
+            context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+            assetManager = context.getAssets();
+
+            origin = assetManager.open(IO_CONFIG_FILE);
+            validator = assetManager.open(IO_CONFIG_DEFINITION_FILE);
+            Document document = XmlParser.getInstance().parseXml(origin,validator);
+            resources = XmlParser.getInstance().getResourceData(document);
+            service = XmlParser.getInstance().getIOData(document);
+
+        } catch (IOException e) {
+            Logger.log(ILoggingLogLevel.Error, APIService, "Error Opening xml - Error: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            Logger.log(ILoggingLogLevel.Error, APIService, "Error Parsing xml - Error: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        } catch (SAXException e) {
+            Logger.log(ILoggingLogLevel.Error, APIService, "Error Validating xml - Error: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            closeStream(plistIS);
+        }
     }
 
     /**
@@ -149,6 +207,22 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     public boolean isServiceRegistered(String serviceName, String endpointName, String functionName, IServiceMethod method) {
         // TODO: Not implemented.
         throw new UnsupportedOperationException(this.getClass().getName() + ":isServiceRegistered");
+    }
+
+    /**
+     * Close given InputStream
+     *
+     * @param is inputString
+     */
+    private static void closeStream(InputStream is) {
+
+        try {
+            if (is != null) {
+                is.close();
+            }
+        } catch (Exception ex) {
+            Logger.log(ILoggingLogLevel.Error, APIService, "Error closing stream: " + ex.getLocalizedMessage());
+        }
     }
 
 

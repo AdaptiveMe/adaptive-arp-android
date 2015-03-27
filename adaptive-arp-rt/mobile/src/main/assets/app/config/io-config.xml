@@ -7,14 +7,14 @@
     <services>
         <service name="petstore">
             <end-point host="http://petstore.swagger.wordnik.com" validation="None">
-                <path path="/api/pet/15" type="RestJson">
+                <path path="/api/pet/(.*)" type="RestJson">
                     <method method="Get" />
                     <method method="Post" />
                 </path>
             </end-point>
         </service>
         <service name="geonames">
-            <end-point host="http://api.geonames.org" validation="None">
+            <end-point host="http://api.geonames.(.*)" validation="None">
                 <path path="/postalCodeLookupJSON" type="RestJson">
                     <method method="Get" />
                 </path>
