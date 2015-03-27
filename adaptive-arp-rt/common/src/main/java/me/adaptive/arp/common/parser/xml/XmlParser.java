@@ -108,7 +108,6 @@ public class XmlParser {
 
         return document;
 
-
     }
 
     public List<Locale> getLocaleData(Document document, String tag) throws ParserConfigurationException, SAXException, IOException {
