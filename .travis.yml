@@ -4,19 +4,13 @@ jdk: oraclejdk8
 env:
   matrix:
     - ANDROID_TARGET=android-21
-    
-notifications:
-  email: false
 
 android:
   components:
     - build-tools-22.0.1
 
-before_install:
-  - cd adaptive-arp-rt
-  - uname -a
-
 script:
+  - cd adaptive-arp-rt
   - ./gradlew build
   
 cache:
