@@ -42,44 +42,39 @@ import java.util.concurrent.Executors;
 import me.adaptive.arp.api.IAppContext;
 import me.adaptive.arp.api.IOSType;
 
-//import me.adaptive.arp.api.IAppContext;
-//import me.adaptive.arp.api.IOSType;
-
 /**
  * Interface for context management purposes
  * Auto-generated implementation of IAppContext specification.
  */
 public class AppContextDelegate implements IAppContext {
 
+    // MAin activity of the application
+    private Activity activity;
 
-    private static Activity mainActivity;
-    private static ExecutorService executor;
+    // Executor service of the application
+    private ExecutorService executor;
 
     /**
-     * Default Constructor.
+     * Constructor with context
+     *
+     * @param activity Main context of the application
      */
-    public AppContextDelegate() {
-        super();
-    }
-
     public AppContextDelegate(Activity activity) {
         super();
-        mainActivity = activity;
-        executor = Executors.newFixedThreadPool(50);
+        this.activity = activity;
+        this.executor = Executors.newFixedThreadPool(50);
     }
 
-    public AppContextDelegate(Activity activity, ExecutorService executors) {
+    /**
+     * Constructor with context and executor
+     *
+     * @param activity  Main context of the application
+     * @param executor Executor of the application
+     */
+    public AppContextDelegate(Activity activity, ExecutorService executor) {
         super();
-        mainActivity = activity;
-        executor = executors;
-    }
-
-    public static Activity getMainActivity() {
-        return mainActivity;
-    }
-
-    public static final ExecutorService getExecutorService() {
-        return executor;
+        this.activity = activity;
+        this.executor = executor;
     }
 
     /**
@@ -89,7 +84,7 @@ public class AppContextDelegate implements IAppContext {
      * @since ARP1.0
      */
     public Object getContext() {
-        return mainActivity.getApplicationContext();
+        return activity.getApplicationContext();
     }
 
     /**
@@ -102,6 +97,13 @@ public class AppContextDelegate implements IAppContext {
         return IOSType.Android;
     }
 
+    /**
+     * Getter for the executor service
+     * @return
+     */
+    public ExecutorService getExecutor() {
+        return executor;
+    }
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

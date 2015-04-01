@@ -191,7 +191,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
             callback.onError(IContactPhotoResultCallbackError.WrongParams);
             return;
         }
-        Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+        Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
         Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.valueOf(contact.getContactId()));
         Uri displayPhotoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.DISPLAY_PHOTO);
         try {
@@ -243,7 +243,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
      * @param filter
      */
     private void nativeToAdaptive(final IContactResultCallback callback, final ContactUid contact, final String term, final IContactFieldGroup[] fields, final IContactFilter[] filter) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
 
             public void run() {
                 Logger.log(ILoggingLogLevel.Debug, APIService, "androidContactToAdaptive contactID[" + (contact == null ? "NO_ID" : contact.getContactId()) + "] - term[" + (term == null ? "NO_TERM" : term) + "] - fields[" + (fields == null ? "NO_FILTER" : fields.toString()) + "] - filter[" + (filter == null ? "NO_FILTER" : filter.toString()) + "]");
@@ -251,7 +251,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                 Logger.log(ILoggingLogLevel.Debug, "nativeToAdaptive@" + ini.toString());
 
 
-                Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+                Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
                 ContentResolver cr = context.getContentResolver();
                 List<Contact> contactList = null;
                 String selection = null;
@@ -491,18 +491,18 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                         Date test1 = new Date();
                         Logger.log(ILoggingLogLevel.Debug, "Prefilter: " + contactsIDs.size());
 
-                        for (Contact contact : contactList) {
-                            if (aFilter.equals(IContactFilter.HasEmail) && contact.getContactEmails() == null) {
+                        for (Contact contact2 : contactList) {
+                            if (aFilter.equals(IContactFilter.HasEmail) && contact2.getContactEmails() == null) {
                                 Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HasEmail");
-                                contactsIDs.remove(contact.getContactId());
+                                contactsIDs.remove(contact2.getContactId());
                             }
-                            if (aFilter.equals(IContactFilter.HasAddress) && contact.getContactAddresses() == null) {
+                            if (aFilter.equals(IContactFilter.HasAddress) && contact2.getContactAddresses() == null) {
                                 Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HasAddress");
-                                contactsIDs.remove(contact.getContactId());
+                                contactsIDs.remove(contact2.getContactId());
                             }
-                            if (aFilter.equals(IContactFilter.HasPhone) && contact.getContactPhones() == null) {
+                            if (aFilter.equals(IContactFilter.HasPhone) && contact2.getContactPhones() == null) {
                                 Logger.log(ILoggingLogLevel.Debug, APIService, "Filter: HasPhone");
-                                contactsIDs.remove(contact.getContactId());
+                                contactsIDs.remove(contact2.getContactId());
                             }
                         }
                         Logger.log(ILoggingLogLevel.Debug, (new Date().getTime() - test1.getTime()) + "ms - Postfilter: " + contactsIDs.size());
@@ -514,37 +514,37 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                     Date test1 = new Date();
                     Logger.log(ILoggingLogLevel.Debug, "Prefilter: " + contactsIDs.size());
 
-                    for (Contact contact : contactList) {
+                    for (Contact contact2 : contactList) {
 
                         if (Arrays.binarySearch(fields, IContactFieldGroup.Addresses) < 0) {
                             //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Addresses");
-                            contact.setContactAddresses(null);
+                            contact2.setContactAddresses(null);
                         }
                         if (Arrays.binarySearch(fields, IContactFieldGroup.Emails) < 0) {
                             //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Emails");
-                            contact.setContactEmails(null);
+                            contact2.setContactEmails(null);
                         }
                         if (Arrays.binarySearch(fields, IContactFieldGroup.PersonalInfo) < 0) {
                             //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: PersonalInfo");
-                            contact.setPersonalInfo(null);
+                            contact2.setPersonalInfo(null);
                         }
                         if (Arrays.binarySearch(fields, IContactFieldGroup.Phones) < 0) {
                             //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Phones");
-                            contact.setContactPhones(null);
+                            contact2.setContactPhones(null);
                         }
                         if (Arrays.binarySearch(fields, IContactFieldGroup.ProfessionalInfo) < 0) {
                             //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: ProfessionalInfo");
-                            contact.setProfessionalInfo(null);
+                            contact2.setProfessionalInfo(null);
                         }
                         if (Arrays.binarySearch(fields, IContactFieldGroup.Socials) < 0) {
                             //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Socials");
-                            contact.setContactSocials(null);
+                            contact2.setContactSocials(null);
                         }
                         if (Arrays.binarySearch(fields, IContactFieldGroup.Websites) < 0) {
                             //Logger.log(ILoggingLogLevel.Debug, APIService, "NO Fields: Websites");
-                            contact.setContactWebsites(null);
+                            contact2.setContactWebsites(null);
                         }
-                        contactsIDs.put(contact.getContactId(), contact);
+                        contactsIDs.put(contact2.getContactId(), contact2);
                     }
 
                     Logger.log(ILoggingLogLevel.Debug, (new Date().getTime() - test1.getTime()) + "ms - Postfields: " + contactsIDs.size());

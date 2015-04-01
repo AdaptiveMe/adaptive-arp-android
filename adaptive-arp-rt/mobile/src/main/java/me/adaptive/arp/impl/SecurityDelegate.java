@@ -138,7 +138,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      * @since ARP 1.0
      */
     public void deleteSecureKeyValuePairs(final String[] keys, final String publicAccessName, final ISecurityResultCallback callback) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
             public void run() {
                 List<SecureKeyPair> successfulKeyPairs = new ArrayList<SecureKeyPair>();
                 List<SecureKeyPair> failedKeyPairs = new ArrayList<SecureKeyPair>();
@@ -184,7 +184,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      * @since ARP 1.0
      */
     public void getSecureKeyValuePairs(final String[] keys, final String publicAccessName, final ISecurityResultCallback callback) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
             public void run() {
                 List<SecureKeyPair> foundKeyPairs = new ArrayList<SecureKeyPair>();
                 try {
@@ -332,7 +332,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
 
             List<ApplicationInfo> packages;
             PackageManager pm;
-            pm = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager();
+            pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
             packages = pm.getInstalledApplications(0);
             for (ApplicationInfo packageInfo : packages) {
                 //LOGGER.logInfo("PACKAGE NAME: ", packageInfo.packageName);
@@ -353,9 +353,9 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         SharedPreferences settings = null;
         try {
             if (publicAccessName != null) {
-                settings = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getSharedPreferences(publicAccessName, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
+                settings = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSharedPreferences(publicAccessName, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
             } else {
-                settings = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
+                settings = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
             }
 
 
@@ -374,7 +374,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      * @since ARP 1.0
      */
     public void setSecureKeyValuePairs(final SecureKeyPair[] keyValues, final String publicAccessName, final ISecurityResultCallback callback) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
             public void run() {
                 List<SecureKeyPair> successfulKeyPairs = new ArrayList<SecureKeyPair>();
                 List<SecureKeyPair> failedKeyPairs = new ArrayList<SecureKeyPair>();

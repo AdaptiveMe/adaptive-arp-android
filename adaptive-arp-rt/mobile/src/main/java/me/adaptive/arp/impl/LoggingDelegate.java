@@ -34,10 +34,9 @@
 
 package me.adaptive.arp.impl;
 
-import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
-import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.BuildConfig;
 import me.adaptive.arp.api.BaseUtilDelegate;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
@@ -48,19 +47,6 @@ import me.adaptive.arp.api.ILoggingLogLevel;
  */
 public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
 
-    public static String APIService = "logging";
-    final boolean isDebuggable;
-
-    /**
-     * Default Constructor.
-     */
-    public LoggingDelegate() {
-        super();
-        AppRegistryBridge.getInstance().getLoggingBridge().setDelegate(this);
-        isDebuggable = (0 != (((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
-
-    }
-
     /**
      * Logs the given message, with the given log level if specified, to the standard platform/environment.
      *
@@ -69,7 +55,8 @@ public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
      * @since ARP1.0
      */
     public void log(ILoggingLogLevel level, String message) {
-        log(level, APIService, message);
+
+        log(level, "GENERAL", message);
     }
 
     /**
@@ -81,17 +68,22 @@ public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
      * @since ARP1.0
      */
     public void log(ILoggingLogLevel level, String category, String message) {
-        if (isDebuggable && level == ILoggingLogLevel.Debug) {
-            Log.d("Adaptive: " + category, message);
-        }
-        if (level == ILoggingLogLevel.Error) {
-            Log.e("Adaptive: " + category, message);
-        }
-        if (isDebuggable && level == ILoggingLogLevel.Info) {
-            Log.i("Adaptive: " + category, message);
-        }
-        if (level == ILoggingLogLevel.Warn) {
-            Log.w("Adaptive: " + category, message);
+
+        switch (level) {
+            case Debug:
+                if (BuildConfig.DEBUG) {
+                    Log.d("[DEBUG - " + category + "] ", message);
+                }
+                break;
+            case Info:
+                Log.i("[INFO - " + category + "] ", message);
+                break;
+            case Warn:
+                Log.w("[WARN - " + category + "] ", message);
+                break;
+            case Error:
+                Log.e("[ERROR - " + category + "] ", message);
+                break;
         }
     }
 

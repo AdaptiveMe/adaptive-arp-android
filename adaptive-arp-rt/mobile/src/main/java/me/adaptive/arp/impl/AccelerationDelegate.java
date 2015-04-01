@@ -126,8 +126,7 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
         super();
 
         Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-        mSensorManager = (SensorManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity()
-                .getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager = (SensorManager) ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 

@@ -34,6 +34,7 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.telephony.PhoneNumberUtils;
@@ -73,7 +74,7 @@ public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
      * @since ARP1.0
      */
     public void sendSMS(final String number, final String text, final IMessagingCallback callback) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(new Runnable() {
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
             public void run() {
                 boolean result = false;
 
@@ -83,7 +84,7 @@ public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
                         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
                         sendIntent.setData(Uri.parse("sms:" + number));
                         sendIntent.putExtra("sms_body", text);
-                        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(sendIntent);
+                        ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(sendIntent);
 
                         result = true;
                     }

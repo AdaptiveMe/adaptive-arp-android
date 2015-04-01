@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Adaptive Runtime Platform</string>
-
-    <string name="title_activity_video">Video Player</string>
-    <string name="title_activity_browser">Browser</string>
+    <string name="arp_url">https://adaptiveapp/</string>
 
 </resources>

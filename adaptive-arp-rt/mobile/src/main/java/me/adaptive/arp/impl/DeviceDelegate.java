@@ -117,7 +117,7 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
      * @since ARP1.0
      */
     public DeviceInfo getDeviceInfo() {
-        TelephonyManager tManager = (TelephonyManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getSystemService(((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().TELEPHONY_SERVICE);
+        TelephonyManager tManager = (TelephonyManager) ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSystemService(((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).TELEPHONY_SERVICE);
         String uuid = tManager.getDeviceId();
         return new DeviceInfo(android.os.Build.DEVICE, android.os.Build.BOARD, android.os.Build.BRAND, uuid);
     }
