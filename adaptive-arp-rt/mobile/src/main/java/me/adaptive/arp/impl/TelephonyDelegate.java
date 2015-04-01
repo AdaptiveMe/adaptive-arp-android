@@ -34,12 +34,14 @@
 
 package me.adaptive.arp.impl;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseCommunicationDelegate;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.ITelephony;
 import me.adaptive.arp.api.ITelephonyStatus;
@@ -50,15 +52,20 @@ import me.adaptive.arp.api.ITelephonyStatus;
  */
 public class TelephonyDelegate extends BaseCommunicationDelegate implements ITelephony {
 
-    public static String APIService = "telephony";
-    static LoggingDelegate Logger;
+    // Logger
+    private static final String LOG_TAG = "TelephonyDelegate";
+    private ILogging logger;
+
+    // context
+    private Context context;
 
     /**
      * Default Constructor.
      */
     public TelephonyDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
     /**
@@ -69,15 +76,27 @@ public class TelephonyDelegate extends BaseCommunicationDelegate implements ITel
      * @since ARP1.0
      */
     public ITelephonyStatus call(String number) {
+
         try {
-            Logger.log(ILoggingLogLevel.Debug, "Calling " + number);
-            String uri = "tel:" + number.trim();
-            Intent intent = new Intent(Intent.ACTION_CALL);
-            intent.setData(Uri.parse(uri));
-            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(intent);
-        } catch (Exception ex) {
+            final Intent intent = new Intent(Intent.ACTION_CALL);
+            String tel = "tel:" + number.trim();
+            intent.setData(Uri.parse(tel));
+
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Calling number: " + tel);
+
+            Activity mainActivity = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getActivity();
+
+            // Run on main Thread
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    context.startActivity(intent);
+                }
+            });
+        } catch (Exception e) {
             return ITelephonyStatus.Failed;
         }
+
         return ITelephonyStatus.Dialing;
     }
 

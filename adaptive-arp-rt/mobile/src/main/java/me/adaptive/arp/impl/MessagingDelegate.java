@@ -41,6 +41,7 @@ import android.telephony.PhoneNumberUtils;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BasePIMDelegate;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IMessaging;
 import me.adaptive.arp.api.IMessagingCallback;
@@ -52,17 +53,20 @@ import me.adaptive.arp.api.IMessagingCallbackError;
  */
 public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
 
+    // Logger
+    private static final String LOG_TAG = "MessagingDelegate";
+    private ILogging logger;
 
-    static LoggingDelegate Logger;
-    public String APIService = "messaging";
+    // context
+    private Context context;
 
     /**
      * Default Constructor.
      */
     public MessagingDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
     /**
@@ -74,31 +78,23 @@ public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
      * @since ARP1.0
      */
     public void sendSMS(final String number, final String text, final IMessagingCallback callback) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
-            public void run() {
-                boolean result = false;
 
-                try {
+        try {
 
-                    if (PhoneNumberUtils.isWellFormedSmsAddress(number)) {
-                        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-                        sendIntent.setData(Uri.parse("sms:" + number));
-                        sendIntent.putExtra("sms_body", text);
-                        ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(sendIntent);
+            if (PhoneNumberUtils.isWellFormedSmsAddress(number)) {
 
-                        result = true;
-                    }
-                } catch (Exception ex) {
-                    Logger.log(ILoggingLogLevel.Error, APIService,
-                            "sendMessageSMS: Error [" + text + "] to phone ["
-                                    + number + "]" + ex.getLocalizedMessage()
-                    );
-                    callback.onError(IMessagingCallbackError.Unknown);
-                }
-                callback.onResult(result);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("sms:" + number));
+                intent.putExtra("sms_body", text);
+                context.startActivity(intent);
+
+                callback.onResult(true);
             }
+        } catch (Exception ex) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "sendMessageSMS: Error [" + text + "] to phone [" + number + "]" + ex.getLocalizedMessage());
+            callback.onError(IMessagingCallbackError.Unknown);
+        }
 
-        });
     }
 
 }

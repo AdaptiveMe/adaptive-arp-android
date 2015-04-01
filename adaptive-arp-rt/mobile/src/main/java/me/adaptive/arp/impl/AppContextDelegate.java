@@ -68,7 +68,7 @@ public class AppContextDelegate implements IAppContext {
     /**
      * Constructor with context and executor
      *
-     * @param activity  Main context of the application
+     * @param activity Main context of the application
      * @param executor Executor of the application
      */
     public AppContextDelegate(Activity activity, ExecutorService executor) {
@@ -99,10 +99,29 @@ public class AppContextDelegate implements IAppContext {
 
     /**
      * Getter for the executor service
-     * @return
+     *
+     * @return Executor service
      */
     public ExecutorService getExecutor() {
         return executor;
+    }
+
+    /**
+     * Main activity getter
+     *
+     * @return Main activity
+     */
+    public Activity getActivity() {
+        return activity;
+    }
+
+    /**
+     * Set the Main activity
+     *
+     * @param activity Main activity
+     */
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 }
 /**
