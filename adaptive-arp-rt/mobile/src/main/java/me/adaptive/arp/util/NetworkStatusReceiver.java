@@ -1,4 +1,4 @@
-package me.adaptive.arp.impl;/*
+package me.adaptive.arp.util;/*
  * =| ADAPTIVE RUNTIME PLATFORM |=======================================================================================
  *
  * (C) Copyright 2013-2014 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
@@ -43,6 +43,8 @@ import me.adaptive.arp.api.ICapabilitiesNet;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.INetworkStatusListener;
 import me.adaptive.arp.api.NetworkEvent;
+import me.adaptive.arp.impl.LoggingDelegate;
+import me.adaptive.arp.impl.NetworkStatusDelegate;
 
 public class NetworkStatusReceiver extends BroadcastReceiver {
 

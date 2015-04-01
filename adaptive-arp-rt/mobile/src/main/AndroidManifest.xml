@@ -76,7 +76,7 @@
         </activity>
 
         <receiver
-            android:name=".impl.NetworkStatusReceiver"
+            android:name=".util.NetworkStatusReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

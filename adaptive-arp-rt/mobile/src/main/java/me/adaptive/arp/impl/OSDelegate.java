@@ -36,7 +36,10 @@ package me.adaptive.arp.impl;
 
 import android.os.Build;
 
+import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseSystemDelegate;
+import me.adaptive.arp.api.ILogging;
+import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IOS;
 import me.adaptive.arp.api.IOSType;
 import me.adaptive.arp.api.OSInfo;
@@ -47,14 +50,16 @@ import me.adaptive.arp.api.OSInfo;
  */
 public class OSDelegate extends BaseSystemDelegate implements IOS {
 
-    public static String APIService = "os";
+    // Logger
+    private static final String LOG_TAG = "RuntimeDelegate";
+    private ILogging logger;
 
     /**
      * Default Constructor.
      */
     public OSDelegate() {
         super();
-
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
     }
 
     /**
@@ -64,7 +69,10 @@ public class OSDelegate extends BaseSystemDelegate implements IOS {
      * @since ARP1.0
      */
     public OSInfo getOSInfo() {
-        return new OSInfo(IOSType.Android, Build.VERSION.CODENAME, Build.MANUFACTURER);
+
+        OSInfo os = new OSInfo(IOSType.Android, Build.VERSION.CODENAME, Build.MANUFACTURER);
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Operating System: " + os);
+        return os;
     }
 
 }

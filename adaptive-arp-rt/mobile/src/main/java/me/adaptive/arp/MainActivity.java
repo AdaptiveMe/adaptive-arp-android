@@ -133,7 +133,10 @@ public class MainActivity extends Activity {
         AppRegistryBridge.getInstance().getVideoBridge().setDelegate(new VideoDelegate());
 
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onCreate()");
-        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Starting);
+        LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
+        lifecycleDelegate.updateLifecycleListeners(LifecycleState.Starting);
+        lifecycleDelegate.updateBackground(false);
+
 
         // Webview initialization
         webView = (WebView) findViewById(R.id.webView);
@@ -171,8 +174,10 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onStart()");
-        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Started);
-        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Running);
+        LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
+        lifecycleDelegate.updateLifecycleListeners(LifecycleState.Started);
+        lifecycleDelegate.updateLifecycleListeners(LifecycleState.Running);
+        lifecycleDelegate.updateBackground(false);
 
         if (orientationEventListener.canDetectOrientation()) {
             orientationEventListener.enable();
@@ -189,6 +194,8 @@ public class MainActivity extends Activity {
     protected void onRestart() {
         super.onRestart();
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onRestart()");
+        LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
+        lifecycleDelegate.updateBackground(false);
     }
 
     /**
@@ -200,7 +207,9 @@ public class MainActivity extends Activity {
     public void onResume() {
         super.onResume();
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onResume()");
-        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Resuming);
+        LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
+        lifecycleDelegate.updateLifecycleListeners(LifecycleState.Resuming);
+        lifecycleDelegate.updateBackground(false);
 
         if (orientationEventListener.canDetectOrientation()) {
             orientationEventListener.enable();
@@ -217,7 +226,9 @@ public class MainActivity extends Activity {
     public void onPause() {
         super.onPause();
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onPause()");
-        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Pausing);
+        LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
+        lifecycleDelegate.updateLifecycleListeners(LifecycleState.Pausing);
+        lifecycleDelegate.updateBackground(true);
 
         orientationEventListener.disable();
     }
@@ -233,9 +244,6 @@ public class MainActivity extends Activity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onSaveInstanceState()");
-
-        // Save the state of the WebView
-        webView.saveState(savedInstanceState);
     }
 
     /**
@@ -248,9 +256,6 @@ public class MainActivity extends Activity {
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onRestoreInstanceState()");
-
-        // Restore the state of the WebView
-        webView.restoreState(savedInstanceState);
     }
 
     /**
@@ -263,6 +268,8 @@ public class MainActivity extends Activity {
     public void onStop() {
         super.onStop();
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onStop()");
+        LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
+        lifecycleDelegate.updateBackground(true);
 
         orientationEventListener.disable();
     }
@@ -276,7 +283,9 @@ public class MainActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onDestroy()");
-        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Stopping);
+        LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
+        lifecycleDelegate.updateLifecycleListeners(LifecycleState.Stopping);
+        lifecycleDelegate.updateBackground(true);
 
         orientationEventListener.disable();
     }

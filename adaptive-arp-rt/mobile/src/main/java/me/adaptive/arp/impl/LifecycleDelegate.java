@@ -34,6 +34,8 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +43,7 @@ import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseApplicationDelegate;
 import me.adaptive.arp.api.ILifecycle;
 import me.adaptive.arp.api.ILifecycleListener;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.Lifecycle;
 import me.adaptive.arp.api.LifecycleState;
@@ -51,23 +54,23 @@ import me.adaptive.arp.api.LifecycleState;
  */
 public class LifecycleDelegate extends BaseApplicationDelegate implements ILifecycle {
 
+    // Logger
+    private static final String LOG_TAG = "LifecycleDelegate";
+    private ILogging logger;
 
-    public static String APIService = "lifecycle";
-    static LoggingDelegate Logger;
-    private List<ILifecycleListener> listeners = new ArrayList<>();
-    private boolean isBackground;
+    // Listeners
+    private List<ILifecycleListener> listeners;
+
+    // Background variable
+    private boolean isBackground = false;
 
     /**
      * Default Constructor.
      */
     public LifecycleDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-
-    }
-
-    public List<ILifecycleListener> getListeners() {
-        return listeners;
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        listeners = new ArrayList<>();
     }
 
     /**
@@ -77,11 +80,13 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
      * @since ARP1.0
      */
     public void addLifecycleListener(ILifecycleListener listener) {
+
         if (!listeners.contains(listener)) {
+
             listeners.add(listener);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "addLifecycleListener: " + listener.toString() + " Added!");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "addLifecycleListener: " + listener.toString() + " added!");
         } else
-            Logger.log(ILoggingLogLevel.Warn, APIService, "addLifecycleListener: " + listener.toString() + " is already added!");
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "addLifecycleListener: " + listener.toString() + " is already added!");
     }
 
     /**
@@ -91,21 +96,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
      * @since ARP1.0
      */
     public boolean isBackground() {
-        /* check with the first task(task in the foreground)
-        // in the returned list of tasks
-        Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
-        ActivityManager activityManager = (ActivityManager) context
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> services = activityManager
-                .getRunningTasks(Integer.MAX_VALUE);
-        return !services.get(0).topActivity.getPackageName().toString()
-                .equalsIgnoreCase(context.getPackageName().toString());
-                */
         return this.isBackground;
-    }
-
-    public void setBackground(boolean isBackground) {
-        this.isBackground = isBackground;
     }
 
     /**
@@ -115,11 +106,12 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
      * @since ARP1.0
      */
     public void removeLifecycleListener(ILifecycleListener listener) {
+
         if (listeners.contains(listener)) {
             listeners.remove(listener);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "removeLifecycleListener" + listener.toString() + " Removed!");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeLifecycleListener" + listener.toString() + " removed!");
         } else
-            Logger.log(ILoggingLogLevel.Warn, APIService, "removeLifecycleListener: " + listener.toString() + " is NOT registered");
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "removeLifecycleListener: " + listener.toString() + " is not registered");
 
     }
 
@@ -130,13 +122,25 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
      */
     public void removeLifecycleListeners() {
         listeners.clear();
-        Logger.log(ILoggingLogLevel.Debug, APIService, "removeLifecycleListeners: ALL LifecycleListener have been removed!");
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeLifecycleListeners: all LifecycleListener have been removed!");
     }
 
+    /**
+     * Method for updating the lifecycle listeners
+     * @param state State of the lifecycle
+     */
     public void updateLifecycleListeners(LifecycleState state) {
-            for (ILifecycleListener listener : this.listeners) {
-                listener.onResult(new Lifecycle(state, System.currentTimeMillis()));
-            }
+        for (ILifecycleListener listener : this.listeners) {
+            listener.onResult(new Lifecycle(state, System.currentTimeMillis()));
+        }
+    }
+
+    /**
+     * Method for updating the background state of the application
+     * @param isBackground
+     */
+    public void updateBackground(boolean isBackground) {
+        this.isBackground = isBackground;
     }
 
 }
