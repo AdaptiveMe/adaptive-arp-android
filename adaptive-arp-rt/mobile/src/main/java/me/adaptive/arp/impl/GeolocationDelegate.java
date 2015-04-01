@@ -35,6 +35,7 @@
 package me.adaptive.arp.impl;
 
 import android.app.Service;
+import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -164,7 +165,7 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
     private boolean startUpdatingLocation() {
 
         if (locationManager == null) {
-            locationManager = (LocationManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getSystemService(Service.LOCATION_SERVICE);
+            locationManager = (LocationManager) ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSystemService(Service.LOCATION_SERVICE);
 
         }
 
@@ -180,7 +181,7 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
                             locationListener);
                 }
             };
-            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(rGPS);
+            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(rGPS);
             Logger.log(ILoggingLogLevel.Debug, "GPS provider is enabled");
             isGPSRegistered = true;
         }
@@ -195,7 +196,7 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
                             0, locationListener);
                 }
             };
-            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(rNet);
+            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(rNet);
             Logger.log(ILoggingLogLevel.Debug, "Network provider is enabled");
             isNetworkRegistered = true;
         }
@@ -230,13 +231,13 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
             @Override
             public void run() {
                 if (locationManager == null) {
-                    locationManager = (LocationManager) ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext()
+                    locationManager = (LocationManager) ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext())
                             .getSystemService(android.app.Service.LOCATION_SERVICE);
                 }
                 locationManager.removeUpdates(locationListener);
             }
         };
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutorService().submit(rRemove);
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(rRemove);
 
         return true;
     }

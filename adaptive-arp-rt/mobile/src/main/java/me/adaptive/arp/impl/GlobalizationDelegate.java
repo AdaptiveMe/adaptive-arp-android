@@ -104,7 +104,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         Context context;
         AssetManager assetManager;
         try {
-            context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+            context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
             assetManager = context.getAssets();
 
             origin = assetManager.open(I18N_CONFIG_FILE);
@@ -122,13 +122,10 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
             }
         } catch (IOException e) {
             Logger.log(ILoggingLogLevel.Error, APIService, "Error Opening xml - Error: " + e.getLocalizedMessage());
-            e.printStackTrace();
         } catch (ParserConfigurationException e) {
             Logger.log(ILoggingLogLevel.Error, APIService, "Error Parsing xml - Error: " + e.getLocalizedMessage());
-            e.printStackTrace();
         } catch (SAXException e) {
             Logger.log(ILoggingLogLevel.Error, APIService, "Error Validating xml - Error: " + e.getLocalizedMessage());
-            e.printStackTrace();
         }finally {
             closeStream(plistIS);
 

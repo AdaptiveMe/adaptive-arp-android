@@ -87,7 +87,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
         Logger.log(ILoggingLogLevel.Debug, APIService, "createDatabase: dbName " + database.getName());
         SQLiteDatabase sqlDB = null;
         try {
-            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+            Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
             sqlDB = context.openOrCreateDatabase(database.getName(), Context.MODE_PRIVATE,
                     null);
             if (!sqlDB.isOpen()) {
@@ -155,7 +155,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
     public void deleteDatabase(Database database, IDatabaseResultCallback callback) {
         Logger.log(ILoggingLogLevel.Debug, APIService, "deleteDatabase: " + database.getName());
         try {
-            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+            Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
             context.deleteDatabase(database.getName());
         } catch (Exception ex) {
             Logger.log(ILoggingLogLevel.Error, APIService, "deleteDatabase: Error " + ex.getLocalizedMessage());
@@ -321,7 +321,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
         boolean result = false;
         Logger.log(ILoggingLogLevel.Debug, APIService, "existsDatabase: dbName " + database.getName());
         try {
-            Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+            Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
             String[] databaseNames = context.databaseList();
             for (String dbName : databaseNames) {
                 if (database.getName().equals(dbName)) {
@@ -421,7 +421,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @throws SQLiteException Exception
      */
     private SQLiteDatabase openDatabase(Database db) throws SQLiteException {
-        Context context = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext();
+        Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
         if (db != null) {
             return SQLiteDatabase.openDatabase(context
                             .getDatabasePath(db.getName()).getAbsolutePath(), null,

@@ -35,6 +35,7 @@
 package me.adaptive.arp.impl;
 
 import android.app.UiModeManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -68,11 +69,8 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      */
     public CapabilitiesDelegate() {
         super();
-        UiModeManager uiModeManager = (UiModeManager) ((AppContextDelegate)
-                AppRegistryBridge.getInstance().getPlatformContext().getDelegate())
-                .getMainActivity().getApplicationContext()
-                .getSystemService(((AppContextDelegate) AppRegistryBridge.getInstance()
-                        .getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().UI_MODE_SERVICE);
+        Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
+        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(context.UI_MODE_SERVICE);
         tvDevice = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
 
     }
@@ -138,7 +136,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         boolean supported = false;
         ActivityInfo activityInfo;
         Intent intent;
-        PackageManager pm = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager();
+        PackageManager pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
         //TODO CHECK LIVE CONNECTIVITY?
         switch (type) {
             case Calendar:
@@ -216,7 +214,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         boolean supported = false;
         ActivityInfo activityInfo;
         Intent intent = null;
-        PackageManager pm = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager();
+        PackageManager pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
         switch (type) {
             case AudioPlayback:
                 //Whether has something to handle the request
@@ -286,7 +284,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         //TODO CHECK LIVE? is this is network connected?
         String capability = null;
         boolean supported = false;
-        PackageManager pm = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager();
+        PackageManager pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
         switch (type) {
             case GPRS:
             case GSM:
@@ -337,7 +335,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
     public boolean hasSensorSupport(ICapabilitiesSensor type) {
         String capability = null;
         boolean supported = false;
-        PackageManager pm = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager();
+        PackageManager pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
         switch (type) {
             case Accelerometer:
                 capability = PackageManager.FEATURE_SENSOR_ACCELEROMETER;

@@ -34,6 +34,7 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
 import android.content.Intent;
 
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class MailDelegate extends BasePIMDelegate implements IMail {
 
 
         try {
-            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(Intent.createChooser(emailIntent, "Send mail..."));
             callback.onResult(true);
             Logger.log(ILoggingLogLevel.Debug, "Finished sending email...", "");
         } catch (android.content.ActivityNotFoundException ex) {

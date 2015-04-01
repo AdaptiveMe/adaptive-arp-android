@@ -42,6 +42,8 @@ import me.adaptive.arp.api.BaseApplicationDelegate;
 import me.adaptive.arp.api.ILifecycle;
 import me.adaptive.arp.api.ILifecycleListener;
 import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.api.Lifecycle;
+import me.adaptive.arp.api.LifecycleState;
 
 /**
  * Interface for Managing the Lifecycle listeners
@@ -52,7 +54,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
 
     public static String APIService = "lifecycle";
     static LoggingDelegate Logger;
-    public List<ILifecycleListener> listeners = new ArrayList<ILifecycleListener>();
+    private List<ILifecycleListener> listeners = new ArrayList<>();
     private boolean isBackground;
 
     /**
@@ -129,6 +131,12 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
     public void removeLifecycleListeners() {
         listeners.clear();
         Logger.log(ILoggingLogLevel.Debug, APIService, "removeLifecycleListeners: ALL LifecycleListener have been removed!");
+    }
+
+    public void updateLifecycleListeners(LifecycleState state) {
+            for (ILifecycleListener listener : this.listeners) {
+                listener.onResult(new Lifecycle(state, System.currentTimeMillis()));
+            }
     }
 
 }

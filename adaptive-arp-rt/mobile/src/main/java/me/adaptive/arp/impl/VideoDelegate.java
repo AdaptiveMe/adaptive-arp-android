@@ -34,6 +34,7 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -122,7 +123,7 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
 
             Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), VideoActivity.class);
             intent.putExtra("url", url);
-            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(intent);
+            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(intent);
            // ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().overridePendingTransition(R.anim.right_slide_in, R.anim.right_slide_out);
 
         } catch (Exception ex) {
@@ -134,7 +135,7 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
 
 
     private boolean isCallable(Intent intent) {
-        List<ResolveInfo> list = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().getApplicationContext().getPackageManager().queryIntentActivities(intent,
+        List<ResolveInfo> list = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager().queryIntentActivities(intent,
                 PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }

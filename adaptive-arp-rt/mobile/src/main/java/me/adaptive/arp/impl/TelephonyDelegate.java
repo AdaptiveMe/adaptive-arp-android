@@ -34,6 +34,7 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -73,7 +74,7 @@ public class TelephonyDelegate extends BaseCommunicationDelegate implements ITel
             String uri = "tel:" + number.trim();
             Intent intent = new Intent(Intent.ACTION_CALL);
             intent.setData(Uri.parse(uri));
-            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(intent);
+            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(intent);
         } catch (Exception ex) {
             return ITelephonyStatus.Failed;
         }

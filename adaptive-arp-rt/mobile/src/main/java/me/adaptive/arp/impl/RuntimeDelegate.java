@@ -34,6 +34,8 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
+
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseSystemDelegate;
 import me.adaptive.arp.api.IRuntime;
@@ -61,7 +63,8 @@ public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
      * @since ARP1.0
      */
     public void dismissApplication() {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().finish();
+        // TODO
+        //((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).finish();
     }
 
     /**

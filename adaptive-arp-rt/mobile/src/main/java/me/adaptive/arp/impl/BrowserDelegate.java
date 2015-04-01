@@ -34,6 +34,7 @@
 
 package me.adaptive.arp.impl;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -80,7 +81,7 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
         try {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
-            AppContextDelegate.getMainActivity().startActivity(i);
+            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(i);
             return true;
         } catch (Exception ex) {
             return false;
@@ -100,8 +101,8 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
         try {
             Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), BrowserActivity.class);
             intent.putExtra("url", url);
-            intent.putExtra("title", title);
-            ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().startActivity(intent);
+
+            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(intent);
             //((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().overridePendingTransition(R.anim.fade_out, R.anim.slide_up);
             result = true;
         } catch (Exception ex) {
