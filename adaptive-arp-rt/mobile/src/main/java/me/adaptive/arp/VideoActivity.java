@@ -30,6 +30,7 @@ public class VideoActivity extends Activity {
      * Default Constructor.
      */
     public VideoActivity() {
+        super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
     }
 

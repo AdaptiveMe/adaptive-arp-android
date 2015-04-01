@@ -41,6 +41,7 @@ import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.IAppContextWebview;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
@@ -50,17 +51,20 @@ import me.adaptive.arp.api.ILoggingLogLevel;
 public class AppContextWebviewDelegate implements IAppContextWebview {
 
 
-    static LoggingDelegate Logger;
-    public String APIService = "contextWebview";
-    WebView mainView = null;
-    List<Object> views = new ArrayList<Object>();
+    // Logger
+    private static final String LOG_TAG = "MainActivity";
+    private ILogging logger;
+
+    private WebView primaryView;
+    private List<Object> views;
 
     /**
      * Default Constructor.
      */
     public AppContextWebviewDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        views = new ArrayList<>();
     }
 
 
@@ -74,6 +78,7 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
      * @since ARP1.0
      */
     public void addWebview(Object webView) {
+
         views.add(webView);
     }
 
@@ -83,21 +88,17 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
      * @param javaScriptText The javascript expression to execute on the webview.
      */
     public void executeJavaScript(String javaScriptText) {
-        try {
-            if (mainView != null)
-                mainView.loadUrl("javascript:" + javaScriptText);
-        } catch (Exception e) {
-            Logger.log(ILoggingLogLevel.Error, "Error on executeJavaScript (" + javaScriptText + ") Error: " +
-                    e.getLocalizedMessage());
-        }
-        /* for(Object view: views){
-             try{
-                 ((WebView)view).loadUrl("javascript:"+javaScriptText);
-             }catch (Exception e){
-                 Logger.log(ILoggingLogLevel.Error,"Error on executeJavaScript ("+javaScriptText+" : "+view.toString()+") Error: "+
-                    e.getLocalizedMessage());
-             }
-         }*/
+
+        final String js = javaScriptText;
+
+        // Run the Javascript asynchronously
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
+
+                primaryView.loadUrl("javascript:" + js);
+            }
+        });
     }
 
     /**
@@ -107,12 +108,18 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
      * @param webViewReference The target webview on which to execute the expression.
      */
     public void executeJavaScript(String javaScriptText, Object webViewReference) {
-        try {
-            ((WebView) webViewReference).loadUrl("javascript:" + javaScriptText);
-        } catch (Exception e) {
-            Logger.log(ILoggingLogLevel.Error, "Error on executeJavaScript (" + javaScriptText + " : " + webViewReference.toString() + ") Error: " +
-                    e.getLocalizedMessage());
-        }
+
+        final String js = javaScriptText;
+        final WebView wv = (WebView) webViewReference;
+
+        // Run the Javascript asynchronously
+        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
+
+                wv.loadUrl("javascript:" + js);
+            }
+        });
     }
 
     /**
@@ -124,11 +131,7 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
      * @since ARP1.0
      */
     public Object getWebviewPrimary() {
-        return this.mainView;
-    }
-
-    public void setWebviewPrimary(Object webView) {
-        this.mainView = (WebView) webView;
+        return this.primaryView;
     }
 
     /**
@@ -139,7 +142,11 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
      * @since ARP1.0
      */
     public Object[] getWebviews() {
-        return views.toArray();
+
+        List<Object> ret = views;
+        // Add the primary webview
+        ret.add(primaryView);
+        return ret.toArray();
     }
 
     /**
@@ -150,9 +157,30 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
      * @since ARP1.0
      */
     public void removeWebview(Object webView) {
-        if (views.contains(webView)) views.remove(webView);
+        if (views.contains(webView)) {
+            views.remove(webView);
+        } else {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "The webView you're trying to remove is not on the list");
+        }
     }
 
+    /**
+     * Getter for the primary webView
+     *
+     * @return The primary webView
+     */
+    public WebView getPrimaryView() {
+        return primaryView;
+    }
+
+    /**
+     * Setter for the primary webView
+     *
+     * @param primaryView The primary webView
+     */
+    public void setPrimaryView(WebView primaryView) {
+        this.primaryView = primaryView;
+    }
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

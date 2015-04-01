@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
-    <!--<issue id="Overdraw" severity="ignore"/>
-    <issue id="SetJavaScriptEnabled" severity="ignore" />
+    <!-- TODO: remove all this lint exceptions -->
+
+    <!-- OldTargetApi: Target SDK attribute is not targeting latest version -->
+    <issue id="OldTargetApi" severity="ignore" />
+
+    <!-- IconMissingDensityFolder: Missing density folder -->
     <issue id="IconMissingDensityFolder" severity="ignore" />
-    <issue id="OldTargetApi" severity="ignore" />-->
+
+    <!-- Overdraw: Overdraw: Painting regions more than once -->
+    <issue id="Overdraw" severity="ignore"/>
+
+    <!-- GradleDependency: Obsolete Gradle Dependency -->
+    <issue id="GradleDependency" severity="ignore"/>
 </lint>

@@ -38,6 +38,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
@@ -45,7 +46,10 @@ import me.adaptive.arp.api.BaseSystemDelegate;
 import me.adaptive.arp.api.ICapabilitiesOrientation;
 import me.adaptive.arp.api.IDisplay;
 import me.adaptive.arp.api.IDisplayOrientationListener;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.api.RotationEvent;
+import me.adaptive.arp.api.RotationEventState;
 
 /**
  * Interface for Managing the Display operations
@@ -53,16 +57,24 @@ import me.adaptive.arp.api.ILoggingLogLevel;
  */
 public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
 
-    static LoggingDelegate Logger;
-    public String APIService = "display";
-    public List<IDisplayOrientationListener> listeners = new ArrayList<>();
+    // Logger
+    private static final String LOG_TAG = "DisplayDelegate";
+    private ILogging logger;
+
+    // Listeners
+    private List<IDisplayOrientationListener> displayOrientationListeners;
+
+    // Context
+    private Context context;
 
     /**
      * Default Constructor.
      */
     public DisplayDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        displayOrientationListeners = new ArrayList<>();
+        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
     /**
@@ -72,11 +84,12 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * @since v2.0.5
      */
     public void addDisplayOrientationListener(IDisplayOrientationListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "addDisplayOrientationListener: " + listener.toString() + " Added!");
+
+        if (!displayOrientationListeners.contains(listener)) {
+            displayOrientationListeners.add(listener);
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "addDisplayOrientationListener: " + listener.toString() + " added!");
         } else
-            Logger.log(ILoggingLogLevel.Debug, APIService, "addDisplayOrientationListener: " + listener.toString() + " is already added!");
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "addDisplayOrientationListener: " + listener.toString() + " is already added!");
     }
 
     /**
@@ -87,15 +100,19 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * @since v2.0.5
      */
     public ICapabilitiesOrientation getOrientationCurrent() {
-        Context context = ((Context) AppRegistryBridge.getInstance().getPlatformContext().getDelegate().getContext());
+
         Configuration config = context.getResources().getConfiguration();
+
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getOrientationCurrent: " + config.toString());
+
         switch (config.orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 return ICapabilitiesOrientation.PortraitUp;
             case Configuration.ORIENTATION_PORTRAIT:
                 return ICapabilitiesOrientation.LandscapeLeft;
+            default:
+                return ICapabilitiesOrientation.Unknown;
         }
-        return ICapabilitiesOrientation.Unknown;
     }
 
     /**
@@ -105,11 +122,12 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * @since v2.0.5
      */
     public void removeDisplayOrientationListener(IDisplayOrientationListener listener) {
-        if (listeners.contains(listener)) {
-            listeners.remove(listener);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "removeDisplayOrientationListener: " + listener.toString() + " Removed!");
+
+        if (displayOrientationListeners.contains(listener)) {
+            displayOrientationListeners.remove(listener);
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeDisplayOrientationListener: " + listener.toString() + " removed!");
         } else
-            Logger.log(ILoggingLogLevel.Debug, APIService, "removeDisplayOrientationListener: " + listener.toString() + " is NOT registered");
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "removeDisplayOrientationListener: " + listener.toString() + " is not registered");
     }
 
     /**
@@ -118,8 +136,20 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * @since v2.0.5
      */
     public void removeDisplayOrientationListeners() {
-        listeners.clear();
-        Logger.log(ILoggingLogLevel.Debug, APIService, "removeDisplayOrientationListeners: " + "ALL listeners have been removed!");
+
+        displayOrientationListeners.clear();
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeDisplayOrientationListeners: all listeners have been removed!");
+    }
+
+    /**
+     * Public method called for update the current state of all the listeners registered
+     */
+    public void updateDisplayOrientationListeners() {
+
+        for (IDisplayOrientationListener listener : displayOrientationListeners) {
+            listener.onResult(new RotationEvent(ICapabilitiesOrientation.Unknown, this.getOrientationCurrent(),
+                    RotationEventState.DidFinishRotation, new Date().getTime()));
+        }
     }
 
 }

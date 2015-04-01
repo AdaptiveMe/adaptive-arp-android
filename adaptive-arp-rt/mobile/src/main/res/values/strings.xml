@@ -3,5 +3,6 @@
 
     <string name="app_name">Adaptive Runtime Platform</string>
     <string name="arp_url">https://adaptiveapp/</string>
+    <string name="arp_page">index.html</string>
 
 </resources>

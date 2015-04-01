@@ -10,8 +10,8 @@ import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.common.webview.Utils;
-import me.adaptive.arp.core.WebChromeClient;
-import me.adaptive.arp.core.WebViewClient;
+import me.adaptive.arp.core.net.WebChromeClient;
+import me.adaptive.arp.core.net.WebViewClient;
 
 /**
  * Custom Activity to show an internal browser inside an Adaptive ARP Application
@@ -29,6 +29,7 @@ public class BrowserActivity extends Activity {
      * Default Constructor.
      */
     public BrowserActivity() {
+        super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
     }
 

@@ -1,15 +1,30 @@
 package me.adaptive.arp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.OrientationEventListener;
 import android.webkit.WebView;
 
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
+import java.util.HashMap;
+import java.util.Hashtable;
+
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.ILogging;
+import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.LifecycleState;
 import me.adaptive.arp.common.webview.Utils;
-import me.adaptive.arp.core.WebChromeClient;
-import me.adaptive.arp.core.WebViewClient;
+import me.adaptive.arp.core.net.CustomStreamHandler;
+import me.adaptive.arp.core.net.WebChromeClient;
+import me.adaptive.arp.core.net.WebViewClient;
 import me.adaptive.arp.impl.AccelerationDelegate;
 import me.adaptive.arp.impl.AppContextDelegate;
 import me.adaptive.arp.impl.AppContextWebviewDelegate;
@@ -39,11 +54,45 @@ import me.adaptive.arp.impl.VideoDelegate;
 
 public class MainActivity extends Activity {
 
-    /*OrientationEventListener orientationEventListener;
-    LoggingBridge Logger = AppRegistryBridge.getInstance().getLoggingBridge();
-    LifecycleBridge lifecycle = AppRegistryBridge.getInstance().getLifecycleBridge();*/
+    // Logger
+    private static final String LOG_TAG = "MainActivity";
+    private ILogging logger;
+
+    // Orientation listener
+    private OrientationEventListener orientationEventListener;
+
+    // Webview
+    private WebView webView;
+
+    // context
+    private Context context;
+
+    static {
+        // URLStreamHandler substitution: Lazy loading of the stream handlers
+        URLStreamHandler httpHandler = null;
+        URLStreamHandler httpsHandler = null;
+        try {
+            httpHandler = (URLStreamHandler) Class.forName("com.android.okhttp.HttpHandler").newInstance();
+            httpsHandler = (URLStreamHandler) Class.forName("com.android.okhttp.HttpsHandler").newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Hashtable<String, URLStreamHandler> handlers = Utils.getURLStreamHandlers();
+
+        // Setting of the custom stream handlers
+        handlers.put("http", new CustomStreamHandler(httpHandler));
+        handlers.put("https", new CustomStreamHandler(httpsHandler));
+    }
 
 
+    /**
+     * Called when the activity is starting.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut
+     *                           down then this Bundle contains the data it most recently supplied in
+     *                           onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -52,10 +101,12 @@ public class MainActivity extends Activity {
 
         // Register Logging delegate
         AppRegistryBridge.getInstance().getLoggingBridge().setDelegate(new LoggingDelegate());
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
 
         // Register the application delegates
         AppRegistryBridge.getInstance().getPlatformContext().setDelegate(new AppContextDelegate(this));
         AppRegistryBridge.getInstance().getPlatformContextWeb().setDelegate(new AppContextWebviewDelegate());
+        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
 
         // Register all the delegates
         AppRegistryBridge.getInstance().getAccelerationBridge().setDelegate(new AccelerationDelegate());
@@ -81,148 +132,165 @@ public class MainActivity extends Activity {
         AppRegistryBridge.getInstance().getTelephonyBridge().setDelegate(new TelephonyDelegate());
         AppRegistryBridge.getInstance().getVideoBridge().setDelegate(new VideoDelegate());
 
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onCreate()");
+        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Starting);
+
         // Webview initialization
-        WebView webView = (WebView) findViewById(R.id.webView);
+        webView = (WebView) findViewById(R.id.webView);
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
 
+        // Save the primary Webview reference
+        ((AppContextWebviewDelegate) AppRegistryBridge.getInstance().getPlatformContextWeb().getDelegate()).setPrimaryView(webView);
+
         // webView settings
         Utils.setWebViewSettings(webView);
-        webView.loadUrl("https://adaptiveapp/index.html");
 
+        // Load main page
+        webView.loadUrl(context.getString(R.string.arp_url) + context.getString(R.string.arp_page));
 
-        //AppRegistryBridge.getInstance().getBrowserBridge().openInternalBrowser("http://www.google.com", "Google", "Adaptive.me!");
+        // Orientation listener
+        orientationEventListener = new OrientationEventListener(getApplicationContext(), SensorManager.SENSOR_DELAY_UI) {
 
-        /*orientationEventListener = new OrientationEventListener(getApplicationContext(), SensorManager.SENSOR_DELAY_UI) {
+            @Override
             public void onOrientationChanged(int orientation) {
 
-                if (AppRegistryBridge.getInstance().getDisplayBridge().getDelegate() != null) {
-                    for (IDisplayOrientationListener listener : ((DisplayDelegate) AppRegistryBridge
-                            .getInstance().getDisplayBridge().getDelegate()).listeners) {
-                        listener.onResult(new RotationEvent(ICapabilitiesOrientation.Unknown, getOrientation(orientation), RotationEventState.Unknown, new Date().getTime()));
-                    }
-                }
-
-                ICapabilitiesOrientation state;
-                final int rotation = ((WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
-                switch (rotation) {
-                    case Surface.ROTATION_0:
-                        state = ICapabilitiesOrientation.PortraitUp;
-                    case Surface.ROTATION_90:
-                        state = ICapabilitiesOrientation.LandscapeRight;
-                    case Surface.ROTATION_180:
-                        state = ICapabilitiesOrientation.PortraitDown;
-                    case Surface.ROTATION_270:
-                        state = ICapabilitiesOrientation.LandscapeLeft;
-                    default:
-                        state = ICapabilitiesOrientation.Unknown;
-                }
-                if (AppRegistryBridge.getInstance().getDeviceBridge().getDelegate() != null) {
-                    for (IDeviceOrientationListener listener : ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).listenersOrientation) {
-                        listener.onResult(new RotationEvent(null, state, RotationEventState.DidFinishRotation, new Date().getTime()));
-                    }
-                }
+                // Device orientation listeners
+                ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).updateDeviceOrientationListeners();
+                // Display orientation listeners
+                ((DisplayDelegate) AppRegistryBridge.getInstance().getDisplayBridge().getDelegate()).updateDisplayOrientationListeners();
             }
         };
-        if (orientationEventListener.canDetectOrientation()) orientationEventListener.enable();
-
-        LifecicleUpdate(LifecycleState.Started);
-        LifecicleUpdate(LifecycleState.Running);*/
     }
 
+    /**
+     * Called after onCreate(Bundle) — or after onRestart() when the activity had been stopped, but
+     * is now again being displayed to the user. It will be followed by onResume().
+     */
     @Override
     protected void onStart() {
-        super.onStart();  // Always call the superclass method first
+        super.onStart();
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onStart()");
+        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Started);
+        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Running);
 
-        LifecicleUpdate(LifecycleState.Started);
+        if (orientationEventListener.canDetectOrientation()) {
+            orientationEventListener.enable();
+        } else {
+            logger.log(ILoggingLogLevel.Warn, LOG_TAG, "It's not possible to detect the device orientation changes");
+        }
     }
 
-    private void LifecicleUpdate(LifecycleState state) {
-        /*if (lifecycle.getDelegate() != null) {
-            for (ILifecycleListener listener : ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).listeners) {
-                listener.onResult(new Lifecycle(state, System.currentTimeMillis()));
-            }
-        }*/
-    }
-
+    /**
+     * Called after onStop() when the current activity is being re-displayed to the user (the user
+     * has navigated back to it). It will be followed by onStart() and then onResume().
+     */
     @Override
     protected void onRestart() {
-        super.onRestart();  // Always call the superclass method first
-
-        //LifecicleUpdate(LifecycleState.Running);
-
-
+        super.onRestart();
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onRestart()");
     }
 
+    /**
+     * Called after onRestoreInstanceState(Bundle), onRestart(), or onPause(), for your activity to
+     * start interacting with the user. This is a good place to begin animations, open
+     * exclusive-access devices (such as the camera), etc.
+     */
     @Override
     public void onResume() {
-        //((LifecycleDelegate) lifecycle.getDelegate()).setBackground(false);
         super.onResume();
-        /*if (orientationEventListener.canDetectOrientation()) orientationEventListener.enable();
-        LifecicleUpdate(LifecycleState.Resuming);*/
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onResume()");
+        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Resuming);
+
+        if (orientationEventListener.canDetectOrientation()) {
+            orientationEventListener.enable();
+        } else {
+            logger.log(ILoggingLogLevel.Warn, LOG_TAG, "It's not possible to detect the device orientation changes");
+        }
     }
 
+    /**
+     * Called as part of the activity lifecycle when an activity is going into the background, but
+     * has not (yet) been killed. The counterpart to onResume().
+     */
     @Override
     public void onPause() {
-        //((LifecycleDelegate) lifecycle.getDelegate()).setBackground(true);
-        super.onPause();  // Always call the superclass method first
+        super.onPause();
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onPause()");
+        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Pausing);
 
-        /*LifecicleUpdate(LifecycleState.Pausing);
-
-        orientationEventListener.disable();*/
+        orientationEventListener.disable();
     }
 
+    /**
+     * Called to retrieve per-instance state from an activity before being killed so that the state
+     * can be restored in onCreate(Bundle) or onRestoreInstanceState(Bundle) (the Bundle populated
+     * by this method will be passed to both).
+     *
+     * @param savedInstanceState Bundle in which to place your saved state.
+     */
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        /* Save the user's current game state
-        savedInstanceState.putInt(STATE_SCORE, mCurrentScore);
-        savedInstanceState.putInt(STATE_LEVEL, mCurrentLevel);*/
-
-        // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onSaveInstanceState()");
+
+        // Save the state of the WebView
+        webView.saveState(savedInstanceState);
     }
 
+    /**
+     * This method is called after onStart() when the activity is being re-initialized from a
+     * previously saved state, given here in savedInstanceState.
+     *
+     * @param savedInstanceState the data most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Always call the superclass so it can restore the view hierarchy
         super.onRestoreInstanceState(savedInstanceState);
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onRestoreInstanceState()");
 
-        /* Restore state members from saved instance
-        mCurrentScore = savedInstanceState.getInt(STATE_SCORE);
-        mCurrentLevel = savedInstanceState.getInt(STATE_LEVEL);*/
+        // Restore the state of the WebView
+        webView.restoreState(savedInstanceState);
     }
 
+    /**
+     * Called when you are no longer visible to the user. You will next receive either onRestart(),
+     * onDestroy(), or nothing, depending on later user activity. Note that this method may never be
+     * called, in low memory situations where the system does not have enough memory to keep your
+     * activity's process running after its onPause() method is called.
+     */
     @Override
     public void onStop() {
-        super.onPause();  // Always call the superclass method first
-        /*LifecicleUpdate(LifecycleState.Stopping);
-        orientationEventListener.disable();*/
+        super.onStop();
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onStop()");
+
+        orientationEventListener.disable();
     }
 
+    /**
+     * Perform any final cleanup before an activity is destroyed. This can happen either because the
+     * activity is finishing (someone called finish() on it, or because the system is temporarily
+     * destroying this instance of the activity to save space.
+     */
     @Override
     public void onDestroy() {
-        super.onPause();  // Always call the superclass method first
+        super.onDestroy();
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onDestroy()");
+        ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate()).updateLifecycleListeners(LifecycleState.Stopping);
 
-        /*LifecicleUpdate(LifecycleState.Stopping);
-        orientationEventListener.disable();*/
+        orientationEventListener.disable();
     }
 
-    /*private ICapabilitiesOrientation getOrientation(int orientation) {
-        switch (orientation) {
-            case ORIENTATION_LANDSCAPE:
-                return ICapabilitiesOrientation.PortraitUp;
-            case ORIENTATION_PORTRAIT:
-                return ICapabilitiesOrientation.LandscapeLeft;
-        }
-        return ICapabilitiesOrientation.Unknown;
-    }*/
 
-
+    /**
+     * Called by the system when the device configuration changes while your activity is running.
+     * Note that this will only be called if you have selected configurations you would like to
+     * handle with the configChanges attribute in your manifest.
+     *
+     * @param newConfig
+     */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
-
     }
-
 }

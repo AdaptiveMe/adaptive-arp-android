@@ -48,7 +48,7 @@ public class AppResourceManager {
         // TODO: Implement AppPacker Reader for Android
         // TODO: remove this code (LEGACY)
 
-        String file = url.replaceFirst(String.valueOf(R.string.arp_url), "www/");
+        String file = url.replaceFirst(context.getString(R.string.arp_url), "www/");
         return this.retriveResource(file);
     }
 
@@ -63,7 +63,7 @@ public class AppResourceManager {
         // TODO: Implement AppPacker Reader for Android
         // TODO: remove this code (LEGACY)
 
-        String file = url.replaceFirst(String.valueOf(R.string.arp_url), "config/");
+        String file = url.replaceFirst(context.getString(R.string.arp_url), "config/");
         return this.retriveResource(file);
     }
 
