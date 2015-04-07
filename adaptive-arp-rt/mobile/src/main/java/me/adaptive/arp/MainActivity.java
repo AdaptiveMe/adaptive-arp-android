@@ -12,8 +12,8 @@ import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.LifecycleState;
-import me.adaptive.arp.api.ServiceToken;
 import me.adaptive.arp.common.webview.Utils;
+import me.adaptive.arp.core.net.WebChromeClient;
 import me.adaptive.arp.core.net.WebViewClient;
 import me.adaptive.arp.impl.AccelerationDelegate;
 import me.adaptive.arp.impl.AppContextDelegate;
@@ -128,12 +128,12 @@ public class MainActivity extends Activity {
         lifecycleDelegate.updateBackground(false);
 
 
-        ServiceToken st = AppRegistryBridge.getInstance().getServiceBridge().getServiceTokenByUri("http://api.geonames.org/postalCodeLookupJSON");
+        //ServiceToken st = AppRegistryBridge.getInstance().getServiceBridge().getServiceTokenByUri("http://api.geonames.org/postalCodeLookupJSON");
 
         // Webview initialization
         webView = (WebView) findViewById(R.id.webView);
         webView.setWebViewClient(new WebViewClient());
-        //webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebChromeClient(new WebChromeClient());
 
         // Save the primary Webview reference
         ((AppContextWebviewDelegate) AppRegistryBridge.getInstance().getPlatformContextWeb().getDelegate()).setPrimaryView(webView);
