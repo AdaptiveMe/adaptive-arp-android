@@ -4,25 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.OrientationEventListener;
 import android.webkit.WebView;
-
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
-import java.util.HashMap;
-import java.util.Hashtable;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.LifecycleState;
 import me.adaptive.arp.common.webview.Utils;
-import me.adaptive.arp.core.net.CustomStreamHandler;
 import me.adaptive.arp.core.net.WebChromeClient;
 import me.adaptive.arp.core.net.WebViewClient;
 import me.adaptive.arp.impl.AccelerationDelegate;
@@ -66,24 +56,6 @@ public class MainActivity extends Activity {
 
     // context
     private Context context;
-
-    static {
-        // URLStreamHandler substitution: Lazy loading of the stream handlers
-        URLStreamHandler httpHandler = null;
-        URLStreamHandler httpsHandler = null;
-        try {
-            httpHandler = (URLStreamHandler) Class.forName("com.android.okhttp.HttpHandler").newInstance();
-            httpsHandler = (URLStreamHandler) Class.forName("com.android.okhttp.HttpsHandler").newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Hashtable<String, URLStreamHandler> handlers = Utils.getURLStreamHandlers();
-
-        // Setting of the custom stream handlers
-        handlers.put("http", new CustomStreamHandler(httpHandler));
-        handlers.put("https", new CustomStreamHandler(httpsHandler));
-    }
 
 
     /**
