@@ -157,7 +157,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public ServiceToken getServiceTokenByUri(String uri) {
-
+        if(services == null) initialize();
         URL url = null;
         if(!Utils.validateURI(uri, "^https?://.*")) return null;
         try {
@@ -192,6 +192,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public ServiceRequest getServiceRequest(ServiceToken serviceToken) {
+        if(services == null) initialize();
         ServiceRequest request = new ServiceRequest(null,serviceToken);
         if(serviceSession.containsKey(serviceToken.getEndpointName())){
            Session session = serviceSession.get(serviceToken.getEndpointName());
@@ -218,7 +219,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public ServiceToken getServiceToken(String serviceName, String endpointName, String functionName, IServiceMethod method) {
-
+        if(services == null) initialize();
         if(services.containsKey(serviceName)){
             Service serv = services.get(serviceName);
             for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
@@ -246,6 +247,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public ServiceToken[] getServicesRegistered() {
+        if(services == null) initialize();
         List<ServiceToken> tokens = new ArrayList<>();
         for(Service serv: services.values()){
             for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
@@ -285,6 +287,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public boolean isServiceRegistered(String serviceName, String endpointName, String functionName, IServiceMethod method) {
+        if(services == null) initialize();
         if(services.containsKey(serviceName)) {
             Service serv = services.get(serviceName);
             for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
