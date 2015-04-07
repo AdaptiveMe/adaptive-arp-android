@@ -50,7 +50,7 @@ import me.adaptive.arp.api.OSInfo;
  */
 public class OSDelegate extends BaseSystemDelegate implements IOS {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "RuntimeDelegate";
     private ILogging logger;
 

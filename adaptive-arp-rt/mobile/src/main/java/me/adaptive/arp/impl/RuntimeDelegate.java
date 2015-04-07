@@ -49,7 +49,7 @@ import me.adaptive.arp.api.IRuntime;
  */
 public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "RuntimeDelegate";
     private ILogging logger;
 

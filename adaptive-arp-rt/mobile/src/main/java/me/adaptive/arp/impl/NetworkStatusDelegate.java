@@ -39,6 +39,7 @@ import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseCommunicationDelegate;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.INetworkStatus;
 import me.adaptive.arp.api.INetworkStatusListener;
@@ -50,17 +51,20 @@ import me.adaptive.arp.api.INetworkStatusListener;
 public class NetworkStatusDelegate extends BaseCommunicationDelegate implements INetworkStatus {
 
 
-    private static String APIService = "networkStatus";
-    static LoggingDelegate Logger;
-    private static List<INetworkStatusListener> listeners = new ArrayList<INetworkStatusListener>();
+    // logger
+    private static final String LOG_TAG = "NetworkStatusDelegate";
+    private ILogging logger;
+
+    // Listeners
+    private static List<INetworkStatusListener> listeners;
 
     /**
      * Default Constructor.
      */
     public NetworkStatusDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        listeners = new ArrayList<INetworkStatusListener>();
     }
 
     public static List<INetworkStatusListener> getListeners() {
@@ -76,9 +80,9 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
     public void addNetworkStatusListener(INetworkStatusListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "addNetworkStatusListener: " + listener.toString() + " Added!");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "addNetworkStatusListener: " + listener.toString() + " Added!");
         } else
-            Logger.log(ILoggingLogLevel.Debug, APIService, "addNetworkStatusListener: " + listener.toString() + " is already added!");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "addNetworkStatusListener: " + listener.toString() + " is already added!");
     }
 
     /**
@@ -90,9 +94,9 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
     public void removeNetworkStatusListener(INetworkStatusListener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "removeNetworkStatusListener" + listener.toString() + " Removed!");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeNetworkStatusListener" + listener.toString() + " Removed!");
         } else
-            Logger.log(ILoggingLogLevel.Debug, APIService, "removeNetworkStatusListener: " + listener.toString() + " is NOT registered");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeNetworkStatusListener: " + listener.toString() + " is NOT registered");
     }
 
     /**
@@ -102,7 +106,7 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
      */
     public void removeNetworkStatusListeners() {
         listeners.clear();
-        Logger.log(ILoggingLogLevel.Debug, APIService, "removeNetworkStatusListeners: ALL NetworkStatusListeners have been removed!");
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeNetworkStatusListeners: ALL NetworkStatusListeners have been removed!");
     }
 
 }

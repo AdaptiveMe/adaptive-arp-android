@@ -51,7 +51,7 @@ import me.adaptive.arp.api.IVideo;
  */
 public class VideoDelegate extends BaseMediaDelegate implements IVideo {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "VideoDelegate";
     private ILogging logger;
 

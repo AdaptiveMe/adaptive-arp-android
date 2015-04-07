@@ -58,7 +58,7 @@ import me.adaptive.arp.api.IMessagingCallbackWarning;
  */
 public class MailDelegate extends BasePIMDelegate implements IMail {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "MailDelegate";
     private ILogging logger;
 

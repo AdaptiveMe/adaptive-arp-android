@@ -57,7 +57,7 @@ import me.adaptive.arp.api.RotationEventState;
  */
 public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "DisplayDelegate";
     private ILogging logger;
 

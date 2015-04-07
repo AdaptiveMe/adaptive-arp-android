@@ -51,7 +51,7 @@ import me.adaptive.arp.api.ILoggingLogLevel;
 public class AppContextWebviewDelegate implements IAppContextWebview {
 
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "MainActivity";
     private ILogging logger;
 

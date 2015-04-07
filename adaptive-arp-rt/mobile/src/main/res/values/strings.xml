@@ -5,4 +5,19 @@
     <string name="arp_url">https://adaptiveapp/</string>
     <string name="arp_page">index.html</string>
 
+
+    <string name="io_validator">io-config.xsd</string>
+    <string name="io_file">io-config.xml</string>
+
+    <string name="i18n_validator">i18n-config.xsd</string>
+    <string name="i18n_file">i18n-config.xml</string>
+
+    <string name="i18n_file_extension">.plist</string>
+    <string name="i18n_default_node">default</string>
+    <string name="i18n_supportedLanguage_node">supportedLanguage</string>
+
+
+    <string name="definitions_folder">definitions/</string>
+    <string name="config_folder">config/</string>
+
 </resources>

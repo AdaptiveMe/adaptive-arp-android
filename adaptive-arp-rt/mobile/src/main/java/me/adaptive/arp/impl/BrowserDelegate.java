@@ -42,6 +42,7 @@ import me.adaptive.arp.BrowserActivity;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseUIDelegate;
 import me.adaptive.arp.api.IBrowser;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
@@ -50,24 +51,20 @@ import me.adaptive.arp.api.ILoggingLogLevel;
  */
 public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
 
+    // logger
+    private static final String LOG_TAG = "BrowserDelegate";
+    private ILogging logger;
 
-    public static final String EXTRA_URL = "extra_url";
-    public static final String EXTRA_HTML = "extra_html";
-    public static final String EXTRA_BROWSER_TITLE = "extra_title";
-    public static final String EXTRA_BUTTON_TEXT = "extra_buttontext";
-    public static final String EXTRA_FILE_EXTENSIONS = "extra_fileextensions";
-
-    private static final String ACTION_SHOW_BROWSER = "arp.adaptive.me.SHOW_BROWSER";
-
-    public static String APIService = "browser";
-    static LoggingDelegate Logger;
+    // Context
+    private Context context;
 
     /**
      * Default Constructor.
      */
     public BrowserDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
     /**
@@ -81,7 +78,7 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
         try {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
-            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(i);
+            context.startActivity(i);
             return true;
         } catch (Exception ex) {
             return false;
@@ -102,11 +99,11 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
             Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), BrowserActivity.class);
             intent.putExtra("url", url);
 
-            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(intent);
+            context.startActivity(intent);
             //((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().overridePendingTransition(R.anim.fade_out, R.anim.slide_up);
             result = true;
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "tryConnection error " + ex.getLocalizedMessage());
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "tryConnection error " + ex.getLocalizedMessage());
         }
         return result;
     }

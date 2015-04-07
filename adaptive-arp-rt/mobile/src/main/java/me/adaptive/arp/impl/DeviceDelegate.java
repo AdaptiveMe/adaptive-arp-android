@@ -62,7 +62,7 @@ import me.adaptive.arp.api.RotationEventState;
  */
 public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "DeviceDelegate";
     private ILogging logger;
 

@@ -52,6 +52,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseApplicationDelegate;
 import me.adaptive.arp.api.IGlobalization;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.KeyPair;
 import me.adaptive.arp.api.Locale;
@@ -66,7 +67,7 @@ import me.adaptive.arp.common.parser.xml.XmlParser;
 public class GlobalizationDelegate extends BaseApplicationDelegate implements IGlobalization {
 
 
-    protected static final String APP_CONFIG_PATH = "app/config/";
+    protected static final String APP_CONFIG_PATH = "config/";
     protected static final String APP_DEFINITIONS_CONFIG_PATH = "definitions/";
     protected static final String I18N_CONFIG_FILENAME = "i18n-config.xml";
     protected static final String I18N_CONFIG_FILE = APP_CONFIG_PATH+I18N_CONFIG_FILENAME;
@@ -78,8 +79,9 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
     protected static final String DEFAULT_LOCALE_TAG = "default";
     protected static final String SUPPORTED_LOCALE_TAG = "supportedLanguage";
 
-    public static String APIService = "globalization";
-    static LoggingDelegate Logger;
+    // logger
+    private static final String LOG_TAG = "GlobalizationDelegate";
+    private ILogging logger;
 
 
     private Locale defaultLocale;
@@ -90,8 +92,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
      */
     public GlobalizationDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
     }
 
     /**
@@ -110,6 +111,10 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
             origin = assetManager.open(I18N_CONFIG_FILE);
             validator = assetManager.open(I18N_CONFIG_VALIDATOR_FILE);
 
+            /*if(XmlParser.getInstance().validateWithIntXSDUsingDOM(I18N_CONFIG_FILE)){
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VALID");
+            }else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");*/
+
             Document document = XmlParser.getInstance().parseXml(origin,validator);
             defaultLocale = XmlParser.getInstance().getLocaleData(document, DEFAULT_LOCALE_TAG).get(0);
             supportedLocale = XmlParser.getInstance().getLocaleData(document,SUPPORTED_LOCALE_TAG);
@@ -121,11 +126,11 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
                 i18nData.put(localeToString(locale),plist);
             }
         } catch (IOException e) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "Error Opening xml - Error: " + e.getLocalizedMessage());
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Opening xml - Error: " + e.getLocalizedMessage());
         } catch (ParserConfigurationException e) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "Error Parsing xml - Error: " + e.getLocalizedMessage());
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Parsing xml - Error: " + e.getLocalizedMessage());
         } catch (SAXException e) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "Error Validating xml - Error: " + e.getLocalizedMessage());
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Validating xml - Error: " + e.getLocalizedMessage());
         }finally {
             closeStream(plistIS);
 
@@ -187,7 +192,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
     public KeyPair[] getResourceLiterals(Locale locale) {
         if(i18nData == null)
             initialize();
-        return i18nData.get(locale).getKeyPair();
+        return i18nData.get(localeToString(locale)).getKeyPair();
     }
 
     /**
@@ -206,14 +211,14 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
      *
      * @param is inputString
      */
-    private static void closeStream(InputStream is) {
+    private void closeStream(InputStream is) {
 
         try {
             if (is != null) {
                 is.close();
             }
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "Error closing stream: " + ex.getLocalizedMessage());
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error closing stream: " + ex.getLocalizedMessage());
         }
     }
 

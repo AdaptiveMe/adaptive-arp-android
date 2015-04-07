@@ -39,7 +39,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -81,7 +83,6 @@ public class XmlParser {
     private static String RESOURCE_TAG = "resource";
     private static String URL_ATT = "url";
 
-    public String APIService = "XmlParser";
     private List<Locale> locales;
 
     private static XmlParser instance = null;
@@ -97,6 +98,7 @@ public class XmlParser {
 
 
     public Document parseXml(InputStream xml, InputStream xsd) throws IOException, ParserConfigurationException, SAXException {
+
 
 
         // parse an XML document into a DOM tree
@@ -146,8 +148,9 @@ public class XmlParser {
 
     }
 
-    public List<Service> getIOData(Document document) throws ParserConfigurationException, SAXException, IOException {
-        List<Service> services = new ArrayList<>();
+    public Map<String,Service> getIOData(Document document) throws ParserConfigurationException, SAXException, IOException {
+        //List<Service> services = new ArrayList<>();
+        Map<String, Service> services = new HashMap<>();
 
 
         Element docEle = document.getDocumentElement();
@@ -157,8 +160,8 @@ public class XmlParser {
             for (int i = 0; i < nl.getLength(); i++) {
 
                 Element el = (Element) nl.item(i);
-
-                services.add(getService(el));
+                Service serv = getService(el);
+                services.put(serv.getName(),serv);
 
             }
         }
@@ -327,5 +330,9 @@ public class XmlParser {
         }
         return true;
     }
+
+
+
+
 
 }

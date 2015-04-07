@@ -54,7 +54,7 @@ import me.adaptive.arp.api.LifecycleState;
  */
 public class LifecycleDelegate extends BaseApplicationDelegate implements ILifecycle {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "LifecycleDelegate";
     private ILogging logger;
 

@@ -8,15 +8,12 @@ import android.webkit.WebView;
 import java.io.ByteArrayInputStream;
 
 import me.adaptive.arp.R;
-import me.adaptive.arp.api.APIRequest;
-import me.adaptive.arp.api.APIResponse;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.AppResourceData;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.common.Utils;
 import me.adaptive.arp.core.AppResourceManager;
-import me.adaptive.arp.core.ServiceHandler;
 
 /**
  * Http Interceptor for handling requests inside an Adaptive Runtime Application. More information
@@ -78,7 +75,7 @@ public class WebViewClient extends android.webkit.WebViewClient {
                 // ADAPTIVE NATIVE CALLS
 
                 // TODO: Parse the content of the request and parse it
-                APIRequest apiRequest = AppRegistryBridge.getJSONInstance().create().fromJson("{}", APIRequest.class);
+                /*APIRequest apiRequest = AppRegistryBridge.getJSONInstance().create().fromJson("{}", APIRequest.class);
                 logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Intercepting ARP request: " + apiRequest);
 
                 if (!apiRequest.getApiVersion().equals(AppRegistryBridge.getInstance().getAPIVersion())) {
@@ -92,7 +89,8 @@ public class WebViewClient extends android.webkit.WebViewClient {
                 response = new WebResourceResponse("application/javascript",
                         "UTF-8", apiResponse.getStatusCode(), apiResponse.getStatusMessage(),
                         request.getRequestHeaders(), new ByteArrayInputStream(apiResponse.getResponse().getBytes()));
-                return response;
+                return response;*/
+                return null;
 
             } else if (Utils.validateRegexp(url, "^data:(.*)\\/(.*);base64,(.*)") && method.equals("GET")) {
 
