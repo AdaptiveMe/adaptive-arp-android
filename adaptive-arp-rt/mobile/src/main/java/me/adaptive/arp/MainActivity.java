@@ -1,4 +1,4 @@
-package me.adaptive.arp;
+﻿package me.adaptive.arp;
 
 import android.app.Activity;
 import android.content.Context;
@@ -57,24 +57,6 @@ public class MainActivity extends Activity {
     // context
     private Context context;
 
-    static {
-        // URLStreamHandler substitution: Lazy loading of the stream handlers
-        /*URLStreamHandler httpHandler = null;
-        URLStreamHandler httpsHandler = null;
-        try {
-            httpHandler = (URLStreamHandler) Class.forName("com.android.okhttp.HttpHandler").newInstance();
-            httpsHandler = (URLStreamHandler) Class.forName("com.android.okhttp.HttpsHandler").newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Hashtable<String, URLStreamHandler> handlers = Utils.getURLStreamHandlers();
-
-        // Setting of the custom stream handlers
-        handlers.put("http", new CustomStreamHandler(httpHandler));
-        handlers.put("https", new CustomStreamHandler(httpsHandler));*/
-    }
-
 
     /**
      * Called when the activity is starting.
@@ -127,8 +109,6 @@ public class MainActivity extends Activity {
         lifecycleDelegate.updateLifecycleListeners(LifecycleState.Starting);
         lifecycleDelegate.updateBackground(false);
 
-
-        //ServiceToken st = AppRegistryBridge.getInstance().getServiceBridge().getServiceTokenByUri("http://api.geonames.org/postalCodeLookupJSON");
 
         // Webview initialization
         webView = (WebView) findViewById(R.id.webView);

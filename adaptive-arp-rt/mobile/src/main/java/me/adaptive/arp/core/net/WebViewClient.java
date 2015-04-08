@@ -6,14 +6,18 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 
 import me.adaptive.arp.R;
+import me.adaptive.arp.api.APIRequest;
+import me.adaptive.arp.api.APIResponse;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.AppResourceData;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.common.Utils;
 import me.adaptive.arp.core.AppResourceManager;
+import me.adaptive.arp.core.ServiceHandler;
 
 /**
  * Http Interceptor for handling requests inside an Adaptive Runtime Application. More information
@@ -50,9 +54,10 @@ public class WebViewClient extends android.webkit.WebViewClient {
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
 
-        WebResourceResponse response;
+        WebResourceResponse response = null;
         String method = request.getMethod();
         String url = request.getUrl().toString();
+
 
         if (!(url == null || url.isEmpty() || method == null || method.isEmpty())) {
 
@@ -75,7 +80,7 @@ public class WebViewClient extends android.webkit.WebViewClient {
                 // ADAPTIVE NATIVE CALLS
 
                 // TODO: Parse the content of the request and parse it
-                /*APIRequest apiRequest = AppRegistryBridge.getJSONInstance().create().fromJson("{}", APIRequest.class);
+                APIRequest apiRequest = AppRegistryBridge.getJSONInstance().create().fromJson(request.getRequestHeaders().get("Content-Body"), APIRequest.class);
                 logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Intercepting ARP request: " + apiRequest);
 
                 if (!apiRequest.getApiVersion().equals(AppRegistryBridge.getInstance().getAPIVersion())) {
@@ -86,11 +91,14 @@ public class WebViewClient extends android.webkit.WebViewClient {
                 APIResponse apiResponse = ServiceHandler.getInstance().handleServiceUrl(apiRequest);
 
                 // Prepare the response
-                response = new WebResourceResponse("application/javascript",
-                        "UTF-8", apiResponse.getStatusCode(), apiResponse.getStatusMessage(),
-                        request.getRequestHeaders(), new ByteArrayInputStream(apiResponse.getResponse().getBytes()));
-                return response;*/
-                return null;
+                try {
+                    response = new WebResourceResponse("application/javascript; charset=utf-8",
+                            "UTF-8", apiResponse.getStatusCode(), apiResponse.getStatusMessage(),
+                            request.getRequestHeaders(), new ByteArrayInputStream(AppRegistryBridge.getJSONInstance().create().toJson(apiResponse).getBytes("utf-8")));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                return response;
 
             } else if (Utils.validateRegexp(url, "^data:(.*)\\/(.*);base64,(.*)") && method.equals("GET")) {
 

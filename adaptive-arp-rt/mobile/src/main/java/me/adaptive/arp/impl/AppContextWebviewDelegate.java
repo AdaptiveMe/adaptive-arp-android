@@ -34,6 +34,7 @@
 
 package me.adaptive.arp.impl;
 
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
 import java.util.ArrayList;
@@ -80,6 +81,7 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
     public void addWebview(Object webView) {
 
         views.add(webView);
+        ((WebView) webView).addJavascriptInterface(this, "quirksMode");
     }
 
     /**
@@ -91,12 +93,10 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
 
         final String js = javaScriptText;
 
-        // Run the Javascript asynchronously
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
+        primaryView.post(new Runnable() {
             @Override
             public void run() {
-
-                primaryView.loadUrl("javascript:" + js);
+                primaryView.evaluateJavascript(js, null);
             }
         });
     }
@@ -112,14 +112,13 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
         final String js = javaScriptText;
         final WebView wv = (WebView) webViewReference;
 
-        // Run the Javascript asynchronously
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
+        wv.post(new Runnable() {
             @Override
             public void run() {
-
-                wv.loadUrl("javascript:" + js);
+                wv.evaluateJavascript(js, null);
             }
         });
+
     }
 
     /**
@@ -180,6 +179,17 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
      */
     public void setPrimaryView(WebView primaryView) {
         this.primaryView = primaryView;
+        this.primaryView.addJavascriptInterface(this, "quirksMode");
+    }
+
+    /**
+     * Binds quirks to the webview to customize request processing to the extent Android allows.
+     *
+     * @return true always, if bound to the DOM.
+     */
+    @JavascriptInterface
+    public boolean isQuirkEnabled() {
+        return true;
     }
 }
 /**
