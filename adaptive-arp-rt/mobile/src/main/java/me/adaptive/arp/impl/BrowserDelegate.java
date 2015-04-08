@@ -76,9 +76,10 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
      */
     public boolean openExtenalBrowser(String url) {
         try {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            context.startActivity(i);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
             return true;
         } catch (Exception ex) {
             logger.log(ILoggingLogLevel.Error, LOG_TAG, "openExtenalBrowser Error: "+ ex.getLocalizedMessage());
@@ -99,7 +100,8 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
         try {
             Intent intent = new Intent(context, BrowserActivity.class);
             intent.putExtra("url", url);
-
+            intent.putExtra("title", title);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
             return true;
         } catch (Exception ex) {
