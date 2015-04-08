@@ -101,6 +101,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
+    //TODO ADD TO COMMON
     /**
      * Cast from InputStream to byte[]
      *
@@ -570,15 +571,16 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
 
     }
 
-
+    //TODO MOVE TO COMMON
     public <APIBean> APIBean[] addElement(APIBean[] a, APIBean e) {
         a = Arrays.copyOf(a, a.length + 1);
         a[a.length - 1] = e;
         return a;
     }
 
-
+    //TODO DOCUMENT
     /**
+     *
      * @param prefix
      * @return
      */

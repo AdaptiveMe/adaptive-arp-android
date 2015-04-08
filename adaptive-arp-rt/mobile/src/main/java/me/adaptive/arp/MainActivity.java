@@ -1,4 +1,4 @@
-﻿package me.adaptive.arp;
+package me.adaptive.arp;
 
 import android.app.Activity;
 import android.app.Dialog;
