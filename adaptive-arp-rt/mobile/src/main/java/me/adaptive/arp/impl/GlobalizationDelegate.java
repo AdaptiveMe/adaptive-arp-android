@@ -34,30 +34,13 @@
 
 package me.adaptive.arp.impl;
 
-import android.content.Context;
-import android.content.res.AssetManager;
-
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseApplicationDelegate;
 import me.adaptive.arp.api.IGlobalization;
 import me.adaptive.arp.api.ILogging;
-import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.KeyPair;
 import me.adaptive.arp.api.Locale;
 import me.adaptive.arp.common.parser.plist.PList;
-import me.adaptive.arp.common.parser.plist.PListParser;
 import me.adaptive.arp.common.parser.xml.XmlParser;
 
 /**
@@ -67,26 +50,13 @@ import me.adaptive.arp.common.parser.xml.XmlParser;
 public class GlobalizationDelegate extends BaseApplicationDelegate implements IGlobalization {
 
 
-    protected static final String APP_CONFIG_PATH = "config/";
-    protected static final String APP_DEFINITIONS_CONFIG_PATH = "definitions/";
-    protected static final String I18N_CONFIG_FILENAME = "i18n-config.xml";
-    protected static final String I18N_CONFIG_FILE = APP_CONFIG_PATH+I18N_CONFIG_FILENAME;
-    protected static final String I18N_DEFINITIONS_CONFIG_FILENAME = "i18n-config.xsd";
-    protected static final String I18N_CONFIG_VALIDATOR_FILE = APP_CONFIG_PATH+APP_DEFINITIONS_CONFIG_PATH+I18N_DEFINITIONS_CONFIG_FILENAME;
-
-
-    protected static final String PLIST_EXTENSION = ".plist";
-    protected static final String DEFAULT_LOCALE_TAG = "default";
-    protected static final String SUPPORTED_LOCALE_TAG = "supportedLanguage";
 
     // logger
     private static final String LOG_TAG = "GlobalizationDelegate";
     private ILogging logger;
 
 
-    private Locale defaultLocale;
-    private List<Locale> supportedLocale = null;
-    private Map<String,PList> i18nData = null;
+
     /**
      * Default Constructor.
      */
@@ -95,47 +65,6 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
     }
 
-    /**
-     * Initialize all the relate objects
-     */
-    private void initialize(){
-        supportedLocale = new ArrayList<>();
-        i18nData = new HashMap<String, PList>();
-        InputStream plistIS = null, origin = null ,validator = null;
-        Context context;
-        AssetManager assetManager;
-        try {
-            context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
-            assetManager = context.getAssets();
-
-            origin = assetManager.open(I18N_CONFIG_FILE);
-            validator = assetManager.open(I18N_CONFIG_VALIDATOR_FILE);
-
-            /*if(XmlParser.getInstance().validateWithIntXSDUsingDOM(I18N_CONFIG_FILE)){
-                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VALID");
-            }else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");*/
-
-            Document document = XmlParser.getInstance().parseXml(origin,validator);
-            defaultLocale = XmlParser.getInstance().getLocaleData(document, DEFAULT_LOCALE_TAG).get(0);
-            supportedLocale = XmlParser.getInstance().getLocaleData(document,SUPPORTED_LOCALE_TAG);
-
-
-            for(Locale locale: supportedLocale){
-                plistIS = assetManager.open(getResourcesFilePath(locale));
-                PList plist = PListParser.getInstance().parse(plistIS);
-                i18nData.put(localeToString(locale),plist);
-            }
-        } catch (IOException e) {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Opening xml - Error: " + e.getLocalizedMessage());
-        } catch (ParserConfigurationException e) {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Parsing xml - Error: " + e.getLocalizedMessage());
-        } catch (SAXException e) {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Validating xml - Error: " + e.getLocalizedMessage());
-        }finally {
-            closeStream(plistIS);
-
-        }
-    }
 
 
 
@@ -146,9 +75,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
      * @since ARP1.0
      */
     public Locale getDefaultLocale() {
-        if(defaultLocale == null)
-            initialize();
-        return defaultLocale;
+        return XmlParser.getInstance().getDefaultLocale();
     }
 
     /**
@@ -158,9 +85,7 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
      * @since ARP1.0
      */
     public Locale[] getLocaleSupportedDescriptors() {
-        if(supportedLocale == null)
-            initialize();
-        return supportedLocale.toArray(new Locale[supportedLocale.size()]);
+        return XmlParser.getInstance().getSupportedLocale().toArray(new Locale[XmlParser.getInstance().getSupportedLocale().size()]);
     }
 
     /**
@@ -172,9 +97,8 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
      * @since ARP1.0
      */
     public String getResourceLiteral(String key, Locale locale) {
-        if(i18nData == null)
-            initialize();
-        PList plist = i18nData.get(localeToString(locale));
+
+        PList plist = XmlParser.getInstance().getI18nData().get(localeToString(locale));
         if(plist != null){
             return plist.getKey(key);
         }
@@ -190,38 +114,9 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
      * @since ARP1.0
      */
     public KeyPair[] getResourceLiterals(Locale locale) {
-        if(i18nData == null)
-            initialize();
-        return i18nData.get(localeToString(locale)).getKeyPair();
+
+        return XmlParser.getInstance().getI18nData().get(localeToString(locale)).getKeyPair();
     }
-
-    /**
-     * get the absolute path for resources
-     *
-     * @param locale data
-     * @return The string with the path
-     */
-    private String getResourcesFilePath(Locale locale) {
-        return APP_CONFIG_PATH + localeToString(locale) + PLIST_EXTENSION;
-    }
-
-
-    /**
-     * Close given InputStream
-     *
-     * @param is inputString
-     */
-    private void closeStream(InputStream is) {
-
-        try {
-            if (is != null) {
-                is.close();
-            }
-        } catch (Exception ex) {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error closing stream: " + ex.getLocalizedMessage());
-        }
-    }
-
 
     /**
      * Return the String representation of the Locale

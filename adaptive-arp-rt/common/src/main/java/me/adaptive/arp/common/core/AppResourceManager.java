@@ -1,4 +1,4 @@
-package me.adaptive.arp.core;
+package me.adaptive.arp.common.core;
 
 import android.content.Context;
 import android.webkit.MimeTypeMap;
@@ -6,11 +6,11 @@ import android.webkit.MimeTypeMap;
 import java.io.IOException;
 import java.io.InputStream;
 
-import me.adaptive.arp.R;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.AppResourceData;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.common.R;
 import me.adaptive.arp.common.Utils;
 
 /**
@@ -19,7 +19,7 @@ import me.adaptive.arp.common.Utils;
 public class AppResourceManager {
 
     // Logger
-    private static final String LOG_TAG = "WebViewClient";
+    private static final String LOG_TAG = "AppResourceManager";
     private static ILogging logger;
 
     // Context
@@ -63,8 +63,8 @@ public class AppResourceManager {
         // TODO: Implement AppPacker Reader for Android
         // TODO: remove this code (LEGACY)
 
-        String file = url.replaceFirst(context.getString(R.string.arp_url), "config/");
-        return this.retriveResource(file);
+        //String file = url.replaceFirst(context.getString(R.string.arp_url), "config/");
+        return this.retriveResource("config/"+url);
     }
 
     /**

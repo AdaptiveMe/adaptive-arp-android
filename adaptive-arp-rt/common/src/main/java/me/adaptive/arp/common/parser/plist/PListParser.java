@@ -31,7 +31,7 @@
 package me.adaptive.arp.common.parser.plist;
 
 
-import android.util.Log;
+import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -41,6 +41,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.ILogging;
+import me.adaptive.arp.api.ILoggingLogLevel;
 
 
 public class PListParser {
@@ -50,11 +56,16 @@ public class PListParser {
     private final static String KEY_TAG = "key";
     private final static String VALUE_TAG = "string";
 
-    public static String APIService = "plistParser";
+    // logger
+    private static final String LOG_TAG = "PListParser";
+    private static ILogging logger;
+
+    private static final Pattern ESCAPE_XML_CHARS = Pattern.compile("[\"&'<>]");
 
     private static PListParser instance = null;
     protected PListParser() {
         // Exists only to defeat instantiation.
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
     }
     public static PListParser getInstance() {
         if(instance == null) {
@@ -73,8 +84,11 @@ public class PListParser {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(false);
             factory.setValidating(false);
+            factory.setFeature(Xml.FEATURE_RELAXED, true);
             XmlPullParser parser = factory.newPullParser();
-            parser.setInput(is, null);
+            parser.setInput(is, "UTF-8");
+
+
 
             int event = parser.next();
             while (event != XmlPullParser.END_DOCUMENT) {
@@ -111,14 +125,15 @@ public class PListParser {
             }
         } catch (Exception ex) {
             plist = null;
-            Log.d(APIService, "Parse Error: " + ex.getLocalizedMessage());
+            logger.log(ILoggingLogLevel.Error,LOG_TAG, "Parse Error: " + ex.getLocalizedMessage());
         }
 
 
         if (plist != null) {
-            Log.d(APIService, "Parse Result is: " + plist.toString());
+            logger.log(ILoggingLogLevel.Debug,LOG_TAG, "Parse Result is: " + plist.toString());
+
         } else {
-            Log.d(APIService, "Parse Result is null");
+            logger.log(ILoggingLogLevel.Debug,LOG_TAG, "Parse Result is null");
         }
 
 
@@ -168,15 +183,40 @@ public class PListParser {
         }
 
         String text = sb.toString();
-
         if ((event != XmlPullParser.END_TAG) || !tag.equals(parser.getName())) {
             throw new XmlPullParserException("Unexpected element found ["
                     + event + "," + parser.getName() + "]");
         }
 
         return text;
+
     }
 
 
+    public static String escapeXml2(String s) {
+        Matcher m = ESCAPE_XML_CHARS.matcher(s);
+        StringBuffer buf = new StringBuffer();
+        while (m.find()) {
+            switch (m.group().codePointAt(0)) {
+                case '"':
+                    m.appendReplacement(buf, "&quot;");
+                    break;
+                case '&':
+                    m.appendReplacement(buf, "&amp;");
+                    break;
+                case '\'':
+                    m.appendReplacement(buf, "&apos;");
+                    break;
+                case '<':
+                    m.appendReplacement(buf, "&lt;");
+                    break;
+                case '>':
+                    m.appendReplacement(buf, "&gt;");
+                    break;
+            }
+        }
+        m.appendTail(buf);
+        return buf.toString();
+    }
 
 }

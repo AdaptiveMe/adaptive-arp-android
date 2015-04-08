@@ -1,4 +1,4 @@
-package me.adaptive.arp.core.net;
+package me.adaptive.arp.core;
 
 /**
  * Extension of the WebChromeClient

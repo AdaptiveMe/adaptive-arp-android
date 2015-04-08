@@ -14,7 +14,7 @@ import me.adaptive.arp.impl.AppContextDelegate;
 public class ServiceHandler {
 
     // Logger
-    private static final String LOG_TAG = "WebViewClient";
+    private static final String LOG_TAG = "ServiceHandler";
     private static ILogging logger;
 
     // Singleton instance

@@ -35,21 +35,13 @@
 package me.adaptive.arp.impl;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseCommunicationDelegate;
@@ -76,16 +68,7 @@ import me.adaptive.arp.common.parser.xml.XmlParser;
  */
 public class ServiceDelegate extends BaseCommunicationDelegate implements IService {
 
-
-    protected static final String APP_CONFIG_PATH = "config/";
-    protected static final String APP_DEFINITIONS_CONFIG_PATH = "definitions/";
-    protected static final String IO_CONFIG_FILENAME = "io-config.xml";
-    protected static final String IO_CONFIG_FILE = APP_CONFIG_PATH+IO_CONFIG_FILENAME;
-    protected static final String IO_CONFIG_DEFINITION_FILENAME = "i18n-config.xsd";
-    protected static final String IO_CONFIG_DEFINITION_FILE = APP_CONFIG_PATH+APP_DEFINITIONS_CONFIG_PATH+IO_CONFIG_DEFINITION_FILENAME;
-
-
-    // logger
+ // logger
     private static final String LOG_TAG = "ServiceDelegate";
     private ILogging logger;
 
@@ -93,8 +76,6 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     // Context
     private Context context;
 
-    private List<String> resources = null;
-    private Map<String, Service> services = null;
     private Map<String, Session> serviceSession;
 
 
@@ -105,45 +86,9 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
+        serviceSession = new HashMap<String, Session>();
     }
 
-    /**
-     * Initialize all the relate objects
-     */
-    private void initialize(){
-
-        AssetManager assetManager;
-        services = new HashMap<>();
-        resources = new ArrayList<>();
-        InputStream plistIS = null, origin = null ,validator = null;
-        serviceSession = new HashMap<>();
-        try {
-
-            assetManager = context.getAssets();
-
-            origin = assetManager.open(IO_CONFIG_FILE);
-            validator = assetManager.open(IO_CONFIG_DEFINITION_FILE);
-
-
-            /*if(XmlParser.getInstance().validateWithExtXSDUsingSAX(originStr,validatorStr)){
-                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VALID");
-            }else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");*/
-
-
-            Document document = XmlParser.getInstance().parseXml(origin,validator);
-            resources = XmlParser.getInstance().getResourceData(document);
-            services = XmlParser.getInstance().getIOData(document);
-
-        } catch (IOException e) {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Opening xml - Error: " + e.getLocalizedMessage());
-        } catch (ParserConfigurationException e) {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Parsing xml - Error: " + e.getLocalizedMessage());
-        } catch (SAXException e) {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Validating xml - Error: " + e.getLocalizedMessage());
-        }finally {
-            closeStream(plistIS);
-        }
-    }
 
     /**
      * Obtains a Service token by a concrete uri (http://domain.com/path). This method would be useful when
@@ -157,7 +102,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public ServiceToken getServiceTokenByUri(String uri) {
-        if(services == null) initialize();
+
         URL url = null;
         if(!Utils.validateURI(uri, "^https?://.*")) return null;
         try {
@@ -166,7 +111,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
             logger.log(ILoggingLogLevel.Error,LOG_TAG,"uri Error: "+e.getLocalizedMessage());
             return null;
         }
-        for(Service ser: services.values())
+        for(Service ser: XmlParser.getInstance().getServices().values())
             for(ServiceEndpoint endpoint: ser.getServiceEndpoints())
                 if(!url.getHost().equals(endpoint.getHostURI()))
                     continue;
@@ -192,7 +137,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public ServiceRequest getServiceRequest(ServiceToken serviceToken) {
-        if(services == null) initialize();
+
         ServiceRequest request = new ServiceRequest(null,serviceToken);
         if(serviceSession.containsKey(serviceToken.getEndpointName())){
            Session session = serviceSession.get(serviceToken.getEndpointName());
@@ -219,9 +164,9 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public ServiceToken getServiceToken(String serviceName, String endpointName, String functionName, IServiceMethod method) {
-        if(services == null) initialize();
-        if(services.containsKey(serviceName)){
-            Service serv = services.get(serviceName);
+
+        if(XmlParser.getInstance().getServices().containsKey(serviceName)){
+            Service serv = XmlParser.getInstance().getServices().get(serviceName);
             for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
                 if(endpoint.getHostURI().equals(endpointName)){
                     for(ServicePath path: endpoint.getPaths()){
@@ -247,9 +192,9 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public ServiceToken[] getServicesRegistered() {
-        if(services == null) initialize();
+
         List<ServiceToken> tokens = new ArrayList<>();
-        for(Service serv: services.values()){
+        for(Service serv: XmlParser.getInstance().getServices().values()){
             for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
                 for(ServicePath path:endpoint.getPaths()){
                     for(IServiceMethod method: path.getMethods()){
@@ -287,9 +232,9 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public boolean isServiceRegistered(String serviceName, String endpointName, String functionName, IServiceMethod method) {
-        if(services == null) initialize();
-        if(services.containsKey(serviceName)) {
-            Service serv = services.get(serviceName);
+
+        if(XmlParser.getInstance().getServices().containsKey(serviceName)) {
+            Service serv = XmlParser.getInstance().getServices().get(serviceName);
             for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
                 if(endpoint.equals(endpointName)){
                     for(ServicePath path: endpoint.getPaths()){
@@ -304,23 +249,6 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
             }
         }
         return false;
-    }
-
-    /**
-     * Close given InputStream
-     *
-     * @param is inputString
-     */
-    private void closeStream(InputStream is) {
-
-        try {
-            if (is != null) {
-                is.close();
-            }
-        } catch (Exception ex) {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error closing stream: " + ex.getLocalizedMessage());
-
-        }
     }
 
 
