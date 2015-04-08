@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Adaptive Runtime Platform</string>
+    <string name="app_name">Adaptive.Me</string>
     <string name="arp_url">https://adaptiveapp/</string>
     <string name="arp_page">index.html</string>
 

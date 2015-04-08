@@ -116,6 +116,8 @@ public class WebViewClient extends android.webkit.WebViewClient {
         }
     }
 
+
+
     /**
      * Notify the host application that a page has finished loading. This method
      * is called only for main frame. When onPageFinished() is called, the
@@ -128,5 +130,12 @@ public class WebViewClient extends android.webkit.WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
+
+        //TODO REVIEW WHY THIS IS CALLED TWICE IN JQUERY APPS
+        if(url.equals(context.getString(R.string.arp_url) + context.getString(R.string.arp_page))){
+            AppRegistryBridge.getInstance().getRuntimeBridge().dismissSplashScreen();
+        }
     }
+
+
 }

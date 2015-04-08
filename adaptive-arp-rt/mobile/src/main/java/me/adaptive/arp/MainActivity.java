@@ -1,6 +1,7 @@
 ﻿package me.adaptive.arp;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
 
@@ -60,6 +62,7 @@ public class MainActivity extends Activity {
     // context
     private Context context;
 
+    private Dialog dialog;
 
     /**
      * Called when the activity is starting.
@@ -72,6 +75,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        buildDialog();
+        showSplash();
         setContentView(R.layout.activity_main);
 
         // Register Logging delegate
@@ -125,6 +130,7 @@ public class MainActivity extends Activity {
 
         // Load main page
         webView.loadUrl(context.getString(R.string.arp_url) + context.getString(R.string.arp_page));
+
 
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onCreate()");
 
@@ -332,4 +338,22 @@ public class MainActivity extends Activity {
         //super.onBackPressed();
         ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.BackButton);
     }
+
+
+    private void buildDialog(){
+        dialog = new Dialog(this,android.R.style.Theme_NoTitleBar_Fullscreen);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        dialog.setContentView(getLayoutInflater().inflate(R.layout.splash_layout
+                , null));
+    }
+
+    private void showSplash(){
+        dialog.show();
+    }
+
+    public Dialog getDialog() {
+        return dialog;
+    }
+
 }
