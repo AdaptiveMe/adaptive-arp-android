@@ -46,7 +46,7 @@ public class VideoActivity extends Activity {
 
         Uri uri = Uri.parse(getIntent().getStringExtra("url"));
         //TODO validate
-        
+
         logger.log(ILoggingLogLevel.Info, LOG_TAG, "Stating Video Activity with uri: " + uri);
 
         // animation
