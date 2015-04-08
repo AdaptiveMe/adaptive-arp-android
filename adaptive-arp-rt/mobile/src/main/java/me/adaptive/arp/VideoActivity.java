@@ -5,8 +5,6 @@ import android.app.ProgressDialog;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
@@ -55,10 +53,10 @@ public class VideoActivity extends Activity {
         setContentView(R.layout.activity_video);
 
         // remove title
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         // remove notification bar
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // dialog
         dialog = new ProgressDialog(this, R.style.MyTheme);
