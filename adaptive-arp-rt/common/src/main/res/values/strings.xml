@@ -3,7 +3,5 @@
 
     <string name="app_name">common</string>
     <string name="arp_url">https://adaptiveapp/</string>
-    <string name="arp_page">index.html</string>
-
 
 </resources>

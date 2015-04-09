@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,6 +77,11 @@ public class Utils {
         }
     }
 
+    /**
+     * Returns a FileDescriptor from a java File
+     * @param file to read
+     * @return the FileDescriptor
+     */
     public static FileDescriptor toArp(File file){
 
         FileDescriptor fd = new FileDescriptor();
@@ -113,6 +119,12 @@ public class Utils {
         return readFile(new File(file));
     }
 
+    /**
+     * Returns a byte[]
+     * @param file to read
+     * @return the byte[]
+     * @throws IOException
+     */
     public static byte[] readFile(File file) throws IOException {
         // Open file
         RandomAccessFile f = new RandomAccessFile(file, "r");
@@ -133,6 +145,18 @@ public class Utils {
 
     public static boolean validateURI(String test, String regex){
         return test.matches(regex);
+    }
+
+    /**
+     * Add element to APIBean Array
+     * @param a source array
+     * @param e element
+     * @return the new array
+     */
+    public static <APIBean> APIBean[] addElement(APIBean[] a, APIBean e) {
+        a = Arrays.copyOf(a, a.length + 1);
+        a[a.length - 1] = e;
+        return a;
     }
 
 }

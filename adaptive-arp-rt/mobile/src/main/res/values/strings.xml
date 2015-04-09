@@ -4,6 +4,7 @@
     <string name="app_name">Adaptive.Me</string>
     <string name="arp_url">https://adaptiveapp/</string>
     <string name="arp_page">index.html</string>
+    <string name="splash_description">SplashScreen</string>
 
 
 </resources>

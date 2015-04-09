@@ -138,7 +138,6 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         ActivityInfo activityInfo;
         Intent intent;
 
-        //TODO CHECK LIVE CONNECTIVITY?
         switch (type) {
             case Calendar:
                 intent = new Intent(Intent.ACTION_MAIN);
@@ -173,7 +172,6 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                 }
                 break;
             case Telephony:
-                //TODO CHECK ACTION_DIAL?
                 capability = PackageManager.FEATURE_TELEPHONY;
                 break;
 
@@ -250,7 +248,6 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                 break;
             case VideoPlayback:
                 intent = intent.setAction(Intent.ACTION_VIEW);
-                //TODO CHECK CRASH URI NULL
                 intent.setType("video/*");
                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
                 if (activityInfo.exported) {
@@ -282,7 +279,6 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      * @since ARP1.0
      */
     public boolean hasNetSupport(ICapabilitiesNet type) {
-        //TODO CHECK LIVE? is this is network connected?
         String capability = null;
         boolean supported = false;
 

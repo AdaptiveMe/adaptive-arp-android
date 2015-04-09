@@ -44,7 +44,6 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -78,6 +77,7 @@ import me.adaptive.arp.api.IContactResultCallbackError;
 import me.adaptive.arp.api.IContactResultCallbackWarning;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.common.Utils;
 
 /**
  * Interface for Managing the Contact operations
@@ -101,27 +101,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
-    //TODO ADD TO COMMON
-    /**
-     * Cast from InputStream to byte[]
-     *
-     * @param is InputStream
-     * @return byte[]
-     */
-    public static byte[] getBytesFromInputStream(InputStream is) {
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream();) {
-            byte[] buffer = new byte[0xFFFF];
 
-            for (int len; (len = is.read(buffer)) != -1; )
-                os.write(buffer, 0, len);
-
-            os.flush();
-
-            return os.toByteArray();
-        } catch (IOException e) {
-            return null;
-        }
-    }
 
     /**
      * Get all the details of a contact according to its id
@@ -203,7 +183,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
             AssetFileDescriptor fd = context.
                     getContentResolver().openAssetFileDescriptor(displayPhotoUri, "r");
             InputStream image = fd.createInputStream();
-            byte[] bytes = getBytesFromInputStream(image);
+            byte[] bytes = Utils.getBytesFromInputStream(image);
             if (bytes == null) {
                 callback.onResult(bytes);
                 return;
@@ -241,11 +221,12 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
     }
 
     /**
-     * @param callback
-     * @param contact
-     * @param term
-     * @param fields
-     * @param filter
+     * Perfmorm the native contact search
+     * @param callback Object
+     * @param contact Id if applies
+     * @param term if applies
+     * @param fields if applies
+     * @param filter if applies
      */
     private void nativeToAdaptive(final IContactResultCallback callback, final ContactUid contact, final String term, final IContactFieldGroup[] fields, final IContactFilter[] filter) {
 
@@ -404,7 +385,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                                 if (array == null) {
                                     array = new ContactEmail[0];
                                 }
-                                contactBean.setContactEmails(addElement(array, contactEmails));
+                                contactBean.setContactEmails(Utils.addElement(array, contactEmails));
                             }
                             //Phones
                             if (contactPhones != null) {
@@ -412,7 +393,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                                 if (array == null) {
                                     array = new ContactPhone[0];
                                 }
-                                contactBean.setContactPhones(addElement(array, contactPhones));
+                                contactBean.setContactPhones(Utils.addElement(array, contactPhones));
                             }
                             //Addresses
                             if (contactAddresses != null) {
@@ -420,7 +401,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                                 if (array == null) {
                                     array = new ContactAddress[0];
                                 }
-                                contactBean.setContactAddresses(addElement(array, contactAddresses));
+                                contactBean.setContactAddresses(Utils.addElement(array, contactAddresses));
                             }
                             //Websites/social
                             if (contactWebsites != null) {
@@ -428,7 +409,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                                 if (array == null) {
                                     array = new ContactWebsite[0];
                                 }
-                                contactBean.setContactWebsites(addElement(array, contactWebsites));
+                                contactBean.setContactWebsites(Utils.addElement(array, contactWebsites));
                             }
 
                             //PersonalInfo
@@ -571,18 +552,12 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
 
     }
 
-    //TODO MOVE TO COMMON
-    public <APIBean> APIBean[] addElement(APIBean[] a, APIBean e) {
-        a = Arrays.copyOf(a, a.length + 1);
-        a[a.length - 1] = e;
-        return a;
-    }
 
-    //TODO DOCUMENT
+
     /**
-     *
-     * @param prefix
-     * @return
+     * Retrieve the contact title from string
+     * @param prefix string
+     * @return ContactPersonalInfoTitle
      */
     private ContactPersonalInfoTitle getContactTitle(String prefix) {
         ContactPersonalInfoTitle result = null;

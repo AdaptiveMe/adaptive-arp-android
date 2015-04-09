@@ -83,7 +83,7 @@ public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
      */
     public boolean dismissSplashScreen() {
         try {
-            ((MainActivity) activity).getDialog().dismiss();
+            ((MainActivity) activity).getSplashDialog().dismiss();
         }catch (Exception e){
             logger.log(ILoggingLogLevel.Error,LOG_TAG,"dismissSplashScreen Error: "+e.getLocalizedMessage());
             return false;

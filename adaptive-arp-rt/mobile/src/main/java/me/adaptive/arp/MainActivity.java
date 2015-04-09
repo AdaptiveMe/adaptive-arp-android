@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
     // context
     private Context context;
 
-    private Dialog dialog;
+    private Dialog splashDialog;
 
     /**
      * Called when the activity is starting.
@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         buildDialog();
-        showSplash();
+        showSplashDialog();
         setContentView(R.layout.activity_main);
 
         // Register Logging delegate
@@ -340,20 +340,31 @@ public class MainActivity extends Activity {
     }
 
 
+    /**
+     * Create the splash Dialog
+     */
     private void buildDialog(){
-        dialog = new Dialog(this,android.R.style.Theme_NoTitleBar_Fullscreen);
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        dialog.setContentView(getLayoutInflater().inflate(R.layout.splash_layout
-                , null));
+        splashDialog = new Dialog(this,android.R.style.Theme_NoTitleBar_Fullscreen);
+        splashDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        splashDialog.setContentView(R.layout.splash_layout);
+        splashDialog.setCancelable(false);
     }
 
-    private void showSplash(){
-        dialog.show();
+    /**
+     * Shows the spash splashDialog
+     */
+    private void showSplashDialog(){
+        splashDialog.show();
     }
 
-    public Dialog getDialog() {
-        return dialog;
+    /**
+     * Returns the SplashDialog
+     * @return SplashDialog
+     */
+    public Dialog getSplashDialog() {
+        return splashDialog;
     }
 
 }
