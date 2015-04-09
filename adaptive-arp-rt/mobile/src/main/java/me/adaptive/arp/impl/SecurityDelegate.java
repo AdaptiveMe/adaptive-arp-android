@@ -46,6 +46,7 @@ import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseSecurityDelegate;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.ISecurity;
 import me.adaptive.arp.api.ISecurityResultCallback;
@@ -59,7 +60,13 @@ import me.adaptive.arp.api.SecureKeyPair;
  */
 public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity {
 
-    static LoggingDelegate Logger;
+    // logger
+    private static final String LOG_TAG = "SecurityDelegate";
+    private ILogging logger;
+
+    // Context
+    private Context context;
+
     private static String[] foldersToCheckWriteAccess = {
             "/data",
             "/",
@@ -95,7 +102,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
             "/system/bin/failsafe/",
             "/data/local/"
     };
-    public String APIService = "security";
+
     private String SHARED_PACKAGE_NAME = null;
     private String PREFERENCES_FILE_NAME = "AdaptiveSettings"; // default value
 
@@ -104,8 +111,8 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      */
     public SecurityDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
-
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
     /**
@@ -138,8 +145,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      * @since ARP 1.0
      */
     public void deleteSecureKeyValuePairs(final String[] keys, final String publicAccessName, final ISecurityResultCallback callback) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
-            public void run() {
+
                 List<SecureKeyPair> successfulKeyPairs = new ArrayList<SecureKeyPair>();
                 List<SecureKeyPair> failedKeyPairs = new ArrayList<SecureKeyPair>();
                 SecureKeyPair sc;
@@ -161,18 +167,17 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
                         }
                     }
                 } else {
-                    Logger.log(ILoggingLogLevel.Debug, APIService, "removeStoredKeyValuePairs: Storage Unit is null.");
+                    logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeStoredKeyValuePairs: Storage Unit is null.");
                     callback.onError(ISecurityResultCallbackError.NoMatchesFound);
                 }
 
-                Logger.log(ILoggingLogLevel.Debug, APIService, "removeStoredKeyValuePairs: Keys removed from storage unit: " + successfulKeyPairs.size() + "; Keys Not removed from storage unit: " + failedKeyPairs.size());
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeStoredKeyValuePairs: Keys removed from storage unit: " + successfulKeyPairs.size() + "; Keys Not removed from storage unit: " + failedKeyPairs.size());
                 if (failedKeyPairs.size() != 0) {
                     callback.onWarning((SecureKeyPair[]) successfulKeyPairs.toArray(new SecureKeyPair[successfulKeyPairs.size()]), ISecurityResultCallbackWarning.Unknown);
                 } else {
                     callback.onResult((SecureKeyPair[]) successfulKeyPairs.toArray(new SecureKeyPair[successfulKeyPairs.size()]));
                 }
-            }
-        });
+
     }
 
     /**
@@ -184,8 +189,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      * @since ARP 1.0
      */
     public void getSecureKeyValuePairs(final String[] keys, final String publicAccessName, final ISecurityResultCallback callback) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
-            public void run() {
+
                 List<SecureKeyPair> foundKeyPairs = new ArrayList<SecureKeyPair>();
                 try {
 
@@ -200,17 +204,16 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
                             }
                         }
                     } else {
-                        Logger.log(ILoggingLogLevel.Debug, APIService, "getSecureKeyValuePairs: Storage Unit is null.");
+                        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getSecureKeyValuePairs: Storage Unit is null.");
                         callback.onError(ISecurityResultCallbackError.NoMatchesFound);
                     }
                 } catch (Exception ex) {
                     callback.onError(ISecurityResultCallbackError.NoMatchesFound);
                 }
-                Logger.log(ILoggingLogLevel.Debug, APIService, "getSecureKeyValuePairs: Keys found in storage unit: " + foundKeyPairs.size());
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getSecureKeyValuePairs: Keys found in storage unit: " + foundKeyPairs.size());
 
                 callback.onResult((SecureKeyPair[]) foundKeyPairs.toArray(new SecureKeyPair[foundKeyPairs.size()]));
-            }
-        });
+
     }
 
     /**
@@ -221,32 +224,32 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      */
     public boolean isDeviceModified() {
         if (checkRootMethod1()) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "isDeviceModified: Detected by checkRootMethod1");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "isDeviceModified: Detected by checkRootMethod1");
             return true;
         }
 
         if (checkRootMethod2()) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "isDeviceModified: Detected by checkRootMethod2");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "isDeviceModified: Detected by checkRootMethod2");
             return true;
         }
 
         if (checkRootMethod3_0()) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "isDeviceModified: Detected by checkRootMethod3_0");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "isDeviceModified: Detected by checkRootMethod3_0");
             return true;
         }
 
         if (checkRootMethod3_1()) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "isDeviceModified: Detected by checkRootMethod3_1");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "isDeviceModified: Detected by checkRootMethod3_1");
             return true;
         }
 
         if (checkRootMethod3_2()) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "isDeviceModified: Detected by checkRootMethod3_2");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "isDeviceModified: Detected by checkRootMethod3_2");
             return true;
         }
 
         if (checkRootMethod3_2()) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "isDeviceModified: Detected by checkRootMethod3_2");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "isDeviceModified: Detected by checkRootMethod3_2");
             return true;
         }
 
@@ -332,7 +335,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
 
             List<ApplicationInfo> packages;
             PackageManager pm;
-            pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
+            pm = context.getPackageManager();
             packages = pm.getInstalledApplications(0);
             for (ApplicationInfo packageInfo : packages) {
                 //LOGGER.logInfo("PACKAGE NAME: ", packageInfo.packageName);
@@ -353,14 +356,14 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         SharedPreferences settings = null;
         try {
             if (publicAccessName != null) {
-                settings = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSharedPreferences(publicAccessName, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
+                settings = context.getSharedPreferences(publicAccessName, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
             } else {
-                settings = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
+                settings = context.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
             }
 
 
         } catch (Exception e) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "GetOtherAppSharedPreferences: Opening Storage Unit: The storage unit could not be accessed. Unhanlded error. e: " + e.toString());
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "GetOtherAppSharedPreferences: Opening Storage Unit: The storage unit could not be accessed. Unhanlded error. e: " + e.toString());
         }
         return settings;
     }
@@ -374,8 +377,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      * @since ARP 1.0
      */
     public void setSecureKeyValuePairs(final SecureKeyPair[] keyValues, final String publicAccessName, final ISecurityResultCallback callback) {
-        ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(new Runnable() {
-            public void run() {
+
                 List<SecureKeyPair> successfulKeyPairs = new ArrayList<SecureKeyPair>();
                 List<SecureKeyPair> failedKeyPairs = new ArrayList<SecureKeyPair>();
                 SecureKeyPair sc;
@@ -399,10 +401,10 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
                         }
                     }
                 } else {
-                    Logger.log(ILoggingLogLevel.Debug, APIService + " setSecureKeyValuePairs", "Storage Unit is null.");
+                    logger.log(ILoggingLogLevel.Debug, LOG_TAG + " setSecureKeyValuePairs", "Storage Unit is null.");
                     callback.onError(ISecurityResultCallbackError.NoMatchesFound);
                 }
-                Logger.log(ILoggingLogLevel.Debug, APIService, "setSecureKeyValuePairs: Key stored in storage unit: " + successfulKeyPairs.size() + "; Keys Not stored in storage unit: " + failedKeyPairs.size());
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "setSecureKeyValuePairs: Key stored in storage unit: " + successfulKeyPairs.size() + "; Keys Not stored in storage unit: " + failedKeyPairs.size());
 
                 if (failedKeyPairs.size() != 0) {
                     callback.onWarning((SecureKeyPair[]) failedKeyPairs.toArray(new SecureKeyPair[failedKeyPairs.size()]), ISecurityResultCallbackWarning.Unknown);
@@ -410,8 +412,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
                     callback.onResult((SecureKeyPair[]) successfulKeyPairs.toArray(new SecureKeyPair[successfulKeyPairs.size()]));
                 }
 
-            }
-        });
+
     }
 
 }

@@ -42,6 +42,7 @@ import me.adaptive.arp.BrowserActivity;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseUIDelegate;
 import me.adaptive.arp.api.IBrowser;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
@@ -50,24 +51,20 @@ import me.adaptive.arp.api.ILoggingLogLevel;
  */
 public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
 
+    // logger
+    private static final String LOG_TAG = "BrowserDelegate";
+    private ILogging logger;
 
-    public static final String EXTRA_URL = "extra_url";
-    public static final String EXTRA_HTML = "extra_html";
-    public static final String EXTRA_BROWSER_TITLE = "extra_title";
-    public static final String EXTRA_BUTTON_TEXT = "extra_buttontext";
-    public static final String EXTRA_FILE_EXTENSIONS = "extra_fileextensions";
-
-    private static final String ACTION_SHOW_BROWSER = "arp.adaptive.me.SHOW_BROWSER";
-
-    public static String APIService = "browser";
-    static LoggingDelegate Logger;
+    // Context
+    private Context context;
 
     /**
      * Default Constructor.
      */
     public BrowserDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
     /**
@@ -79,11 +76,13 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
      */
     public boolean openExtenalBrowser(String url) {
         try {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(i);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
             return true;
         } catch (Exception ex) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "openExtenalBrowser Error: "+ ex.getLocalizedMessage());
             return false;
         }
     }
@@ -96,19 +95,20 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
      * @return The result of the operation
      * @since ARP1.0
      */
-    public boolean openInternalBrowser(String url, String title) {
-        boolean result = false;
-        try {
-            Intent intent = new Intent((android.content.Context) AppRegistryBridge.getInstance().getPlatformContext().getContext(), BrowserActivity.class);
-            intent.putExtra("url", url);
+    private boolean openInternalBrowser(String url, String title) {
 
-            ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).startActivity(intent);
-            //((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getMainActivity().overridePendingTransition(R.anim.fade_out, R.anim.slide_up);
-            result = true;
+        try {
+            Intent intent = new Intent(context, BrowserActivity.class);
+            intent.putExtra("url", url);
+            intent.putExtra("title", title);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            return true;
         } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "tryConnection error " + ex.getLocalizedMessage());
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "openInternalBrowser Error: " + ex.getLocalizedMessage());
+            return false;
         }
-        return result;
+
     }
 
 

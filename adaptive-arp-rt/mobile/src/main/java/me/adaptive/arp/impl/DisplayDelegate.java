@@ -35,7 +35,8 @@
 package me.adaptive.arp.impl;
 
 import android.content.Context;
-import android.content.res.Configuration;
+import android.view.Surface;
+import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,9 +58,11 @@ import me.adaptive.arp.api.RotationEventState;
  */
 public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "DisplayDelegate";
     private ILogging logger;
+
+    private ICapabilitiesOrientation origin;
 
     // Listeners
     private List<IDisplayOrientationListener> displayOrientationListeners;
@@ -75,6 +78,7 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
         displayOrientationListeners = new ArrayList<>();
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
+        origin = this.getOrientationCurrent();
     }
 
     /**
@@ -101,15 +105,17 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      */
     public ICapabilitiesOrientation getOrientationCurrent() {
 
-        Configuration config = context.getResources().getConfiguration();
-
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getOrientationCurrent: " + config.toString());
-
-        switch (config.orientation) {
-            case Configuration.ORIENTATION_LANDSCAPE:
+        final int rotation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getOrientationCurrent: " + rotation);
+        switch (rotation) {
+            case Surface.ROTATION_0:
                 return ICapabilitiesOrientation.PortraitUp;
-            case Configuration.ORIENTATION_PORTRAIT:
+            case Surface.ROTATION_90:
                 return ICapabilitiesOrientation.LandscapeLeft;
+            case Surface.ROTATION_180:
+                return ICapabilitiesOrientation.PortraitDown;
+            case Surface.ROTATION_270:
+                return ICapabilitiesOrientation.LandscapeRight;
             default:
                 return ICapabilitiesOrientation.Unknown;
         }
@@ -145,11 +151,13 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
      * Public method called for update the current state of all the listeners registered
      */
     public void updateDisplayOrientationListeners() {
-
+        ICapabilitiesOrientation orientation = this.getOrientationCurrent();
+        logger.log(ILoggingLogLevel.Debug,LOG_TAG,"ROTATION updateDisplayOrientationListeners: "+orientation);
         for (IDisplayOrientationListener listener : displayOrientationListeners) {
-            listener.onResult(new RotationEvent(ICapabilitiesOrientation.Unknown, this.getOrientationCurrent(),
+            listener.onResult(new RotationEvent(origin, orientation,
                     RotationEventState.DidFinishRotation, new Date().getTime()));
         }
+        origin = orientation;
     }
 
 }

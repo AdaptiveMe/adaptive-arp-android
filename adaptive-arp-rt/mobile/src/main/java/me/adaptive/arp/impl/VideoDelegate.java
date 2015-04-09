@@ -34,7 +34,6 @@
 
 package me.adaptive.arp.impl;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -51,7 +50,7 @@ import me.adaptive.arp.api.IVideo;
  */
 public class VideoDelegate extends BaseMediaDelegate implements IVideo {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "VideoDelegate";
     private ILogging logger;
 
@@ -75,21 +74,17 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
      * @since ARP1.0
      */
     public void playStream(String url) {
+        try {
+            Intent intent = new Intent(context, VideoActivity.class);
+            intent.putExtra("url", url);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Opening video: " + url);
+            context.startActivity(intent);
+        } catch (Exception ex) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "openInternalBrowser Error: " + ex.getLocalizedMessage());
+        }
 
-        final Intent intent = new Intent(context, VideoActivity.class);
-        intent.putExtra("url", url);
 
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Opening video: " + url);
-
-        Activity mainActivity = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getActivity();
-
-        // Run on main Thread
-        mainActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                context.startActivity(intent);
-            }
-        });
 
     }
 }

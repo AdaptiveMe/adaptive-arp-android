@@ -50,7 +50,7 @@ import me.adaptive.arp.api.OSInfo;
  */
 public class OSDelegate extends BaseSystemDelegate implements IOS {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "RuntimeDelegate";
     private ILogging logger;
 
@@ -70,7 +70,7 @@ public class OSDelegate extends BaseSystemDelegate implements IOS {
      */
     public OSInfo getOSInfo() {
 
-        OSInfo os = new OSInfo(IOSType.Android, Build.VERSION.CODENAME, Build.MANUFACTURER);
+        OSInfo os = new OSInfo(IOSType.Android, Build.VERSION.RELEASE, Build.MANUFACTURER);
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Operating System: " + os);
         return os;
     }

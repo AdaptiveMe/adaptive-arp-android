@@ -52,7 +52,7 @@ import me.adaptive.arp.api.ITelephonyStatus;
  */
 public class TelephonyDelegate extends BaseCommunicationDelegate implements ITelephony {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "TelephonyDelegate";
     private ILogging logger;
 

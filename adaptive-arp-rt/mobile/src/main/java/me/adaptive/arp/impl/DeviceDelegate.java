@@ -45,8 +45,10 @@ import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseSystemDelegate;
+import me.adaptive.arp.api.Button;
 import me.adaptive.arp.api.DeviceInfo;
 import me.adaptive.arp.api.IButtonListener;
+import me.adaptive.arp.api.ICapabilitiesButton;
 import me.adaptive.arp.api.ICapabilitiesOrientation;
 import me.adaptive.arp.api.IDevice;
 import me.adaptive.arp.api.IDeviceOrientationListener;
@@ -62,7 +64,7 @@ import me.adaptive.arp.api.RotationEventState;
  */
 public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "DeviceDelegate";
     private ILogging logger;
 
@@ -72,6 +74,7 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
 
     // Context
     private Context context;
+    private ICapabilitiesOrientation origin;
 
     /**
      * Default Constructor.
@@ -82,6 +85,7 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
         buttonListeners = new ArrayList<>();
         deviceOrientationListeners = new ArrayList<>();
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
+        origin = this.getOrientationCurrent();
     }
 
     /**
@@ -230,10 +234,22 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
      * Public method called for update the current state of all the listeners registered
      */
     public void updateDeviceOrientationListeners() {
-
+        ICapabilitiesOrientation orientation = this.getOrientationCurrent();
+        logger.log(ILoggingLogLevel.Debug,LOG_TAG,"ROTATION updateDeviceOrientationListeners: "+orientation);
         for (IDeviceOrientationListener listener : deviceOrientationListeners) {
-            listener.onResult(new RotationEvent(ICapabilitiesOrientation.Unknown, this.getOrientationCurrent(),
+            listener.onResult(new RotationEvent(origin, orientation,
                     RotationEventState.DidFinishRotation, new Date().getTime()));
+        }
+        origin = orientation;
+    }
+
+    /**
+     * Public method called for update the current state of all the listeners registered
+     */
+    public void fireButtonsListeners(ICapabilitiesButton button) {
+
+        for (IButtonListener listener : buttonListeners) {
+            listener.onResult(new Button(button, new Date().getTime()));
         }
     }
 

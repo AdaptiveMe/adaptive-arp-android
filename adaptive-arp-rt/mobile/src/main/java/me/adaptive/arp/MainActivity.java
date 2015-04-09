@@ -1,20 +1,27 @@
 package me.adaptive.arp;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.OrientationEventListener;
+import android.view.ContextMenu;
+import android.view.Display;
+import android.view.KeyEvent;
+import android.view.Surface;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;
 
 import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.ICapabilitiesButton;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.LifecycleState;
 import me.adaptive.arp.common.webview.Utils;
-import me.adaptive.arp.core.net.WebChromeClient;
-import me.adaptive.arp.core.net.WebViewClient;
+import me.adaptive.arp.core.WebChromeClient;
+import me.adaptive.arp.core.WebViewClient;
 import me.adaptive.arp.impl.AccelerationDelegate;
 import me.adaptive.arp.impl.AppContextDelegate;
 import me.adaptive.arp.impl.AppContextWebviewDelegate;
@@ -48,8 +55,6 @@ public class MainActivity extends Activity {
     private static final String LOG_TAG = "MainActivity";
     private ILogging logger;
 
-    // Orientation listener
-    private OrientationEventListener orientationEventListener;
 
     // Webview
     private WebView webView;
@@ -57,6 +62,7 @@ public class MainActivity extends Activity {
     // context
     private Context context;
 
+    private Dialog splashDialog;
 
     /**
      * Called when the activity is starting.
@@ -69,6 +75,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        buildDialog();
+        showSplashDialog();
         setContentView(R.layout.activity_main);
 
         // Register Logging delegate
@@ -104,11 +112,6 @@ public class MainActivity extends Activity {
         AppRegistryBridge.getInstance().getTelephonyBridge().setDelegate(new TelephonyDelegate());
         AppRegistryBridge.getInstance().getVideoBridge().setDelegate(new VideoDelegate());
 
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onCreate()");
-        LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
-        lifecycleDelegate.updateLifecycleListeners(LifecycleState.Starting);
-        lifecycleDelegate.updateBackground(false);
-
 
         // Webview initialization
         webView = (WebView) findViewById(R.id.webView);
@@ -121,21 +124,17 @@ public class MainActivity extends Activity {
         // webView settings
         Utils.setWebViewSettings(webView);
 
+        LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
+        lifecycleDelegate.updateLifecycleListeners(LifecycleState.Starting);
+        lifecycleDelegate.updateBackground(false);
+
         // Load main page
         webView.loadUrl(context.getString(R.string.arp_url) + context.getString(R.string.arp_page));
 
-        // Orientation listener
-        orientationEventListener = new OrientationEventListener(getApplicationContext(), SensorManager.SENSOR_DELAY_UI) {
 
-            @Override
-            public void onOrientationChanged(int orientation) {
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onCreate()");
 
-                // Device orientation listeners
-                ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).updateDeviceOrientationListeners();
-                // Display orientation listeners
-                ((DisplayDelegate) AppRegistryBridge.getInstance().getDisplayBridge().getDelegate()).updateDisplayOrientationListeners();
-            }
-        };
+
     }
 
     /**
@@ -151,11 +150,7 @@ public class MainActivity extends Activity {
         lifecycleDelegate.updateLifecycleListeners(LifecycleState.Running);
         lifecycleDelegate.updateBackground(false);
 
-        if (orientationEventListener.canDetectOrientation()) {
-            orientationEventListener.enable();
-        } else {
-            logger.log(ILoggingLogLevel.Warn, LOG_TAG, "It's not possible to detect the device orientation changes");
-        }
+
     }
 
     /**
@@ -183,11 +178,7 @@ public class MainActivity extends Activity {
         lifecycleDelegate.updateLifecycleListeners(LifecycleState.Resuming);
         lifecycleDelegate.updateBackground(false);
 
-        if (orientationEventListener.canDetectOrientation()) {
-            orientationEventListener.enable();
-        } else {
-            logger.log(ILoggingLogLevel.Warn, LOG_TAG, "It's not possible to detect the device orientation changes");
-        }
+
     }
 
     /**
@@ -202,7 +193,7 @@ public class MainActivity extends Activity {
         lifecycleDelegate.updateLifecycleListeners(LifecycleState.Pausing);
         lifecycleDelegate.updateBackground(true);
 
-        orientationEventListener.disable();
+
     }
 
     /**
@@ -243,7 +234,7 @@ public class MainActivity extends Activity {
         LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
         lifecycleDelegate.updateBackground(true);
 
-        orientationEventListener.disable();
+
     }
 
     /**
@@ -259,7 +250,7 @@ public class MainActivity extends Activity {
         lifecycleDelegate.updateLifecycleListeners(LifecycleState.Stopping);
         lifecycleDelegate.updateBackground(true);
 
-        orientationEventListener.disable();
+
     }
 
 
@@ -273,5 +264,107 @@ public class MainActivity extends Activity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        Display display = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        switch (display.getRotation()){
+            case Surface.ROTATION_0:
+                logger.log(ILoggingLogLevel.Debug,LOG_TAG, "ROTATION 0");
+                break;
+            case Surface.ROTATION_90:
+                logger.log(ILoggingLogLevel.Debug,LOG_TAG, "ROTATION 90");
+                break;
+            case Surface.ROTATION_180:
+                logger.log(ILoggingLogLevel.Debug,LOG_TAG, "ROTATION 180");
+                break;
+            case Surface.ROTATION_270:
+                logger.log(ILoggingLogLevel.Debug,LOG_TAG, "ROTATION 270");
+        }
+
+
+        // Device orientation listeners
+        ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).updateDeviceOrientationListeners();
+        // Display orientation listeners
+        ((DisplayDelegate) AppRegistryBridge.getInstance().getDisplayBridge().getDelegate()).updateDisplayOrientationListeners();
     }
+
+    /**
+     * Called when a key was pressed down and not handled by any of the views
+     * inside of the activity. So, for example, key presses while the cursor
+     * is inside a TextView will not trigger the event (unless it is a navigation
+     * to another object) because TextView handles its own key presses.
+     * @param keyCode
+     * @param event
+     * @return Return <code>true</code> to prevent this event from being propagated
+     * further, or <code>false</code> to indicate that you have not handled
+     * this event and it should continue to be propagated.
+     * @see #onKeyUp
+     * @see android.view.KeyEvent
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        switch (keyCode){
+            case KeyEvent.KEYCODE_HOME:
+                ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.HomeButton);
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * Called when a context menu for the {@code view} is about to be shown.
+     * <p/>
+     * Use {@link #onContextItemSelected(android.view.MenuItem)} to know when an
+     * item has been selected.
+     * <p/>
+     * It is not safe to hold onto the context menu after this method returns.
+     *
+     * @param menu
+     * @param v
+     * @param menuInfo
+     */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        //super.onCreateContextMenu(menu, v, menuInfo);
+        ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.OptionButton);
+    }
+
+    /**
+     * Called when the activity has detected the user's press of the back
+     * key.  The default implementation simply finishes the current activity,
+     * but you can override this to do whatever you want.
+     */
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.BackButton);
+    }
+
+
+    /**
+     * Create the splash Dialog
+     */
+    private void buildDialog(){
+        splashDialog = new Dialog(this,android.R.style.Theme_NoTitleBar_Fullscreen);
+        splashDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        splashDialog.setContentView(R.layout.splash_layout);
+        splashDialog.setCancelable(false);
+    }
+
+    /**
+     * Shows the spash splashDialog
+     */
+    private void showSplashDialog(){
+        splashDialog.show();
+    }
+
+    /**
+     * Returns the SplashDialog
+     * @return SplashDialog
+     */
+    public Dialog getSplashDialog() {
+        return splashDialog;
+    }
+
 }

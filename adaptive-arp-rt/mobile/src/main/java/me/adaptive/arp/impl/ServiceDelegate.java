@@ -35,27 +35,31 @@
 package me.adaptive.arp.impl;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.Map;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseCommunicationDelegate;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IService;
 import me.adaptive.arp.api.IServiceMethod;
 import me.adaptive.arp.api.IServiceResultCallback;
 import me.adaptive.arp.api.Service;
+import me.adaptive.arp.api.ServiceEndpoint;
+import me.adaptive.arp.api.ServiceHeader;
+import me.adaptive.arp.api.ServicePath;
 import me.adaptive.arp.api.ServiceRequest;
+import me.adaptive.arp.api.ServiceSession;
+import me.adaptive.arp.api.ServiceSessionAttribute;
+import me.adaptive.arp.api.ServiceSessionCookie;
 import me.adaptive.arp.api.ServiceToken;
+import me.adaptive.arp.common.Utils;
 import me.adaptive.arp.common.parser.xml.XmlParser;
 
 /**
@@ -64,87 +68,87 @@ import me.adaptive.arp.common.parser.xml.XmlParser;
  */
 public class ServiceDelegate extends BaseCommunicationDelegate implements IService {
 
-    protected static final String APP_CONFIG_PATH = "app/config/";
-    protected static final String APP_DEFINITIONS_CONFIG_PATH = "definitions/";
-    protected static final String IO_CONFIG_FILENAME = "io-config.xml";
-    protected static final String IO_CONFIG_FILE = APP_CONFIG_PATH+IO_CONFIG_FILENAME;
-    protected static final String IO_CONFIG_DEFINITION_FILENAME = "/i18n-config.xsd";
-    protected static final String IO_CONFIG_DEFINITION_FILE = APP_CONFIG_PATH+APP_DEFINITIONS_CONFIG_PATH+IO_CONFIG_DEFINITION_FILENAME;
-
-    public static String APIService = "service";
-    static LoggingDelegate Logger;
+ // logger
+    private static final String LOG_TAG = "ServiceDelegate";
+    private ILogging logger;
 
 
-    private List<String> resources = null;
-    private List<Service> service = null;
+    // Context
+    private Context context;
+
+    private Map<String, Session> serviceSession;
+
 
     /**
      * Default Constructor.
      */
     public ServiceDelegate() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
+        serviceSession = new HashMap<String, Session>();
     }
 
-    /**
-     * Initialize all the relate objects
-     */
-    private void initialize(){
-        Context context;
-        AssetManager assetManager;
-        service = new ArrayList<>();
-        resources = new ArrayList<>();
-        InputStream plistIS = null, origin = null ,validator = null;
-        try {
-            context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
-            assetManager = context.getAssets();
-
-            origin = assetManager.open(IO_CONFIG_FILE);
-            validator = assetManager.open(IO_CONFIG_DEFINITION_FILE);
-            Document document = XmlParser.getInstance().parseXml(origin,validator);
-            resources = XmlParser.getInstance().getResourceData(document);
-            service = XmlParser.getInstance().getIOData(document);
-
-        } catch (IOException e) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "Error Opening xml - Error: " + e.getLocalizedMessage());
-        } catch (ParserConfigurationException e) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "Error Parsing xml - Error: " + e.getLocalizedMessage());
-        } catch (SAXException e) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "Error Validating xml - Error: " + e.getLocalizedMessage());
-        }finally {
-            closeStream(plistIS);
-        }
-    }
 
     /**
      * Obtains a Service token by a concrete uri (http://domain.com/path). This method would be useful when
-     * a service response is a redirect (3XX) and it is necessary to make a request to another host and we
-     * don't know by advance the name of the service.
+     * a services response is a redirect (3XX) and it is necessary to make a request to another host and we
+     * don't know by advance the name of the services.
      *
      * @param uri Unique Resource Identifier for a Service-Endpoint-Path-Method
-     * @return ServiceToken to create a service request or null if the given parameter is not
-     * configured in the platform's XML service definition file.
+     * @return ServiceToken to create a services request or null if the given parameter is not
+     * configured in the platform's XML services definition file.
      * @since v2.1.4
      */
     @Override
     public ServiceToken getServiceTokenByUri(String uri) {
+
+        URL url = null;
+        if(!Utils.validateURI(uri, "^https?://.*")) return null;
+        try {
+            url = new URL(uri);
+        } catch (MalformedURLException e) {
+            logger.log(ILoggingLogLevel.Error,LOG_TAG,"uri Error: "+e.getLocalizedMessage());
+            return null;
+        }
+        for(Service ser: XmlParser.getInstance().getServices().values())
+            for(ServiceEndpoint endpoint: ser.getServiceEndpoints())
+                if(!url.getHost().equals(endpoint.getHostURI()))
+                    continue;
+                else
+                    for(ServicePath path: endpoint.getPaths())
+                        if(!url.getPath().equals(path))
+                            continue;
+                        else
+                            return new ServiceToken(ser.getName(), endpoint.getHostURI(), path.getPath(), path.getMethods()[0]);
+
         return null;
     }
 
     /**
-     * Create a service request for the given ServiceToken. This method creates the request, populating
-     * existing headers and cookies for the same service. The request is populated with all the defaults
-     * for the service being invoked and requires only the request body to be set. Headers and cookies may be
+     * Create a services request for the given ServiceToken. This method creates the request, populating
+     * existing headers and cookies for the same services. The request is populated with all the defaults
+     * for the services being invoked and requires only the request body to be set. Headers and cookies may be
      * manipulated as needed by the application before submitting the ServiceRequest via invokeService.
      *
      * @param serviceToken ServiceToken to be used for the creation of the request.
-     * @return ServiceRequest with pre-populated headers, cookies and defaults for the service.
+     * @return ServiceRequest with pre-populated headers, cookies and defaults for the services.
      * @since v2.0.6
      */
     @Override
     public ServiceRequest getServiceRequest(ServiceToken serviceToken) {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getServiceRequest");
+
+        ServiceRequest request = new ServiceRequest(null,serviceToken);
+        if(serviceSession.containsKey(serviceToken.getEndpointName())){
+           Session session = serviceSession.get(serviceToken.getEndpointName());
+            request.setServiceHeaders(session.headers);
+            request.setServiceSession(new ServiceSession(session.cookies,session.attribs));
+            request.setUserAgent(session.userAgent);
+        }
+
+        return request;
+
+
     }
 
     /**
@@ -154,26 +158,52 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      * @param endpointName Endpoint name.
      * @param functionName Function name.
      * @param method       Method type.
-     * @return ServiceToken to create a service request or null if the given parameter combination is not
-     * configured in the platform's XML service definition file.
+     * @return ServiceToken to create a services request or null if the given parameter combination is not
+     * configured in the platform's XML services definition file.
      * @since v2.0.6
      */
     @Override
     public ServiceToken getServiceToken(String serviceName, String endpointName, String functionName, IServiceMethod method) {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getServiceToken");
+
+        if(XmlParser.getInstance().getServices().containsKey(serviceName)){
+            Service serv = XmlParser.getInstance().getServices().get(serviceName);
+            for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
+                if(endpoint.getHostURI().equals(endpointName)){
+                    for(ServicePath path: endpoint.getPaths()){
+                        if(path.equals(functionName)){
+                            for(IServiceMethod serviceMethod: path.getMethods()){
+                                if(serviceMethod.equals(method)){
+                                    return new ServiceToken(serviceName,endpoint.getHostURI(),path.getPath(),serviceMethod);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
-     * Returns all the possible service tokens configured in the platform's XML service definition file.
+     * Returns all the possible services tokens configured in the platform's XML services definition file.
      *
-     * @return Array of service tokens configured.
+     * @return Array of services tokens configured.
      * @since v2.0.6
      */
     @Override
     public ServiceToken[] getServicesRegistered() {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getServicesRegistered");
+
+        List<ServiceToken> tokens = new ArrayList<>();
+        for(Service serv: XmlParser.getInstance().getServices().values()){
+            for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
+                for(ServicePath path:endpoint.getPaths()){
+                    for(IServiceMethod method: path.getMethods()){
+                        tokens.add(new ServiceToken(serv.getName(),endpoint.getHostURI(),path.getPath(),method));
+                    }
+                }
+            }
+        }
+        return (ServiceToken[]) tokens.toArray();
     }
 
     /**
@@ -190,39 +220,44 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     }
 
     /**
-     * Checks whether a specific service, endpoint, function and method type is configured in the platform's
-     * XML service definition file.
+     * Checks whether a specific services, endpoint, function and method type is configured in the platform's
+     * XML services definition file.
      *
      * @param serviceName  Service name.
      * @param endpointName Endpoint name.
      * @param functionName Function name.
      * @param method       Method type.
-     * @return Returns true if the service is configured, false otherwise.
+     * @return Returns true if the services is configured, false otherwise.
      * @since v2.0.6
      */
     @Override
     public boolean isServiceRegistered(String serviceName, String endpointName, String functionName, IServiceMethod method) {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":isServiceRegistered");
-    }
 
-    /**
-     * Close given InputStream
-     *
-     * @param is inputString
-     */
-    private static void closeStream(InputStream is) {
-
-        try {
-            if (is != null) {
-                is.close();
+        if(XmlParser.getInstance().getServices().containsKey(serviceName)) {
+            Service serv = XmlParser.getInstance().getServices().get(serviceName);
+            for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
+                if(endpoint.equals(endpointName)){
+                    for(ServicePath path: endpoint.getPaths()){
+                        if(path.equals(functionName)){
+                            for(IServiceMethod serviceMethod: path.getMethods()){
+                                if(serviceMethod.equals(method))
+                                    return true;
+                            }
+                        }
+                    }
+                }
             }
-        } catch (Exception ex) {
-            Logger.log(ILoggingLogLevel.Error, APIService, "Error closing stream: " + ex.getLocalizedMessage());
         }
+        return false;
     }
 
 
+    private class Session {
+        ServiceHeader[] headers;
+        ServiceSessionCookie[] cookies;
+        ServiceSessionAttribute[] attribs;
+        String userAgent;
+    }
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

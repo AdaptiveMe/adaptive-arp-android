@@ -49,6 +49,7 @@ import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseSensorDelegate;
 import me.adaptive.arp.api.IAcceleration;
 import me.adaptive.arp.api.IAccelerationListener;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 
 /**
@@ -58,13 +59,20 @@ import me.adaptive.arp.api.ILoggingLogLevel;
 public class AccelerationDelegate extends BaseSensorDelegate implements IAcceleration {
 
 
-    static final float ALPHA = 0.15f;
-    static LoggingDelegate Logger;
-    public String APIService = "accelerometer";
-    protected float[] gravSensorVals;
-    private List<IAccelerationListener> listeners = new ArrayList<IAccelerationListener>();
+
+    // logger
+    private ILogging logger;
+    private static final String LOG_TAG = "AccelerationDelegate";
+
+    // Listeners
+    private List<IAccelerationListener> listeners;
+
+
     private SensorManager mSensorManager;
     private Sensor mSensor;
+
+    static final float ALPHA = 0.15f;
+    protected float[] gravSensorVals;
     private float[] grav = new float[3];
     private float[] geomagnetic = new float[3];
     private float[] orientation = new float[3];
@@ -125,9 +133,10 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
     public AccelerationDelegate() {
         super();
 
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
         mSensorManager = (SensorManager) ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        listeners = new ArrayList<IAccelerationListener>();
     }
 
     /**
@@ -152,9 +161,9 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
     public void addAccelerationListener(IAccelerationListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "addAccelerationListener: " + listener.toString() + " Added!");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "addAccelerationListener: " + listener.toString() + " Added!");
         } else
-            Logger.log(ILoggingLogLevel.Warn, APIService, "addAccelerationListener: " + listener.toString() + " is already added!");
+            logger.log(ILoggingLogLevel.Warn, LOG_TAG, "addAccelerationListener: " + listener.toString() + " is already added!");
         if (!listeners.isEmpty()) {
             mSensorManager.registerListener(sensorListener, mSensor,
                     SensorManager.SENSOR_DELAY_NORMAL);
@@ -170,9 +179,9 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
     public void removeAccelerationListener(IAccelerationListener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
-            Logger.log(ILoggingLogLevel.Debug, APIService, "removeAccelerationListener" + listener.toString() + " Removed!");
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeAccelerationListener" + listener.toString() + " Removed!");
         } else
-            Logger.log(ILoggingLogLevel.Warn, APIService, "removeAccelerationListener: " + listener.toString() + " is NOT registered");
+            logger.log(ILoggingLogLevel.Warn, LOG_TAG, "removeAccelerationListener: " + listener.toString() + " is NOT registered");
         if (listeners.isEmpty()) mSensorManager.unregisterListener(sensorListener);
     }
 
@@ -183,7 +192,7 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
      */
     public void removeAccelerationListeners() {
         listeners.clear();
-        Logger.log(ILoggingLogLevel.Debug, APIService, "removeAccelerationListeners: ALL AccelerationListeners have been removed!");
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeAccelerationListeners: ALL AccelerationListeners have been removed!");
         mSensorManager.unregisterListener(sensorListener);
     }
 

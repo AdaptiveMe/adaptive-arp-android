@@ -33,13 +33,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -50,12 +53,18 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import me.adaptive.arp.api.AppRegistryBridge;
+import me.adaptive.arp.api.ILogging;
+import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IServiceMethod;
 import me.adaptive.arp.api.IServiceType;
 import me.adaptive.arp.api.Locale;
 import me.adaptive.arp.api.Service;
 import me.adaptive.arp.api.ServiceEndpoint;
 import me.adaptive.arp.api.ServicePath;
+import me.adaptive.arp.common.core.AppResourceManager;
+import me.adaptive.arp.common.parser.plist.PList;
+import me.adaptive.arp.common.parser.plist.PListParser;
 
 public class XmlParser {
 
@@ -81,12 +90,35 @@ public class XmlParser {
     private static String RESOURCE_TAG = "resource";
     private static String URL_ATT = "url";
 
-    public String APIService = "XmlParser";
+
+    private static final String APP_DEFINITIONS_CONFIG_PATH = "definitions/";
+
+    private static final String IO_CONFIG_FILENAME = "io-config.xml";
+
+    private static final String IO_CONFIG_DEFINITION_FILENAME = APP_DEFINITIONS_CONFIG_PATH+"i18n-config.xsd";
+
+
+    private static final String I18N_CONFIG_FILENAME = "i18n-config.xml";
+
+    private static final String I18N_DEFINITIONS_CONFIG_FILENAME = APP_DEFINITIONS_CONFIG_PATH+"i18n-config.xsd";
+
+
+
+    private static final String PLIST_EXTENSION = ".plist";
+    private static final String DEFAULT_LOCALE_TAG = "default";
+    private static final String SUPPORTED_LOCALE_TAG = "supportedLanguage";
+
+    // logger
+    private static final String LOG_TAG = "DeviceDelegate";
+    private static ILogging logger = AppRegistryBridge.getInstance().getLoggingBridge();
+
+
     private List<Locale> locales;
 
     private static XmlParser instance = null;
     protected XmlParser() {
         // Exists only to defeat instantiation.
+        initialize();
     }
     public static XmlParser getInstance() {
         if(instance == null) {
@@ -95,9 +127,91 @@ public class XmlParser {
         return instance;
     }
 
+    private List<String> resources = null;
+    private Map<String, Service> services = null;
+
+    private Locale defaultLocale;
+    private List<Locale> supportedLocale = null;
+    private Map<String,PList> i18nData = null;
+
+    public List<Locale> getLocales() {
+        return locales;
+    }
+
+    public Locale getDefaultLocale() {
+        return defaultLocale;
+    }
+
+    public List<Locale> getSupportedLocale() {
+        return supportedLocale;
+    }
+
+    public Map<String, PList> getI18nData() {
+        return i18nData;
+    }
+
+    public List<String> getResources() {
+        return resources;
+    }
+
+    public Map<String, Service> getServices() {
+        return services;
+    }
+
+    private void initialize(){
+        services = new HashMap<>();
+        resources = new ArrayList<>();
+
+        supportedLocale = new ArrayList<>();
+        i18nData = new HashMap<String, PList>();
+        InputStream plistIS = null, origin = null ,validator = null;
+
+        try {
+
+            origin = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(IO_CONFIG_FILENAME).getData());
+            validator = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(IO_CONFIG_DEFINITION_FILENAME).getData());
+
+
+            /*if(XmlParser.getInstance().validateWithExtXSDUsingSAX(originStr,validatorStr)){
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VALID");
+            }else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");*/
+
+
+            Document document = this.parseXml(origin,validator);
+            resources = this.getResourceData(document);
+            services = this.getIOData(document);
+
+
+            origin = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(I18N_CONFIG_FILENAME).getData());
+            validator = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(I18N_DEFINITIONS_CONFIG_FILENAME).getData());
+
+            /*if(XmlParser.getInstance().validateWithIntXSDUsingDOM(I18N_CONFIG_FILE)){
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VALID");
+            }else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");*/
+
+            document = this.parseXml(origin,validator);
+            defaultLocale = this.getLocaleData(document, DEFAULT_LOCALE_TAG).get(0);
+            supportedLocale = this.getLocaleData(document,SUPPORTED_LOCALE_TAG);
+
+
+            for(Locale locale: supportedLocale){
+                plistIS = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(getResourcesFilePath(locale)).getData());
+                PList plist = PListParser.getInstance().parse(plistIS);
+                i18nData.put(localeToString(locale),plist);
+            }
+        } catch (IOException e) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Opening xml - Error: " + e.getLocalizedMessage());
+        } catch (ParserConfigurationException e) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Parsing xml - Error: " + e.getLocalizedMessage());
+        } catch (SAXException e) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Validating xml - Error: " + e.getLocalizedMessage());
+        }finally {
+            closeStream(plistIS);
+
+        }
+    }
 
     public Document parseXml(InputStream xml, InputStream xsd) throws IOException, ParserConfigurationException, SAXException {
-
 
         // parse an XML document into a DOM tree
         DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
@@ -146,8 +260,9 @@ public class XmlParser {
 
     }
 
-    public List<Service> getIOData(Document document) throws ParserConfigurationException, SAXException, IOException {
-        List<Service> services = new ArrayList<>();
+    public Map<String,Service> getIOData(Document document) throws ParserConfigurationException, SAXException, IOException {
+        //List<Service> services = new ArrayList<>();
+        Map<String, Service> services = new HashMap<>();
 
 
         Element docEle = document.getDocumentElement();
@@ -157,8 +272,8 @@ public class XmlParser {
             for (int i = 0; i < nl.getLength(); i++) {
 
                 Element el = (Element) nl.item(i);
-
-                services.add(getService(el));
+                Service serv = getService(el);
+                services.put(serv.getName(),serv);
 
             }
         }
@@ -328,4 +443,38 @@ public class XmlParser {
         return true;
     }
 
+    /**
+     * Close given InputStream
+     *
+     * @param is inputString
+     */
+    private static void closeStream(InputStream is) {
+
+        try {
+            if (is != null) {
+                is.close();
+            }
+        } catch (Exception ex) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error closing stream: " + ex.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * get the absolute path for resources
+     *
+     * @param locale data
+     * @return The string with the path
+     */
+    private String getResourcesFilePath(Locale locale) {
+        return localeToString(locale) + PLIST_EXTENSION;
+    }
+
+    /**
+     * Return the String representation of the Locale
+     * @param locale object
+     * @return String
+     */
+    private String localeToString(Locale locale) {
+        return locale.getLanguage() + "-" + locale.getCountry();
+    }
 }

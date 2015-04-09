@@ -35,8 +35,8 @@
 package me.adaptive.arp.impl;
 
 import android.app.Activity;
-import android.content.Context;
 
+import me.adaptive.arp.MainActivity;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseSystemDelegate;
 import me.adaptive.arp.api.ILogging;
@@ -49,16 +49,20 @@ import me.adaptive.arp.api.IRuntime;
  */
 public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "RuntimeDelegate";
     private ILogging logger;
 
+
+    private Activity activity;
     /**
      * Default Constructor.
      */
     public RuntimeDelegate() {
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
+        activity = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getActivity();
+
     }
 
     /**
@@ -67,12 +71,8 @@ public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
      * @since ARP1.0
      */
     public void dismissApplication() {
-
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Dismissing application");
-
-        Activity mainActivity = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getActivity();
-
-        mainActivity.finish();
+        activity.finish();
     }
 
     /**
@@ -82,10 +82,17 @@ public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
      * @since ARP1.0
      */
     public boolean dismissSplashScreen() {
+        try {
+            ((MainActivity) activity).getSplashDialog().dismiss();
+        }catch (Exception e){
+            logger.log(ILoggingLogLevel.Error,LOG_TAG,"dismissSplashScreen Error: "+e.getLocalizedMessage());
+            return false;
+        }
+        return true;
 
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":dismissSplashScreen");
     }
+
+
 
 }
 /**

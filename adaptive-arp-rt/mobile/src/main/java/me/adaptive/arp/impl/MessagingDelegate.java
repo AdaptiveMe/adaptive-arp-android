@@ -53,7 +53,7 @@ import me.adaptive.arp.api.IMessagingCallbackError;
  */
 public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
 
-    // Logger
+    // logger
     private static final String LOG_TAG = "MessagingDelegate";
     private ILogging logger;
 

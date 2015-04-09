@@ -62,17 +62,18 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
 
 
     private final boolean tvDevice;
-    public String APIService = "capabilities";
+
+    private PackageManager pm;
 
     /**
      * Default Constructor.
      */
     public CapabilitiesDelegate() {
         super();
-        Context context = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext());
+        Context context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(context.UI_MODE_SERVICE);
         tvDevice = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
-
+        pm = context.getPackageManager();
     }
 
     /**
@@ -136,8 +137,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         boolean supported = false;
         ActivityInfo activityInfo;
         Intent intent;
-        PackageManager pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
-        //TODO CHECK LIVE CONNECTIVITY?
+
         switch (type) {
             case Calendar:
                 intent = new Intent(Intent.ACTION_MAIN);
@@ -172,7 +172,6 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                 }
                 break;
             case Telephony:
-                //TODO CHECK ACTION_DIAL?
                 capability = PackageManager.FEATURE_TELEPHONY;
                 break;
 
@@ -214,7 +213,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         boolean supported = false;
         ActivityInfo activityInfo;
         Intent intent = null;
-        PackageManager pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
+
         switch (type) {
             case AudioPlayback:
                 //Whether has something to handle the request
@@ -249,7 +248,6 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                 break;
             case VideoPlayback:
                 intent = intent.setAction(Intent.ACTION_VIEW);
-                //TODO CHECK CRASH URI NULL
                 intent.setType("video/*");
                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
                 if (activityInfo.exported) {
@@ -281,10 +279,9 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      * @since ARP1.0
      */
     public boolean hasNetSupport(ICapabilitiesNet type) {
-        //TODO CHECK LIVE? is this is network connected?
         String capability = null;
         boolean supported = false;
-        PackageManager pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
+
         switch (type) {
             case GPRS:
             case GSM:
@@ -335,7 +332,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
     public boolean hasSensorSupport(ICapabilitiesSensor type) {
         String capability = null;
         boolean supported = false;
-        PackageManager pm = ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getPackageManager();
+
         switch (type) {
             case Accelerometer:
                 capability = PackageManager.FEATURE_SENSOR_ACCELEROMETER;

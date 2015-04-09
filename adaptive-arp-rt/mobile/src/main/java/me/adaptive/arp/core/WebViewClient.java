@@ -1,4 +1,4 @@
-package me.adaptive.arp.core.net;
+package me.adaptive.arp.core;
 
 import android.content.Context;
 import android.webkit.WebResourceRequest;
@@ -16,8 +16,7 @@ import me.adaptive.arp.api.AppResourceData;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.common.Utils;
-import me.adaptive.arp.core.AppResourceManager;
-import me.adaptive.arp.core.ServiceHandler;
+import me.adaptive.arp.common.core.AppResourceManager;
 
 /**
  * Http Interceptor for handling requests inside an Adaptive Runtime Application. More information
@@ -79,7 +78,6 @@ public class WebViewClient extends android.webkit.WebViewClient {
 
                 // ADAPTIVE NATIVE CALLS
 
-                // TODO: Parse the content of the request and parse it
                 APIRequest apiRequest = AppRegistryBridge.getJSONInstance().create().fromJson(request.getRequestHeaders().get("Content-Body"), APIRequest.class);
                 logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Intercepting ARP request: " + apiRequest);
 
@@ -117,4 +115,27 @@ public class WebViewClient extends android.webkit.WebViewClient {
             return null;
         }
     }
+
+
+
+    /**
+     * Notify the host application that a page has finished loading. This method
+     * is called only for main frame. When onPageFinished() is called, the
+     * rendering picture may not be updated yet. To get the notification for the
+     * new Picture, use {@link android.webkit.WebView.PictureListener#onNewPicture}.
+     *
+     * @param view The WebView that is initiating the callback.
+     * @param url  The url of the page.
+     */
+    @Override
+    public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+
+        //TODO REVIEW WHY THIS IS CALLED TWICE IN JQUERY APPS
+        if(url.equals(context.getString(R.string.arp_url) + context.getString(R.string.arp_page))){
+            AppRegistryBridge.getInstance().getRuntimeBridge().dismissSplashScreen();
+        }
+    }
+
+
 }
