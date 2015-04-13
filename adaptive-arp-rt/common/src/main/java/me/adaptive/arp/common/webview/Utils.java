@@ -1,6 +1,5 @@
 package me.adaptive.arp.common.webview;
 
-import android.content.Context;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -9,6 +8,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.util.Hashtable;
+
+import me.adaptive.arp.common.BuildConfig;
 
 /**
  * Utils class for webView management
@@ -35,6 +36,11 @@ public class Utils {
         webSettings.setGeolocationEnabled(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setSupportZoom(false);
+        webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        if (BuildConfig.DEBUG)
+        { WebView.setWebContentsDebuggingEnabled(true); }
+
+
     }
 
     /**

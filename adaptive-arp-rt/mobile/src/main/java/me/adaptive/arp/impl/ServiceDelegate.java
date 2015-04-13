@@ -36,6 +36,19 @@ package me.adaptive.arp.impl;
 
 import android.content.Context;
 
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -48,13 +61,17 @@ import me.adaptive.arp.api.BaseCommunicationDelegate;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.IService;
+import me.adaptive.arp.api.IServiceContentEncoding;
 import me.adaptive.arp.api.IServiceMethod;
 import me.adaptive.arp.api.IServiceResultCallback;
+import me.adaptive.arp.api.IServiceResultCallbackError;
 import me.adaptive.arp.api.Service;
 import me.adaptive.arp.api.ServiceEndpoint;
 import me.adaptive.arp.api.ServiceHeader;
 import me.adaptive.arp.api.ServicePath;
 import me.adaptive.arp.api.ServiceRequest;
+import me.adaptive.arp.api.ServiceRequestParameter;
+import me.adaptive.arp.api.ServiceResponse;
 import me.adaptive.arp.api.ServiceSession;
 import me.adaptive.arp.api.ServiceSessionAttribute;
 import me.adaptive.arp.api.ServiceSessionCookie;
@@ -71,6 +88,10 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
  // logger
     private static final String LOG_TAG = "ServiceDelegate";
     private ILogging logger;
+
+
+    private HttpClient httpClient = null;
+    private CookieStore httpCookieStore = new BasicCookieStore();
 
 
     // Context
@@ -113,11 +134,11 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         }
         for(Service ser: XmlParser.getInstance().getServices().values())
             for(ServiceEndpoint endpoint: ser.getServiceEndpoints())
-                if(!url.getHost().equals(endpoint.getHostURI()))
+                if(!url.getProtocol().concat("://").concat(url.getHost()).equals(endpoint.getHostURI()))
                     continue;
                 else
                     for(ServicePath path: endpoint.getPaths())
-                        if(!url.getPath().equals(path))
+                        if(!url.getPath().equals(path.getPath()))
                             continue;
                         else
                             return new ServiceToken(ser.getName(), endpoint.getHostURI(), path.getPath(), path.getMethods()[0]);
@@ -138,9 +159,18 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     @Override
     public ServiceRequest getServiceRequest(ServiceToken serviceToken) {
 
+        if(!isServiceRegistered(serviceToken)){
+            return null;
+        }
         ServiceRequest request = new ServiceRequest(null,serviceToken);
+        request.setContentEncoding(IServiceContentEncoding.Utf8);
+        request.setServiceToken(serviceToken);
+        AppContextWebviewDelegate webViewDelegate = (AppContextWebviewDelegate) AppRegistryBridge.getInstance().getPlatformContextWeb().getDelegate();
+        request.setUserAgent(webViewDelegate.getUserAgent());
+        request.setContentType(String.valueOf(XmlParser.getInstance().getContentType(serviceToken)));
+
         if(serviceSession.containsKey(serviceToken.getEndpointName())){
-           Session session = serviceSession.get(serviceToken.getEndpointName());
+            Session session = serviceSession.get(serviceToken.getEndpointName());
             request.setServiceHeaders(session.headers);
             request.setServiceSession(new ServiceSession(session.cookies,session.attribs));
             request.setUserAgent(session.userAgent);
@@ -150,6 +180,8 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
 
 
     }
+
+
 
     /**
      * Obtains a ServiceToken for the given parameters to be used for the creation of requests.
@@ -203,7 +235,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
                 }
             }
         }
-        return (ServiceToken[]) tokens.toArray();
+        return tokens.toArray(new ServiceToken[tokens.size()]);
     }
 
     /**
@@ -215,8 +247,99 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public void invokeService(ServiceRequest serviceRequest, IServiceResultCallback callback) {
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":invokeService");
+        if(!Utils.validateService(serviceRequest.getServiceToken())){
+            callback.onError(IServiceResultCallbackError.NotRegisteredService);
+            return;
+        }
+
+        httpClient = new DefaultHttpClient();
+
+        ServiceResponse serviceResponse = new ServiceResponse();
+        try {
+            //TODO PREPARE THE REQUEST
+            HttpResponse response = httpClient.execute(new HttpGet(getURL(serviceRequest)));
+            StatusLine statusLine = response.getStatusLine();
+
+            int status = statusLine.getStatusCode();
+            switch(status){
+
+                case  HttpStatus.SC_OK:
+
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    response.getEntity().writeTo(out);
+
+                    String responseString = out.toString();
+                    out.close();
+
+                    //..more logic
+                    //TODO PREPARE Session
+                    serviceResponse.setContentType(EntityUtils.getContentCharSet(response.getEntity()));
+                    serviceResponse.setContentEncoding(IServiceContentEncoding.Utf8);
+                    serviceResponse.setContent(responseString);
+                    serviceResponse.setContentLength(responseString.length());
+                    serviceResponse.setServiceHeaders(getHeaders(response.getAllHeaders()));
+                    serviceResponse.setStatusCode(status);
+
+                    response.getEntity().getContent().close();
+
+                    callback.onResult(serviceResponse);
+                    return;
+                case HttpStatus.SC_REQUEST_TIMEOUT:
+                    logger.log(ILoggingLogLevel.Error,LOG_TAG, "There is a timeout calling the service: "+status);
+                    callback.onError(IServiceResultCallbackError.TimeOut);
+                    return;
+
+                default:
+                    logger.log(ILoggingLogLevel.Error,LOG_TAG, "The status code received: ["+status+"] is not handled by" +
+                            " the plattform" );
+                    callback.onError(IServiceResultCallbackError.Unknown);
+
+            }
+
+
+
+
+        } catch (IOException e){
+            logger.log(ILoggingLogLevel.Error,LOG_TAG, "invokeService Error: "+e.getLocalizedMessage());
+        }
+
+
+    }
+
+    /**
+     * Get ServiceHeader[] from Header[]
+     * @param headers array
+     * @return serviceHeader array
+     */
+    private ServiceHeader[] getHeaders(Header[] headers){
+        ServiceHeader[] serviceHeaders = new ServiceHeader[0];
+
+        for (Header header : headers) {
+            ServiceHeader serviceHeader = new ServiceHeader(header.getName(),header.getValue());
+            serviceHeaders = Utils.addElement(serviceHeaders,serviceHeader);
+        }
+        return serviceHeaders;
+    }
+
+
+    /**
+     * Return the url string from a ServiceRequest
+     * @param request
+     * @return Url string
+     */
+    private String getURL(ServiceRequest request){
+        String urlString;
+        ServiceToken token = request.getServiceToken();
+        String parameters = "";
+        for (ServiceRequestParameter serviceRequestParameter : request.getQueryParameters()) {
+            if(!parameters.isEmpty()) parameters += "&";
+            parameters += serviceRequestParameter.getKeyName()+"="+serviceRequestParameter.getKeyData();
+        }
+
+        String content = request.getContent();
+        urlString  = token.getEndpointName()+token.getFunctionName()+token.getFunctionName()+(parameters.isEmpty()?"":"?"+parameters);
+
+        return urlString;
     }
 
     /**
@@ -236,9 +359,9 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         if(XmlParser.getInstance().getServices().containsKey(serviceName)) {
             Service serv = XmlParser.getInstance().getServices().get(serviceName);
             for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
-                if(endpoint.equals(endpointName)){
+                if(endpoint.getHostURI().equals(endpointName)){
                     for(ServicePath path: endpoint.getPaths()){
-                        if(path.equals(functionName)){
+                        if(path.getPath().equals(functionName)){
                             for(IServiceMethod serviceMethod: path.getMethods()){
                                 if(serviceMethod.equals(method))
                                     return true;
@@ -249,6 +372,10 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
             }
         }
         return false;
+    }
+
+    private boolean isServiceRegistered(ServiceToken serviceToken) {
+        return isServiceRegistered(serviceToken.getServiceName(),serviceToken.getEndpointName(),serviceToken.getFunctionName(),serviceToken.getInvocationMethod());
     }
 
 

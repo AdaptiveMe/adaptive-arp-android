@@ -7,11 +7,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.adaptive.arp.api.FileDescriptor;
+import me.adaptive.arp.api.Service;
+import me.adaptive.arp.api.ServiceEndpoint;
+import me.adaptive.arp.api.ServicePath;
+import me.adaptive.arp.api.ServiceToken;
+import me.adaptive.arp.common.parser.xml.XmlParser;
 
 /**
  * Utils class for public static methods
@@ -158,5 +165,65 @@ public class Utils {
         a[a.length - 1] = e;
         return a;
     }
+
+    /**
+     * Check whether a service should be handled or not
+     * @param serviceToken to validate
+     * @return true if should be handled, false otherwise
+     */
+    public static boolean validateService(ServiceToken serviceToken){
+        Service serv = XmlParser.getInstance().getServices().get(serviceToken.getServiceName());
+        for (ServiceEndpoint serviceEndpoint : serv.getServiceEndpoints()) {
+            String endpointName = serviceToken.getEndpointName();
+            if(endpointName.equals(serviceEndpoint)){
+                Pattern pattern = Pattern.compile(endpointName);
+                Matcher m = pattern.matcher(serviceToken.getEndpointName());
+                if(m.matches()){
+                    for (ServicePath servicePath : serviceEndpoint.getPaths()) {
+                        pattern = Pattern.compile(servicePath.getPath());
+                        m = pattern.matcher(serviceToken.getFunctionName());
+                        return true;
+                    }
+                }
+
+            }
+        }
+        return false;
+
+    }
+
+    /**
+     * Check whether an url should be handled or not
+     * @param urlString to validate
+     * @return true if should be handled, false otherwise
+     * @throws MalformedURLException
+     */
+    public static boolean validateUrl(String urlString) throws MalformedURLException {
+        Pattern pattern = null;
+        Matcher m = null;
+        URL url = new URL(urlString);
+        for (Service service : XmlParser.getInstance().getServices().values()) {
+            for (ServiceEndpoint serviceEndpoint : service.getServiceEndpoints()) {
+                if(url.getProtocol().concat("://").concat(url.getHost()).equals(serviceEndpoint.getHostURI())){
+                    for (ServicePath servicePath : serviceEndpoint.getPaths()) {
+                        pattern = Pattern.compile(servicePath.getPath());
+                        m = pattern.matcher(url.getPath());
+                        if(m.matches()) return true;
+                    }
+                }
+            }
+        }
+
+        for (String resource : XmlParser.getInstance().getResources()) {
+            pattern = Pattern.compile(resource);
+            m = pattern.matcher(urlString);
+            if(m.matches()) return true;
+        }
+
+
+        return false;
+
+    }
+
 
 }

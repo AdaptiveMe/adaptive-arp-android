@@ -12,6 +12,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
 import me.adaptive.arp.api.AppRegistryBridge;
@@ -124,6 +125,7 @@ public class MainActivity extends Activity {
         // webView settings
         Utils.setWebViewSettings(webView);
 
+
         LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
         lifecycleDelegate.updateLifecycleListeners(LifecycleState.Starting);
         lifecycleDelegate.updateBackground(false);
@@ -131,6 +133,12 @@ public class MainActivity extends Activity {
         // Load main page
         webView.loadUrl(context.getString(R.string.arp_url) + context.getString(R.string.arp_page));
 
+        webView.evaluateJavascript("(function(){ str = navigator.userAgent; return str; })();", new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+                ((AppContextWebviewDelegate)AppRegistryBridge.getInstance().getPlatformContextWeb().getDelegate()).setUserAgent(value);
+            }
+        });
 
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onCreate()");
 

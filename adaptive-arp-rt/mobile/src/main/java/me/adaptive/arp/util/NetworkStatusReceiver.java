@@ -33,23 +33,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.telephony.TelephonyManager;
 
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ICapabilitiesNet;
+import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.INetworkStatusListener;
 import me.adaptive.arp.api.NetworkEvent;
-import me.adaptive.arp.impl.LoggingDelegate;
 import me.adaptive.arp.impl.NetworkStatusDelegate;
 
 public class NetworkStatusReceiver extends BroadcastReceiver {
 
-    private static String APIService = "NetworkStatusReceiver";
-    static LoggingDelegate Logger;
+    // logger
+    private static final String LOG_TAG = "DeviceDelegate";
+    private ILogging logger;
+
+    //listeners
     private static List<INetworkStatusListener> listeners;
 
     /**
@@ -57,20 +59,13 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
      */
     public NetworkStatusReceiver() {
         super();
-        Logger = ((LoggingDelegate) AppRegistryBridge.getInstance().getLoggingBridge().getDelegate());
+        logger = AppRegistryBridge.getInstance().getLoggingBridge();
         listeners = ((NetworkStatusDelegate) AppRegistryBridge.getInstance().getNetworkStatusBridge().getDelegate()).getListeners();
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            for (String key : extras.keySet()) {
-                Logger.log(ILoggingLogLevel.Debug, APIService, "key [" + key + "]: " + extras.get(key));
-            }
-        } else {
-            Logger.log(ILoggingLogLevel.Debug, APIService, "no extras");
-        }
+
         if(listeners.isEmpty()) return;
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -82,11 +77,11 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
             switch (activeNetwork.getType()) {
                 case ConnectivityManager.TYPE_WIMAX:
                 case ConnectivityManager.TYPE_WIFI:
-                    Logger.log(ILoggingLogLevel.Debug, APIService, "WIFI");
+                    logger.log(ILoggingLogLevel.Debug, LOG_TAG, "WIFI");
                     NetworkType = ICapabilitiesNet.WIFI;
                     break;
                 case ConnectivityManager.TYPE_MOBILE:
-                    Logger.log(ILoggingLogLevel.Debug, APIService, "MOBILE");
+                    logger.log(ILoggingLogLevel.Debug, LOG_TAG, "MOBILE");
                     int networkType = activeNetwork.getSubtype();
                     switch (networkType) {
                         case TelephonyManager.NETWORK_TYPE_GPRS:

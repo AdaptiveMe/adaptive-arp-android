@@ -59,6 +59,7 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
     private WebView primaryView;
     private List<Object> views;
 
+    private String userAgent;
     /**
      * Default Constructor.
      */
@@ -180,6 +181,15 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
     public void setPrimaryView(WebView primaryView) {
         this.primaryView = primaryView;
         this.primaryView.addJavascriptInterface(this, "quirksMode");
+
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public String getUserAgent(){
+        return userAgent;
     }
 
     /**
@@ -191,6 +201,7 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
     public boolean isQuirkEnabled() {
         return true;
     }
+
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

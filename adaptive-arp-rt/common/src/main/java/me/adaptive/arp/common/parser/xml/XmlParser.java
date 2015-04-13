@@ -62,6 +62,7 @@ import me.adaptive.arp.api.Locale;
 import me.adaptive.arp.api.Service;
 import me.adaptive.arp.api.ServiceEndpoint;
 import me.adaptive.arp.api.ServicePath;
+import me.adaptive.arp.api.ServiceToken;
 import me.adaptive.arp.common.core.AppResourceManager;
 import me.adaptive.arp.common.parser.plist.PList;
 import me.adaptive.arp.common.parser.plist.PListParser;
@@ -313,8 +314,8 @@ public class XmlParser {
 
         List<ServicePath> paths = new ArrayList<>();
         NodeList nl = el.getElementsByTagName(PATH_TAG);
-        if (nl != null && nl.getLength() > 0) {
-            Element ele = (Element) nl.item(0);
+        for(int i = 0; i < nl.getLength(); i++){
+            Element ele = (Element) nl.item(i);
             paths.add(getPath(ele));
         }
 
@@ -476,5 +477,18 @@ public class XmlParser {
      */
     private String localeToString(Locale locale) {
         return locale.getLanguage() + "-" + locale.getCountry();
+    }
+
+    public IServiceType getContentType(ServiceToken serviceToken) {
+        if(services.containsKey(serviceToken.getServiceName())){
+            for (ServiceEndpoint serviceEndpoint : services.get(serviceToken.getServiceName()).getServiceEndpoints()) {
+                for (ServicePath servicePath : serviceEndpoint.getPaths()) {
+                    if(servicePath.getPath().equals(serviceToken.getFunctionName())){
+                        return servicePath.getType();
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
