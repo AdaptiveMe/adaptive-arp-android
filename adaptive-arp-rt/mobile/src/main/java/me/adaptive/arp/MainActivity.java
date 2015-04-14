@@ -236,7 +236,6 @@ public class MainActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.HomeButton);
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onStop()");
         LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
         lifecycleDelegate.updateBackground(true);
@@ -311,6 +310,7 @@ public class MainActivity extends Activity {
 
         switch (keyCode){
             case KeyEvent.KEYCODE_HOME:
+                //THIS CANNOT BE PREVENTED
                 ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.HomeButton);
                 return true;
             case KeyEvent.KEYCODE_MENU:
@@ -341,7 +341,6 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
-        //((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.BackButton);
     }
 
 

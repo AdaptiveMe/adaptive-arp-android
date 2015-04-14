@@ -80,6 +80,11 @@ public class AppResourceManager {
 
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Retrieveing resource: " + url);
 
+        //TODO REVIEW THIS LINE
+        int index = url.indexOf("#");
+        if(index > 0)
+            url = url.substring(0,index);
+
         AppResourceData resource = new AppResourceData();
         InputStream is;
         try {

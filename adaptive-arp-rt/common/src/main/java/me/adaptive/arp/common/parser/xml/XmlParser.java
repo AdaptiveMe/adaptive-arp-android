@@ -176,9 +176,9 @@ public class XmlParser {
             validator = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(IO_CONFIG_DEFINITION_FILENAME).getData());
 
 
-            if(validate(createFileFromInputStream(origin), createFileFromInputStream(validator))){
+            /*if(validate(createFileFromInputStream(origin), createFileFromInputStream(validator))){
                 logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VALID");
-            }else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");
+            }else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");*/
 
 
 

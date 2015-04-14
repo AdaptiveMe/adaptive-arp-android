@@ -95,7 +95,7 @@ public class Utils {
         fd.setName(file.getName());
         fd.setDateCreated(file.lastModified());
         fd.setDateModified(file.lastModified());
-        fd.setPath(fd.getPath());
+        fd.setPath(file.getPath());
         fd.setPathAbsolute(file.getAbsolutePath());
         fd.setSize(file.getTotalSpace());
 
@@ -103,7 +103,9 @@ public class Utils {
 
     }
 
-    /* Checks if external storage is available for read and write */
+    /**
+     * Checks if external storage is available for read and write
+     */
     public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -122,6 +124,12 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Returns the byte[] content of a File
+     * @param file to read
+     * @return the byte[] data
+     * @throws IOException
+     */
     public static byte[] readFile(String file) throws IOException {
         return readFile(new File(file));
     }
@@ -150,6 +158,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Validate an url against a regexp
+     * @param test url
+     * @param regex test
+     * @return true if valid, false otherwise
+     */
     public static boolean validateURI(String test, String regex){
         return test.matches(regex);
     }
