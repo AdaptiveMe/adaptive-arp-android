@@ -463,7 +463,7 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
                     logger.log(ILoggingLogLevel.Error, "Error: " + Log.getStackTraceString(ex));
                     error = true;
                 } finally {
-                    logger.log(ILoggingLogLevel.Error, "finally clause");
+
                     if (cursorID != null) {
                         cursorID.close();
                     }

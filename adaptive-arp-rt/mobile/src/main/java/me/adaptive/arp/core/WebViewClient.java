@@ -5,6 +5,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
+import org.apache.http.HttpStatus;
+
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 
@@ -57,61 +59,58 @@ public class WebViewClient extends android.webkit.WebViewClient {
         String method = request.getMethod();
         String url = request.getUrl().toString();
 
+        try {
+           if (!(url == null || url.isEmpty() || method == null || method.isEmpty())) {
 
-        if (!(url == null || url.isEmpty() || method == null || method.isEmpty())) {
+                if (url.startsWith(context.getString(R.string.arp_url)) && method.equals("GET")) {
 
-            if (url.startsWith(context.getString(R.string.arp_url)) && method.equals("GET")) {
+                    // FILE MANAGEMENT (via Adaptive Packer)
 
-                // FILE MANAGEMENT (via Adaptive Packer)
+                    logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Intercepting File request: " + request.getUrl().toString());
 
-                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Intercepting File request: " + request.getUrl().toString());
+                    AppResourceData resource = AppResourceManager.getInstance().retrieveWebResource(url);
 
-                AppResourceData resource = AppResourceManager.getInstance().retrieveWebResource(url);
+                    // Prepare the response
+                    response = new WebResourceResponse(resource.getRawType(),
+                            "UTF-8", 200, "OK", request.getRequestHeaders(),
+                            new ByteArrayInputStream(resource.getData()));
+                    return response;
 
-                // Prepare the response
-                response = new WebResourceResponse(resource.getRawType(),
-                        "UTF-8", 200, "OK", request.getRequestHeaders(),
-                        new ByteArrayInputStream(resource.getData()));
-                return response;
+                } else if (url.startsWith(context.getString(R.string.arp_url)) && method.equals("POST")) {
 
-            } else if (url.startsWith(context.getString(R.string.arp_url)) && method.equals("POST")) {
+                    // ADAPTIVE NATIVE CALLS
 
-                // ADAPTIVE NATIVE CALLS
+                    APIRequest apiRequest = AppRegistryBridge.getJSONInstance().create().fromJson(request.getRequestHeaders().get("Content-Body"), APIRequest.class);
+                    logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Intercepting ARP request: " + apiRequest);
 
-                APIRequest apiRequest = AppRegistryBridge.getJSONInstance().create().fromJson(request.getRequestHeaders().get("Content-Body"), APIRequest.class);
-                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Intercepting ARP request: " + apiRequest);
+                    if (!apiRequest.getApiVersion().equals(AppRegistryBridge.getInstance().getAPIVersion())) {
+                        logger.log(ILoggingLogLevel.Warn, LOG_TAG, "\"The API version of the Typescript API is not the same as the Platform API version");
+                    }
 
-                if (!apiRequest.getApiVersion().equals(AppRegistryBridge.getInstance().getAPIVersion())) {
-                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "\"The API version of the Typescript API is not the same as the Platform API version");
+                    // Call the service and return the data
+                    APIResponse apiResponse = ServiceHandler.getInstance().handleServiceUrl(apiRequest);
+
+                    // Prepare the response
+                    try {
+                        response = new WebResourceResponse("application/javascript; charset=utf-8",
+                                "UTF-8", apiResponse.getStatusCode(), apiResponse.getStatusMessage(),
+                                request.getRequestHeaders(), new ByteArrayInputStream(AppRegistryBridge.getJSONInstance().create().toJson(apiResponse).getBytes("utf-8")));
+                    } catch (UnsupportedEncodingException e) {
+                        logger.log(ILoggingLogLevel.Error, LOG_TAG, "shouldInterceptRequest Error:"+e.getLocalizedMessage());
+                    }
+                    return response;
+
+                } else {
+                    if(Utils.validateUrl(url)) return null;
+                    else return nonPermisionResponse(request);
                 }
-
-                // Call the service and return the data
-                APIResponse apiResponse = ServiceHandler.getInstance().handleServiceUrl(apiRequest);
-
-                // Prepare the response
-                try {
-                    response = new WebResourceResponse("application/javascript; charset=utf-8",
-                            "UTF-8", apiResponse.getStatusCode(), apiResponse.getStatusMessage(),
-                            request.getRequestHeaders(), new ByteArrayInputStream(AppRegistryBridge.getJSONInstance().create().toJson(apiResponse).getBytes("utf-8")));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                return response;
-
-            } else if (Utils.validateRegexp(url, "^data:(.*)\\/(.*);base64,(.*)") && method.equals("GET")) {
-
-                // JAVASCRIPT INLINE REQUESTS
-
-                // TODO: forward response
-                return null;
             } else {
-
-                // TODO: external resources
-                // TODO: external services
+                logger.log(ILoggingLogLevel.Error, LOG_TAG, "The method or the url is received is empty");
                 return null;
             }
-        } else {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "The method or the url is received is empty");
+        }catch (Exception e){
+
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "shouldInterceptRequest Error:"+e.getLocalizedMessage());
             return null;
         }
     }
@@ -135,6 +134,18 @@ public class WebViewClient extends android.webkit.WebViewClient {
         if(url.equals(context.getString(R.string.arp_url) + context.getString(R.string.arp_page))){
             AppRegistryBridge.getInstance().getRuntimeBridge().dismissSplashScreen();
         }
+    }
+
+    private WebResourceResponse nonPermisionResponse(WebResourceRequest request){
+        WebResourceResponse response = null;
+        try {
+            response = new WebResourceResponse("application/javascript; charset=utf-8",
+                    "UTF-8", HttpStatus.SC_FORBIDDEN, "The service you're trying to call is not registered in the io-services config file.",
+                    request.getRequestHeaders(), new ByteArrayInputStream(AppRegistryBridge.getJSONInstance().create().toJson("The service you're trying to call is not registered in the io-services config file.").getBytes("utf-8")));
+        } catch (UnsupportedEncodingException e) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "nonPermisionResponse Error:"+e.getLocalizedMessage());
+        }
+        return response;
     }
 
 

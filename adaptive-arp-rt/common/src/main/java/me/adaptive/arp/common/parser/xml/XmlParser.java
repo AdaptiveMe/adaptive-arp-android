@@ -33,9 +33,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -48,6 +50,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -62,6 +65,7 @@ import me.adaptive.arp.api.Locale;
 import me.adaptive.arp.api.Service;
 import me.adaptive.arp.api.ServiceEndpoint;
 import me.adaptive.arp.api.ServicePath;
+import me.adaptive.arp.api.ServiceToken;
 import me.adaptive.arp.common.core.AppResourceManager;
 import me.adaptive.arp.common.parser.plist.PList;
 import me.adaptive.arp.common.parser.plist.PListParser;
@@ -172,9 +176,10 @@ public class XmlParser {
             validator = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(IO_CONFIG_DEFINITION_FILENAME).getData());
 
 
-            /*if(XmlParser.getInstance().validateWithExtXSDUsingSAX(originStr,validatorStr)){
+            /*if(validate(createFileFromInputStream(origin), createFileFromInputStream(validator))){
                 logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VALID");
             }else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");*/
+
 
 
             Document document = this.parseXml(origin,validator);
@@ -207,6 +212,8 @@ public class XmlParser {
             logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Validating xml - Error: " + e.getLocalizedMessage());
         }finally {
             closeStream(plistIS);
+            closeStream(origin);
+            closeStream(validator);
 
         }
     }
@@ -313,8 +320,8 @@ public class XmlParser {
 
         List<ServicePath> paths = new ArrayList<>();
         NodeList nl = el.getElementsByTagName(PATH_TAG);
-        if (nl != null && nl.getLength() > 0) {
-            Element ele = (Element) nl.item(0);
+        for(int i = 0; i < nl.getLength(); i++){
+            Element ele = (Element) nl.item(i);
             paths.add(getPath(ele));
         }
 
@@ -404,45 +411,6 @@ public class XmlParser {
         return el.getAttribute(URL_ATT);
     }
 
-
-    private File createFileFromInputStream(InputStream inputStream, String filename) {
-
-        try{
-            File f = new File(filename);
-            OutputStream outputStream = new FileOutputStream(f);
-            byte buffer[] = new byte[1024];
-            int length = 0;
-
-            while((length=inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer,0,length);
-            }
-
-            outputStream.close();
-            inputStream.close();
-
-            return f;
-        }catch (IOException e) {
-            //Logging exception
-        }
-
-        return null;
-    }
-
-    public static boolean validateXMLSchema(InputStream xmlPath, InputStream xsdPath){
-
-        try {
-            SchemaFactory factory =
-                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);//
-            Schema schema = factory.newSchema();
-            Validator validator = schema.newValidator();
-            validator.validate(new StreamSource(xmlPath));
-        } catch (IOException | SAXException e) {
-            System.out.println("Exception: "+e.getMessage());
-            return false;
-        }
-        return true;
-    }
-
     /**
      * Close given InputStream
      *
@@ -477,4 +445,97 @@ public class XmlParser {
     private String localeToString(Locale locale) {
         return locale.getLanguage() + "-" + locale.getCountry();
     }
+
+    /**
+     * Returns the content type for a ServiceToken
+     * @param serviceToken
+     * @return IServiceType
+     */
+    public IServiceType getContentType(ServiceToken serviceToken) {
+        if(services.containsKey(serviceToken.getServiceName())){
+            for (ServiceEndpoint serviceEndpoint : services.get(serviceToken.getServiceName()).getServiceEndpoints()) {
+                for (ServicePath servicePath : serviceEndpoint.getPaths()) {
+                    if(servicePath.getPath().equals(serviceToken.getFunctionName())){
+                        return servicePath.getType();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Validation method.
+     *
+     * @param xmlFilePath The xml file we are trying to validate.
+     * @param xmlSchemaFilePath The schema file we are using for the validation. This method assumes the schema file is valid.
+     * @return True if valid, false if not valid or bad parse or exception/error during parse.
+     */
+    private static boolean validate(File xmlFilePath, File xmlSchemaFilePath) {
+        //TODO MAKE THE XSD VALIDATION
+        // Try the validation, we assume that if there are any issues with the validation
+        // process that the input is invalid.
+        try {
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Source schemaFile = new StreamSource(xmlSchemaFilePath);
+            Source xmlSource = new StreamSource(xmlFilePath);
+            Schema schema = factory.newSchema(schemaFile);
+            Validator validator = schema.newValidator();
+            validator.validate(xmlSource);
+        } catch (SAXException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
+        } catch (Exception e) {
+            // Catches everything beyond: SAXException, and IOException.
+            e.printStackTrace();
+            return false;
+        } catch (Error e) {
+            // Needed this for debugging when I was having issues with my 1st set of code.
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+
+    private File createFileFromInputStream(InputStream inputStream) {
+
+        try{
+            File f = new File(inputStream.toString());
+            OutputStream outputStream = new FileOutputStream(f);
+            byte buffer[] = new byte[1024];
+            int length = 0;
+
+            while((length=inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer,0,length);
+            }
+
+            outputStream.close();
+            inputStream.close();
+
+            return f;
+        }catch (IOException e) {
+            //Logging exception
+        }
+
+        return null;
+    }
+
+
+    public static void createFileFromString(String fileText, String fileName) {
+        try {
+            File file = new File(fileName);
+            BufferedWriter output = new BufferedWriter(new FileWriter(file));
+            output.write(fileText);
+            output.close();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

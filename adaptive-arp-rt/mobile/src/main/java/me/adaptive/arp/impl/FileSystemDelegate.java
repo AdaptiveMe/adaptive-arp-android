@@ -38,7 +38,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.v4.BuildConfig;
 
 import java.io.File;
 import java.util.Date;
@@ -160,11 +159,12 @@ public class FileSystemDelegate extends BaseDataDelegate implements IFileSystem 
 
         try {
             PackageManager pm = context.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(BuildConfig.PACKAGE_NAME,0);
+            String packageName = context.getApplicationContext().getPackageName();
+            PackageInfo pi = pm.getPackageInfo(packageName,0);
             response.setDateCreated(pi.firstInstallTime);
             response.setDateModified(pi.lastUpdateTime);
 
-            ApplicationInfo applicationInfo = pm.getApplicationInfo(BuildConfig.PACKAGE_NAME, 0);
+            ApplicationInfo applicationInfo = pm.getApplicationInfo(packageName, 0);
             File file = new File(applicationInfo.publicSourceDir);
             response.setSize(file.length());
 
