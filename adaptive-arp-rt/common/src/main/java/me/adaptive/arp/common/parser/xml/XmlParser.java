@@ -46,10 +46,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILogging;
@@ -64,8 +69,6 @@ import me.adaptive.arp.api.ServiceToken;
 import me.adaptive.arp.common.core.AppResourceManager;
 import me.adaptive.arp.common.parser.plist.PList;
 import me.adaptive.arp.common.parser.plist.PListParser;
-import mf.javax.xml.transform.Source;
-import mf.org.apache.xerces.jaxp.validation.XMLSchemaFactory;
 
 public class XmlParser {
 
@@ -473,11 +476,11 @@ public class XmlParser {
         // Try the validation, we assume that if there are any issues with the validation
         // process that the input is invalid.
         try {
-            XMLSchemaFactory factory = new XMLSchemaFactory();
-            Source schemaFile = (Source) new StreamSource(xmlSchemaFilePath);
-            Source xmlSource = (Source) new StreamSource(xmlFilePath);
-            mf.javax.xml.validation.Schema schema = factory.newSchema(schemaFile);
-            mf.javax.xml.validation.Validator validator = schema.newValidator();
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Source schemaFile = new StreamSource(xmlSchemaFilePath);
+            Source xmlSource = new StreamSource(xmlFilePath);
+            Schema schema = factory.newSchema(schemaFile);
+            Validator validator = schema.newValidator();
             validator.validate(xmlSource);
         } catch (SAXException e) {
             return false;

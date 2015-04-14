@@ -175,14 +175,14 @@ public class Utils {
         Service serv = XmlParser.getInstance().getServices().get(serviceToken.getServiceName());
         for (ServiceEndpoint serviceEndpoint : serv.getServiceEndpoints()) {
             String endpointName = serviceToken.getEndpointName();
-            if(endpointName.equals(serviceEndpoint)){
+            if(endpointName.equals(serviceEndpoint.getHostURI())){
                 Pattern pattern = Pattern.compile(endpointName);
                 Matcher m = pattern.matcher(serviceToken.getEndpointName());
                 if(m.matches()){
                     for (ServicePath servicePath : serviceEndpoint.getPaths()) {
                         pattern = Pattern.compile(servicePath.getPath());
                         m = pattern.matcher(serviceToken.getFunctionName());
-                        return true;
+                        if(m.matches()) return true;
                     }
                 }
 

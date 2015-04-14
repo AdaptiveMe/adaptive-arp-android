@@ -38,7 +38,6 @@ import android.content.Context;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -65,6 +64,7 @@ import me.adaptive.arp.api.IServiceContentEncoding;
 import me.adaptive.arp.api.IServiceMethod;
 import me.adaptive.arp.api.IServiceResultCallback;
 import me.adaptive.arp.api.IServiceResultCallbackError;
+import me.adaptive.arp.api.IServiceResultCallbackWarning;
 import me.adaptive.arp.api.Service;
 import me.adaptive.arp.api.ServiceEndpoint;
 import me.adaptive.arp.api.ServiceHeader;
@@ -255,53 +255,122 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         httpClient = new DefaultHttpClient();
 
         ServiceResponse serviceResponse = new ServiceResponse();
+        HttpResponse response = null;
+        String url = null;
         try {
-            //TODO PREPARE THE REQUEST
-            HttpResponse response = httpClient.execute(new HttpGet(getURL(serviceRequest)));
+
+            switch(serviceRequest.getServiceToken().getInvocationMethod()){
+                case Get:
+                    url = getURL(serviceRequest);
+                    response = httpClient.execute(new HttpGet(url));
+                    break;
+                case Post:
+                    break;
+                case Head:
+                    break;
+                default:
+            }
+
             StatusLine statusLine = response.getStatusLine();
 
             int status = statusLine.getStatusCode();
-            switch(status){
 
-                case  HttpStatus.SC_OK:
+            if (isBetween(status, 200,406)||isBetween(status,500,599)) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                response.getEntity().writeTo(out);
 
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    response.getEntity().writeTo(out);
+                String responseString = out.toString();
+                out.close();
 
-                    String responseString = out.toString();
-                    out.close();
+                //..more logic
+                //TODO PREPARE Session
+                serviceResponse.setContentType(EntityUtils.getContentCharSet(response.getEntity()));
+                serviceResponse.setContentEncoding(IServiceContentEncoding.Utf8);
+                serviceResponse.setContent(responseString);
+                serviceResponse.setContentLength(responseString.length());
+                serviceResponse.setServiceHeaders(getHeaders(response.getAllHeaders()));
+                serviceResponse.setStatusCode(status);
+                if(!url.startsWith("https://")){
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Not Secured URL (https): "+url);
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.NotSecure);
+                    return;
+                }
 
-                    //..more logic
-                    //TODO PREPARE Session
-                    serviceResponse.setContentType(EntityUtils.getContentCharSet(response.getEntity()));
-                    serviceResponse.setContentEncoding(IServiceContentEncoding.Utf8);
-                    serviceResponse.setContent(responseString);
-                    serviceResponse.setContentLength(responseString.length());
-                    serviceResponse.setServiceHeaders(getHeaders(response.getAllHeaders()));
-                    serviceResponse.setStatusCode(status);
-
-                    response.getEntity().getContent().close();
+                if (isBetween(status, 200,299)) {
 
                     callback.onResult(serviceResponse);
                     return;
-                case HttpStatus.SC_REQUEST_TIMEOUT:
-                    logger.log(ILoggingLogLevel.Error,LOG_TAG, "There is a timeout calling the service: "+status);
-                    callback.onError(IServiceResultCallbackError.TimeOut);
+                }else if (isBetween(status, 300,399)) {
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Redirected Response");
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.Redirected);
                     return;
+                }else if (status == 400) {
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Wrong params: "+url);
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.WrongParams);
+                    return;
+                }else if (status == 401) {
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Not authenticaded: "+url);
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.NotAuthenticated);
+                    return;
+                }else if (status == 402) {
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Payment Required: "+url);
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.PaymentRequired);
+                    return;
+                }else if (status == 403) {
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Forbidden: "+url);
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.Forbidden);
+                    return;
+                }else if (status == 404) {
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"NotFound: "+url);
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.NotFound);
+                    return;
+                }else if (status == 405) {
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Method not allowed: "+url);
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.MethodNotAllowed);
+                    return;
+                }else if (status == 406) {
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Not allowed: "+url);
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.NotAllowed);
+                    return;
+                }if (isBetween(status, 500,599)) {
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Server error: "+url);
+                    callback.onWarning(serviceResponse, IServiceResultCallbackWarning.ServerError);
+                    return;
+                }else{
+                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"The status code received ["+status+"] is not handled by the platform");
+                    callback.onError(IServiceResultCallbackError.Unreachable);
+                    return;
+                }
 
-                default:
-                    logger.log(ILoggingLogLevel.Error,LOG_TAG, "The status code received: ["+status+"] is not handled by" +
-                            " the plattform" );
-                    callback.onError(IServiceResultCallbackError.Unknown);
+
+            } else if (status == 408) {
+                logger.log(ILoggingLogLevel.Error,LOG_TAG,"There is a timeout calling the service: "+url);
+                callback.onError(IServiceResultCallbackError.TimeOut);
+                return;
+            }else if (status == 444) {
+                logger.log(ILoggingLogLevel.Error,LOG_TAG, "There is no response calling the service: "+url);
+                callback.onError(IServiceResultCallbackError.NoResponse);
+                return;
+            }else {
+                logger.log(ILoggingLogLevel.Error,LOG_TAG,"The status code received ["+status+"] is not handled by the platform");
+                callback.onError(IServiceResultCallbackError.Unknown);
+                return;
 
             }
 
-
-
-
         } catch (IOException e){
             logger.log(ILoggingLogLevel.Error,LOG_TAG, "invokeService Error: "+e.getLocalizedMessage());
+            assert response != null;
+            try {
+                response.getEntity().getContent().close();
+            } catch (IOException e1) {
+                logger.log(ILoggingLogLevel.Error,LOG_TAG, "Error closing the response: "+e1.getLocalizedMessage());
+            }
         }
+
+        logger.log(ILoggingLogLevel.Error,LOG_TAG,"The status code received is not handled by the platform");
+        callback.onError(IServiceResultCallbackError.Unreachable);
+
 
 
     }
@@ -337,7 +406,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         }
 
         String content = request.getContent();
-        urlString  = token.getEndpointName()+token.getFunctionName()+token.getFunctionName()+(parameters.isEmpty()?"":"?"+parameters);
+        urlString  = token.getEndpointName()+token.getFunctionName()+(parameters.isEmpty()?"":("?"+parameters));
 
         return urlString;
     }
@@ -377,6 +446,11 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     private boolean isServiceRegistered(ServiceToken serviceToken) {
         return isServiceRegistered(serviceToken.getServiceName(),serviceToken.getEndpointName(),serviceToken.getFunctionName(),serviceToken.getInvocationMethod());
     }
+
+    public static boolean isBetween(int x, int lower, int upper) {
+        return lower <= x && x <= upper;
+    }
+
 
 
     private class Session {

@@ -5,11 +5,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Surface;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.ValueCallback;
@@ -238,6 +236,7 @@ public class MainActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
+        ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.HomeButton);
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onStop()");
         LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
         lifecycleDelegate.updateBackground(true);
@@ -314,27 +313,25 @@ public class MainActivity extends Activity {
             case KeyEvent.KEYCODE_HOME:
                 ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.HomeButton);
                 return true;
+            case KeyEvent.KEYCODE_MENU:
+                ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.OptionButton);
+                return true;
+            case KeyEvent.KEYCODE_BACK:
+                ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.BackButton);
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                logger.log(ILoggingLogLevel.Debug,LOG_TAG,"VOL DOWN KEY");
+                ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.Unknown);
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                logger.log(ILoggingLogLevel.Debug,LOG_TAG,"VOL UP KEY");
+                ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.Unknown);
+                return true;
+
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    /**
-     * Called when a context menu for the {@code view} is about to be shown.
-     * <p/>
-     * Use {@link #onContextItemSelected(android.view.MenuItem)} to know when an
-     * item has been selected.
-     * <p/>
-     * It is not safe to hold onto the context menu after this method returns.
-     *
-     * @param menu
-     * @param v
-     * @param menuInfo
-     */
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        //super.onCreateContextMenu(menu, v, menuInfo);
-        ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.OptionButton);
-    }
 
     /**
      * Called when the activity has detected the user's press of the back
@@ -344,7 +341,7 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
-        ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.BackButton);
+        //((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.BackButton);
     }
 
 
