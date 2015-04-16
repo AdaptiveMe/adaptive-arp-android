@@ -18,7 +18,7 @@ import me.adaptive.arp.api.ICapabilitiesButton;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.LifecycleState;
-import me.adaptive.arp.common.webview.Utils;
+import me.adaptive.arp.util.Utils;
 import me.adaptive.arp.core.WebChromeClient;
 import me.adaptive.arp.core.WebViewClient;
 import me.adaptive.arp.impl.AccelerationDelegate;

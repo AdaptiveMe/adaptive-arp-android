@@ -59,7 +59,7 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
     public NetworkStatusReceiver() {
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
-        listeners = ((NetworkStatusDelegate) AppRegistryBridge.getInstance().getNetworkStatusBridge().getDelegate()).getListeners();
+        //listeners = ((NetworkStatusDelegate) AppRegistryBridge.getInstance().getNetworkStatusBridge().getDelegate()).getListeners();
     }
 
     /**
@@ -71,6 +71,12 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        // Pork solution for passing the tests. Robolectric instantiates every class in the
+        // manifest and we can't call a delegate on a constructor
+        if (listeners == null){
+            listeners = ((NetworkStatusDelegate) AppRegistryBridge.getInstance().getNetworkStatusBridge().getDelegate()).getListeners();
+        }
 
         if (listeners.isEmpty()) return;
 

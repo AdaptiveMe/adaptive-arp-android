@@ -9,7 +9,7 @@ import android.webkit.WebView;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
-import me.adaptive.arp.common.webview.Utils;
+import me.adaptive.arp.util.Utils;
 import me.adaptive.arp.core.WebChromeClient;
 import me.adaptive.arp.core.WebViewClient;
 

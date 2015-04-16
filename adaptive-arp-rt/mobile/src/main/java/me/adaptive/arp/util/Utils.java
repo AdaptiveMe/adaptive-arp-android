@@ -1,13 +1,7 @@
-package me.adaptive.arp.common.webview;
+package me.adaptive.arp.util;
 
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLStreamHandler;
-import java.util.Hashtable;
 
 import me.adaptive.arp.common.BuildConfig;
 
@@ -32,7 +26,8 @@ public class Utils {
         webSettings.setAppCacheEnabled(false);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSettings.setSaveFormData(false);
-        webSettings.setDefaultTextEncodingName("UTF-8");
+        // TODO: uncomment this line when Robolectric 3.0 released
+        //webSettings.setDefaultTextEncodingName("UTF-8");
         webSettings.setGeolocationEnabled(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setSupportZoom(false);
@@ -49,7 +44,7 @@ public class Utils {
      * @param protocol String identifying the protocol
      * @return URLStreamHandler
      */
-    public static URLStreamHandler getURLStreamHandler(String protocol) {
+    /*public static URLStreamHandler getURLStreamHandler(String protocol) {
         try {
             Method method = URL.class.getDeclaredMethod("getURLStreamHandler", String.class);
             method.setAccessible(true);
@@ -57,14 +52,14 @@ public class Utils {
         } catch (Exception e) {
             return null;
         }
-    }
+    }*/
 
     /**
      * Returns all the stream handlers defined in the JRE
      *
      * @return Table with all the stream handlers
      */
-    public static Hashtable<String, URLStreamHandler> getURLStreamHandlers() {
+    /*public static Hashtable<String, URLStreamHandler> getURLStreamHandlers() {
         try {
 
             Field field = URL.class.getDeclaredField("streamHandlers");
@@ -75,5 +70,5 @@ public class Utils {
         } catch (Exception e) {
             return null;
         }
-    }
+    }*/
 }
