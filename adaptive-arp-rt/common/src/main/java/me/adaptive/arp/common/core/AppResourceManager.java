@@ -45,8 +45,7 @@ public class AppResourceManager {
      */
     public AppResourceData retrieveWebResource(String url) {
 
-        // TODO: Implement AppPacker Reader for Android
-        // TODO: remove this code (LEGACY)
+        // TODO: Implement AppPacker Reader for Android. remove this code (LEGACY)
 
         String file = url.replaceFirst(context.getString(R.string.arp_url), "www/");
         return this.retriveResource(file);
@@ -60,8 +59,7 @@ public class AppResourceManager {
      */
     public AppResourceData retrieveConfigResource(String url) {
 
-        // TODO: Implement AppPacker Reader for Android
-        // TODO: remove this code (LEGACY)
+        // TODO: Implement AppPacker Reader for Android. remove this code (LEGACY)
 
         //String file = url.replaceFirst(context.getString(R.string.arp_url), "config/");
         return this.retriveResource("config/"+url);
@@ -75,12 +73,11 @@ public class AppResourceManager {
      */
     private AppResourceData retriveResource(String url) {
 
-        // TODO: Implement AppPacker Reader for Android
-        // TODO: remove this code (LEGACY)
+        // TODO: Implement AppPacker Reader for Android. remove this code (LEGACY)
 
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Retrieveing resource: " + url);
 
-        //TODO REVIEW THIS LINE
+        // Remove the anchor attributes of url's of single page application
         int index = url.indexOf("#");
         if(index > 0)
             url = url.substring(0,index);

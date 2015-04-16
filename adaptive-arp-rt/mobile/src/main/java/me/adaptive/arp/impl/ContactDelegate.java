@@ -101,8 +101,6 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
-
-
     /**
      * Get all the details of a contact according to its id
      *
@@ -171,7 +169,13 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
         nativeToAdaptive(callback, null, term, null, filter);
     }
 
-    @Override
+    /**
+     * Get the contact photo
+     *
+     * @param contact  id to search for
+     * @param callback called for return
+     * @since v2.0
+     */
     public void getContactPhoto(ContactUid contact, IContactPhotoResultCallback callback) {
         if (contact == null) {
             callback.onError(IContactPhotoResultCallbackError.WrongParams);
@@ -222,340 +226,317 @@ public class ContactDelegate extends BasePIMDelegate implements IContact {
 
     /**
      * Perfmorm the native contact search
+     *
      * @param callback Object
-     * @param contact Id if applies
-     * @param term if applies
-     * @param fields if applies
-     * @param filter if applies
+     * @param contact  Id if applies
+     * @param term     if applies
+     * @param fields   if applies
+     * @param filter   if applies
      */
     private void nativeToAdaptive(final IContactResultCallback callback, final ContactUid contact, final String term, final IContactFieldGroup[] fields, final IContactFilter[] filter) {
 
-                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "androidContactToAdaptive contactID[" + (contact == null ? "NO_ID" : contact.getContactId()) + "] - term[" + (term == null ? "NO_TERM" : term) + "] - fields[" + (fields == null ? "NO_FILTER" : fields.toString()) + "] - filter[" + (filter == null ? "NO_FILTER" : filter.toString()) + "]");
-                Date ini = new Date();
-                logger.log(ILoggingLogLevel.Debug, "nativeToAdaptive@" + ini.toString());
+        Date ini = new Date();
+        ContentResolver cr = context.getContentResolver();
+        List<Contact> contactList;
+        String selection = null;
+        String[] args = null;
+        Map<String, Contact> contactsIDs = new HashMap<>();
+        Uri uri;
+        Cursor cursorID = null;
+        int cursorLength = 0;
+        boolean error = false;
 
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "androidContactToAdaptive contactID[" + (contact == null ? "NO_ID" : contact.getContactId()) + "] - term[" + (term == null ? "NO_TERM" : term) + "] - fields[" + (fields == null ? "NO_FILTER" : fields.toString()) + "] - filter[" + (filter == null ? "NO_FILTER" : filter.toString()) + "]");
 
+        String sortOrder = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
 
-                ContentResolver cr = context.getContentResolver();
-                List<Contact> contactList = null;
-                String selection = null;
-                String[] args = null;
+        try {
 
-                Map<String, Contact> contactsIDs = new HashMap<>();
-                Uri uri = null;
-                Cursor cursorID = null;
-                int cursorLength = 0;
-                boolean addressRequired = false, mailRequired = false, phoneRequired = false, address = false, personalInfo = false, professionalInfo = false, socials = false, websites = false, email = false, phones = false, error = false;
-                String sortOrder = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
-                try {
+            if (term != null && filter != null) {
+                logger.log(ILoggingLogLevel.Error, "Error: Wrong Params");
+                error = true;
+            }
 
-                    if (term != null && filter != null) {
-                        //throw new UnsupportedOperationException(this.getClass().getName() + ": androidContactToAdaptive");
-                        logger.log(ILoggingLogLevel.Error, "Error: Wrong Params");
-                        error = true;
-                    }
+            if (contact != null) {
+                selection = ContactsContract.Contacts._ID + " = ?";
+                args = new String[]{contact.getContactId()};
+            } else if (term != null) {
+                selection = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME + " LIKE ?";
+                args = new String[]{"%" + term + "%"};
+            }
 
+            uri = ContactsContract.RawContactsEntity.CONTENT_URI;
 
-                    if (contact != null) {
-                        selection = ContactsContract.Contacts._ID + " = ?";
-                        args = new String[]{contact.getContactId()};
-                    } else if (term != null) {
-                        selection = ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME + " LIKE ?";
-                        args = new String[]{"%" + term + "%"};
-                    }
-
-                    uri = ContactsContract.RawContactsEntity.CONTENT_URI;
-
-                    // querying the content resolver for all contacts
-                    cursorID = cr.query(uri, null,
-                            selection, args, sortOrder);
-                    cursorID.moveToFirst();
-                    while (!cursorID.isAfterLast()) {
-                        ContactPhone contactPhones = null;
-                        ContactWebsite contactWebsites = null;
-                        ContactAddress contactAddresses = null;
-                        ContactEmail contactEmails = null;
-                        String WEBSITE,
-                                FAMILY_NAME = null,
-                                MIDDLE_NAME = null,
-                                DISPLAY_NAME = null,
-                                PREFIX = null,
-                                JOB = null,
-                                JOB_TITLE = null,
-                                COMPANY = null;
-                        Long id = null;
-                        id = cursorID.getLong(cursorID.getColumnIndex(ContactsContract.Contacts._ID));
-                        Contact contactBean = contactsIDs.get(String.valueOf(id));
-                        if (contactBean == null) {
-                            contactBean = new Contact(id.toString());
-                        }
-
-                        int columnIndex_MIMETYPE = cursorID.getColumnIndex(ContactsContract.Data.MIMETYPE);
-
-                        String type = cursorID.getString(columnIndex_MIMETYPE);
-
-                        switch (type) {
-                            case ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
-                                ContactPhoneType contactPhoneType = null;
-                                int phoneType = cursorID.getInt(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-                                switch (phoneType) {
-                                    case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                                        contactPhoneType = ContactPhoneType.Home;
-                                        break;
-                                    case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
-                                        contactPhoneType = ContactPhoneType.Mobile;
-                                        break;
-                                    case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                                        contactPhoneType = ContactPhoneType.Work;
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                contactPhones = new ContactPhone(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)), contactPhoneType);
-                                break;
-                            case ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE:
-                                ContactAddressType contactAddressType = null;
-                                int addressType = cursorID.getInt(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.TYPE));
-                                switch (addressType) {
-                                    case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_CUSTOM:
-                                    case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME:
-                                        contactAddressType = ContactAddressType.Home;
-                                        break;
-                                    case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK:
-                                        contactAddressType = ContactAddressType.Work;
-                                        break;
-                                    case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER:
-                                        contactAddressType = ContactAddressType.Other;
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                contactAddresses = new ContactAddress(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS)), contactAddressType);
-                                break;
-                            case ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE:
-                                ContactEmailType contactEmailType = null;
-                                int emailType = cursorID.getInt(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.TYPE));
-                                switch (emailType) {
-                                    case ContactsContract.CommonDataKinds.Email.TYPE_CUSTOM:
-                                        contactEmailType = ContactEmailType.Other;
-                                        break;
-                                    case ContactsContract.CommonDataKinds.Email.TYPE_HOME:
-                                        contactEmailType = ContactEmailType.Other;
-                                        break;
-                                    case ContactsContract.CommonDataKinds.Email.TYPE_WORK:
-                                        contactEmailType = ContactEmailType.Other;
-                                        break;
-                                    case ContactsContract.CommonDataKinds.Email.TYPE_OTHER:
-                                        contactEmailType = ContactEmailType.Other;
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                contactEmails = new ContactEmail(contactEmailType,
-                                        Boolean.valueOf(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.IS_PRIMARY))),
-                                        cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS)));
-                                break;
-                            case ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE:
-                                WEBSITE = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Website.URL));
-                                contactWebsites = new ContactWebsite(WEBSITE);
-                                break;
-                            case ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE:
-                                DISPLAY_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-                                FAMILY_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
-                                MIDDLE_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME));
-                                PREFIX = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.PREFIX));
-                                break;
-                            case ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE:
-                                JOB = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Organization.JOB_DESCRIPTION));
-                                COMPANY = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Organization.COMPANY));
-                                JOB_TITLE = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
-
-                                break;
-                        }
-
-                        if (contactsIDs != null && contactsIDs.containsKey(id)) {
-                            contactBean = contactsIDs.get(id);
-                        }
-                        // filling the bean
-                        if (contactBean != null) {
-
-                            //Emails
-                            if (contactEmails != null) {
-                                ContactEmail[] array = contactBean.getContactEmails();
-                                if (array == null) {
-                                    array = new ContactEmail[0];
-                                }
-                                contactBean.setContactEmails(Utils.addElement(array, contactEmails));
-                            }
-                            //Phones
-                            if (contactPhones != null) {
-                                ContactPhone[] array = contactBean.getContactPhones();
-                                if (array == null) {
-                                    array = new ContactPhone[0];
-                                }
-                                contactBean.setContactPhones(Utils.addElement(array, contactPhones));
-                            }
-                            //Addresses
-                            if (contactAddresses != null) {
-                                ContactAddress[] array = contactBean.getContactAddresses();
-                                if (array == null) {
-                                    array = new ContactAddress[0];
-                                }
-                                contactBean.setContactAddresses(Utils.addElement(array, contactAddresses));
-                            }
-                            //Websites/social
-                            if (contactWebsites != null) {
-                                ContactWebsite[] array = contactBean.getContactWebsites();
-                                if (array == null) {
-                                    array = new ContactWebsite[0];
-                                }
-                                contactBean.setContactWebsites(Utils.addElement(array, contactWebsites));
-                            }
-
-                            //PersonalInfo
-                            if (DISPLAY_NAME != null) {
-                                if (contactBean.getPersonalInfo() == null)
-                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
-                                contactBean.getPersonalInfo().setName(DISPLAY_NAME);
-                            }
-                            if (MIDDLE_NAME != null) {
-                                if (contactBean.getPersonalInfo() == null)
-                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
-                                contactBean.getPersonalInfo().setMiddleName(MIDDLE_NAME);
-                            }
-                            if (FAMILY_NAME != null) {
-                                if (contactBean.getPersonalInfo() == null)
-                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
-                                contactBean.getPersonalInfo().setLastName(FAMILY_NAME);
-                            }
-                            if (PREFIX != null) {
-                                ContactPersonalInfoTitle prefix = getContactTitle(PREFIX);
-                                if (contactBean.getPersonalInfo() == null)
-                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
-
-                            }
-                            //ProfessionalInfo
-                            if (JOB != null) {
-                                if (contactBean.getProfessionalInfo() == null)
-                                    contactBean.setProfessionalInfo(new ContactProfessionalInfo());
-                                contactBean.getProfessionalInfo().setJobDescription(JOB);
-                            }
-                            if (COMPANY != null) {
-                                if (contactBean.getProfessionalInfo() == null)
-                                    contactBean.setProfessionalInfo(new ContactProfessionalInfo());
-                                contactBean.getProfessionalInfo().setCompany(COMPANY);
-                            }
-                            if (JOB_TITLE != null) {
-                                if (contactBean.getPersonalInfo() == null)
-                                    contactBean.setPersonalInfo(new ContactPersonalInfo());
-                                contactBean.getProfessionalInfo().setJobTitle(JOB_TITLE);
-                            }
-
-                        }
-
-                        contactsIDs.put(String.valueOf(id), contactBean);
-                        cursorID.moveToNext();
-
-
-                    }
-
-                } catch (Exception ex) {
-                    logger.log(ILoggingLogLevel.Error, "Error: " + Log.getStackTraceString(ex));
-                    error = true;
-                } finally {
-
-                    if (cursorID != null) {
-                        cursorID.close();
-                    }
+            // querying the content resolver for all contacts
+            cursorID = cr.query(uri, null, selection, args, sortOrder);
+            cursorID.moveToFirst();
+            while (!cursorID.isAfterLast()) {
+                ContactPhone contactPhones = null;
+                ContactWebsite contactWebsites = null;
+                ContactAddress contactAddresses = null;
+                ContactEmail contactEmails = null;
+                String WEBSITE, FAMILY_NAME = null, MIDDLE_NAME = null, DISPLAY_NAME = null, PREFIX = null, JOB = null, JOB_TITLE = null, COMPANY = null;
+                Long id = cursorID.getLong(cursorID.getColumnIndex(ContactsContract.Contacts._ID));
+                Contact contactBean = contactsIDs.get(String.valueOf(id));
+                if (contactBean == null) {
+                    contactBean = new Contact(id.toString());
                 }
 
-                if (filter != null) {
-                    for (IContactFilter aFilter : filter) {
-                        contactList = new ArrayList<>(contactsIDs.values());
-                        Date test1 = new Date();
-                        logger.log(ILoggingLogLevel.Debug, "Prefilter: " + contactsIDs.size());
+                int columnIndex_MIMETYPE = cursorID.getColumnIndex(ContactsContract.Data.MIMETYPE);
 
-                        for (Contact contact2 : contactList) {
-                            if (aFilter.equals(IContactFilter.HasEmail) && contact2.getContactEmails() == null) {
-                                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Filter: HasEmail");
-                                contactsIDs.remove(contact2.getContactId());
-                            }
-                            if (aFilter.equals(IContactFilter.HasAddress) && contact2.getContactAddresses() == null) {
-                                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Filter: HasAddress");
-                                contactsIDs.remove(contact2.getContactId());
-                            }
-                            if (aFilter.equals(IContactFilter.HasPhone) && contact2.getContactPhones() == null) {
-                                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Filter: HasPhone");
-                                contactsIDs.remove(contact2.getContactId());
-                            }
+                String type = cursorID.getString(columnIndex_MIMETYPE);
+
+                switch (type) {
+                    case ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
+                        ContactPhoneType contactPhoneType = null;
+                        int phoneType = cursorID.getInt(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                        switch (phoneType) {
+                            case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                                contactPhoneType = ContactPhoneType.Home;
+                                break;
+                            case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                                contactPhoneType = ContactPhoneType.Mobile;
+                                break;
+                            case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+                                contactPhoneType = ContactPhoneType.Work;
+                                break;
+                            default:
+                                break;
                         }
-                       logger.log(ILoggingLogLevel.Debug, (new Date().getTime() - test1.getTime()) + "ms - Postfilter: " + contactsIDs.size());
-                    }
+                        contactPhones = new ContactPhone(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)), contactPhoneType);
+                        break;
+                    case ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE:
+                        ContactAddressType contactAddressType = null;
+                        int addressType = cursorID.getInt(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.TYPE));
+                        switch (addressType) {
+                            case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_CUSTOM:
+                            case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME:
+                                contactAddressType = ContactAddressType.Home;
+                                break;
+                            case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK:
+                                contactAddressType = ContactAddressType.Work;
+                                break;
+                            case ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER:
+                                contactAddressType = ContactAddressType.Other;
+                                break;
+                            default:
+                                break;
+                        }
+                        contactAddresses = new ContactAddress(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS)), contactAddressType);
+                        break;
+                    case ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE:
+                        ContactEmailType contactEmailType = null;
+                        int emailType = cursorID.getInt(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.TYPE));
+                        switch (emailType) {
+                            case ContactsContract.CommonDataKinds.Email.TYPE_CUSTOM:
+                                contactEmailType = ContactEmailType.Other;
+                                break;
+                            case ContactsContract.CommonDataKinds.Email.TYPE_HOME:
+                                contactEmailType = ContactEmailType.Other;
+                                break;
+                            case ContactsContract.CommonDataKinds.Email.TYPE_WORK:
+                                contactEmailType = ContactEmailType.Other;
+                                break;
+                            case ContactsContract.CommonDataKinds.Email.TYPE_OTHER:
+                                contactEmailType = ContactEmailType.Other;
+                                break;
+                            default:
+                                break;
+                        }
+                        contactEmails = new ContactEmail(contactEmailType, Boolean.valueOf(cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.IS_PRIMARY))), cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS)));
+                        break;
+                    case ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE:
+                        WEBSITE = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Website.URL));
+                        contactWebsites = new ContactWebsite(WEBSITE);
+                        break;
+                    case ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE:
+                        DISPLAY_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
+                        FAMILY_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
+                        MIDDLE_NAME = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME));
+                        PREFIX = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.PREFIX));
+                        break;
+                    case ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE:
+                        JOB = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Organization.JOB_DESCRIPTION));
+                        COMPANY = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Organization.COMPANY));
+                        JOB_TITLE = cursorID.getString(cursorID.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
+                        break;
                 }
 
-                if (fields != null) {
-                    contactList = new ArrayList<>(contactsIDs.values());
-                    Date test1 = new Date();
-                    logger.log(ILoggingLogLevel.Debug, "Prefilter: " + contactsIDs.size());
-
-                    for (Contact contact2 : contactList) {
-
-                        if (Arrays.binarySearch(fields, IContactFieldGroup.Addresses) < 0) {
-                            //logger.log(ILoggingLogLevel.Debug, LOG_TAG, "NO Fields: Addresses");
-                            contact2.setContactAddresses(null);
-                        }
-                        if (Arrays.binarySearch(fields, IContactFieldGroup.Emails) < 0) {
-                            //logger.log(ILoggingLogLevel.Debug, LOG_TAG, "NO Fields: Emails");
-                            contact2.setContactEmails(null);
-                        }
-                        if (Arrays.binarySearch(fields, IContactFieldGroup.PersonalInfo) < 0) {
-                            //logger.log(ILoggingLogLevel.Debug, LOG_TAG, "NO Fields: PersonalInfo");
-                            contact2.setPersonalInfo(null);
-                        }
-                        if (Arrays.binarySearch(fields, IContactFieldGroup.Phones) < 0) {
-                            //logger.log(ILoggingLogLevel.Debug, LOG_TAG, "NO Fields: Phones");
-                            contact2.setContactPhones(null);
-                        }
-                        if (Arrays.binarySearch(fields, IContactFieldGroup.ProfessionalInfo) < 0) {
-                            //logger.log(ILoggingLogLevel.Debug, LOG_TAG, "NO Fields: ProfessionalInfo");
-                            contact2.setProfessionalInfo(null);
-                        }
-                        if (Arrays.binarySearch(fields, IContactFieldGroup.Socials) < 0) {
-                            //logger.log(ILoggingLogLevel.Debug, LOG_TAG, "NO Fields: Socials");
-                            contact2.setContactSocials(null);
-                        }
-                        if (Arrays.binarySearch(fields, IContactFieldGroup.Websites) < 0) {
-                            //logger.log(ILoggingLogLevel.Debug, LOG_TAG, "NO Fields: Websites");
-                            contact2.setContactWebsites(null);
-                        }
-                        contactsIDs.put(contact2.getContactId(), contact2);
-                    }
-
-                    logger.log(ILoggingLogLevel.Debug, (new Date().getTime() - test1.getTime()) + "ms - Postfields: " + contactsIDs.size());
+                if (contactsIDs != null && contactsIDs.containsKey(id)) {
+                    contactBean = contactsIDs.get(id);
                 }
 
+                // filling the bean
+                if (contactBean != null) {
 
+                    //Emails
+                    if (contactEmails != null) {
+                        ContactEmail[] array = contactBean.getContactEmails();
+                        if (array == null) {
+                            array = new ContactEmail[0];
+                        }
+                        contactBean.setContactEmails(Utils.addElement(array, contactEmails));
+                    }
+                    //Phones
+                    if (contactPhones != null) {
+                        ContactPhone[] array = contactBean.getContactPhones();
+                        if (array == null) {
+                            array = new ContactPhone[0];
+                        }
+                        contactBean.setContactPhones(Utils.addElement(array, contactPhones));
+                    }
+                    //Addresses
+                    if (contactAddresses != null) {
+                        ContactAddress[] array = contactBean.getContactAddresses();
+                        if (array == null) {
+                            array = new ContactAddress[0];
+                        }
+                        contactBean.setContactAddresses(Utils.addElement(array, contactAddresses));
+                    }
+                    //Websites/social
+                    if (contactWebsites != null) {
+                        ContactWebsite[] array = contactBean.getContactWebsites();
+                        if (array == null) {
+                            array = new ContactWebsite[0];
+                        }
+                        contactBean.setContactWebsites(Utils.addElement(array, contactWebsites));
+                    }
+
+                    //PersonalInfo
+                    if (DISPLAY_NAME != null) {
+                        if (contactBean.getPersonalInfo() == null)
+                            contactBean.setPersonalInfo(new ContactPersonalInfo());
+                        contactBean.getPersonalInfo().setName(DISPLAY_NAME);
+                    }
+                    if (MIDDLE_NAME != null) {
+                        if (contactBean.getPersonalInfo() == null)
+                            contactBean.setPersonalInfo(new ContactPersonalInfo());
+                        contactBean.getPersonalInfo().setMiddleName(MIDDLE_NAME);
+                    }
+                    if (FAMILY_NAME != null) {
+                        if (contactBean.getPersonalInfo() == null)
+                            contactBean.setPersonalInfo(new ContactPersonalInfo());
+                        contactBean.getPersonalInfo().setLastName(FAMILY_NAME);
+                    }
+                    if (PREFIX != null) {
+                        ContactPersonalInfoTitle prefix = getContactTitle(PREFIX);
+                        if (contactBean.getPersonalInfo() == null)
+                            contactBean.setPersonalInfo(new ContactPersonalInfo());
+
+                    }
+                    //ProfessionalInfo
+                    if (JOB != null) {
+                        if (contactBean.getProfessionalInfo() == null)
+                            contactBean.setProfessionalInfo(new ContactProfessionalInfo());
+                        contactBean.getProfessionalInfo().setJobDescription(JOB);
+                    }
+                    if (COMPANY != null) {
+                        if (contactBean.getProfessionalInfo() == null)
+                            contactBean.setProfessionalInfo(new ContactProfessionalInfo());
+                        contactBean.getProfessionalInfo().setCompany(COMPANY);
+                    }
+                    if (JOB_TITLE != null) {
+                        if (contactBean.getPersonalInfo() == null)
+                            contactBean.setPersonalInfo(new ContactPersonalInfo());
+                        contactBean.getProfessionalInfo().setJobTitle(JOB_TITLE);
+                    }
+
+                }
+
+                contactsIDs.put(String.valueOf(id), contactBean);
+                cursorID.moveToNext();
+            }
+
+        } catch (Exception ex) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error: " + Log.getStackTraceString(ex));
+            error = true;
+        } finally {
+
+            if (cursorID != null) {
+                cursorID.close();
+            }
+        }
+
+        if (filter != null) {
+            for (IContactFilter aFilter : filter) {
                 contactList = new ArrayList<>(contactsIDs.values());
+                Date test1 = new Date();
+                logger.log(ILoggingLogLevel.Debug, "Prefilter: " + contactsIDs.size());
 
-                logger.log(ILoggingLogLevel.Debug, "nativeToAdaptive", "It tooks " + String.valueOf(new Date().getTime() - ini.getTime()) + "ms retrieving " + contactList.size() + " contacts");
-
-                if (error) {
-                    callback.onError(IContactResultCallbackError.WrongParams);
-                } else {
-                    if (contactList.size() == 0) {
-                        callback.onWarning((Contact[]) contactList.toArray(new Contact[contactList.size()]), IContactResultCallbackWarning.NoMatches);
-                    } else if (contactList.size() < cursorLength) {
-                        callback.onWarning((Contact[]) contactList.toArray(new Contact[contactList.size()]), IContactResultCallbackWarning.LimitExceeded);
-                    } else
-                        callback.onResult((Contact[]) contactList.toArray(new Contact[contactList.size()]));
+                for (Contact contact2 : contactList) {
+                    if (aFilter.equals(IContactFilter.HasEmail) && contact2.getContactEmails() == null) {
+                        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Filter: HasEmail");
+                        contactsIDs.remove(contact2.getContactId());
+                    }
+                    if (aFilter.equals(IContactFilter.HasAddress) && contact2.getContactAddresses() == null) {
+                        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Filter: HasAddress");
+                        contactsIDs.remove(contact2.getContactId());
+                    }
+                    if (aFilter.equals(IContactFilter.HasPhone) && contact2.getContactPhones() == null) {
+                        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Filter: HasPhone");
+                        contactsIDs.remove(contact2.getContactId());
+                    }
                 }
+                logger.log(ILoggingLogLevel.Debug, (new Date().getTime() - test1.getTime()) + "ms - Postfilter: " + contactsIDs.size());
+            }
+        }
+
+        if (fields != null) {
+
+            contactList = new ArrayList<>(contactsIDs.values());
+            Date test1 = new Date();
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Prefilter: " + contactsIDs.size());
+
+            for (Contact contact2 : contactList) {
+
+                if (Arrays.binarySearch(fields, IContactFieldGroup.Addresses) < 0) {
+                    contact2.setContactAddresses(null);
+                }
+                if (Arrays.binarySearch(fields, IContactFieldGroup.Emails) < 0) {
+                    contact2.setContactEmails(null);
+                }
+                if (Arrays.binarySearch(fields, IContactFieldGroup.PersonalInfo) < 0) {
+                    contact2.setPersonalInfo(null);
+                }
+                if (Arrays.binarySearch(fields, IContactFieldGroup.Phones) < 0) {
+                    contact2.setContactPhones(null);
+                }
+                if (Arrays.binarySearch(fields, IContactFieldGroup.ProfessionalInfo) < 0) {
+                    contact2.setProfessionalInfo(null);
+                }
+                if (Arrays.binarySearch(fields, IContactFieldGroup.Socials) < 0) {
+                    contact2.setContactSocials(null);
+                }
+                if (Arrays.binarySearch(fields, IContactFieldGroup.Websites) < 0) {
+                    contact2.setContactWebsites(null);
+                }
+                contactsIDs.put(contact2.getContactId(), contact2);
+            }
+
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, (new Date().getTime() - test1.getTime()) + "ms - Postfields: " + contactsIDs.size());
+        }
+
+        contactList = new ArrayList<>(contactsIDs.values());
+
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "It tooks " + String.valueOf(new Date().getTime() - ini.getTime()) + "ms retrieving " + contactList.size() + " contacts");
+
+        if (error) {
+            callback.onError(IContactResultCallbackError.WrongParams);
+        } else {
+            if (contactList.size() == 0) {
+                callback.onWarning(contactList.toArray(new Contact[contactList.size()]), IContactResultCallbackWarning.NoMatches);
+            } else if (contactList.size() < cursorLength) {
+                callback.onWarning( contactList.toArray(new Contact[contactList.size()]), IContactResultCallbackWarning.LimitExceeded);
+            } else
+                callback.onResult(contactList.toArray(new Contact[contactList.size()]));
+        }
 
     }
 
 
-
     /**
      * Retrieve the contact title from string
+     *
      * @param prefix string
      * @return ContactPersonalInfoTitle
      */

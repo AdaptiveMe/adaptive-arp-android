@@ -54,13 +54,13 @@ public class MainActivity extends Activity {
     private static final String LOG_TAG = "MainActivity";
     private ILogging logger;
 
-
     // Webview
     private WebView webView;
 
-    // context
+    // Context
     private Context context;
 
+    // Splash screen
     private Dialog splashDialog;
 
     /**
@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         buildDialog();
-        showSplashDialog();
+        splashDialog.show();
         setContentView(R.layout.activity_main);
 
         // Register Logging delegate
@@ -139,8 +139,6 @@ public class MainActivity extends Activity {
         });
 
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "onCreate()");
-
-
     }
 
     /**
@@ -155,8 +153,6 @@ public class MainActivity extends Activity {
         lifecycleDelegate.updateLifecycleListeners(LifecycleState.Started);
         lifecycleDelegate.updateLifecycleListeners(LifecycleState.Running);
         lifecycleDelegate.updateBackground(false);
-
-
     }
 
     /**
@@ -351,16 +347,8 @@ public class MainActivity extends Activity {
         splashDialog = new Dialog(this,android.R.style.Theme_NoTitleBar_Fullscreen);
         splashDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         splashDialog.setContentView(R.layout.splash_layout);
         splashDialog.setCancelable(false);
-    }
-
-    /**
-     * Shows the spash splashDialog
-     */
-    private void showSplashDialog(){
-        splashDialog.show();
     }
 
     /**

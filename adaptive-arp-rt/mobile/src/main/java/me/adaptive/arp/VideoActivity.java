@@ -74,6 +74,7 @@ public class VideoActivity extends Activity {
 
         // listener fired when the video is fully loaded
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
             @Override
             public void onPrepared(MediaPlayer mp) {
 
@@ -86,6 +87,7 @@ public class VideoActivity extends Activity {
 
         // listener fired when the video finishes
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
             @Override
             public void onCompletion(MediaPlayer mp) {
 

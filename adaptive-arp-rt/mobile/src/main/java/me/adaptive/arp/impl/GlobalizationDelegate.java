@@ -49,13 +49,9 @@ import me.adaptive.arp.common.parser.xml.XmlParser;
  */
 public class GlobalizationDelegate extends BaseApplicationDelegate implements IGlobalization {
 
-
-
     // logger
     private static final String LOG_TAG = "GlobalizationDelegate";
     private ILogging logger;
-
-
 
     /**
      * Default Constructor.
@@ -64,9 +60,6 @@ public class GlobalizationDelegate extends BaseApplicationDelegate implements IG
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
     }
-
-
-
 
     /**
      * Returns the default locale of the application defined in the configuration file

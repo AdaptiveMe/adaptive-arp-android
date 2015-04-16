@@ -70,6 +70,7 @@ public class BrowserActivity extends Activity {
         webView.setWebChromeClient(new WebChromeClient());
 
         webView.loadUrl(url);
+
     }
 
     /**

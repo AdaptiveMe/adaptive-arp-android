@@ -62,11 +62,6 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
 
     // logger
     private static final String LOG_TAG = "SecurityDelegate";
-    private ILogging logger;
-
-    // Context
-    private Context context;
-
     private static String[] foldersToCheckWriteAccess = {
             "/data",
             "/",
@@ -102,9 +97,9 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
             "/system/bin/failsafe/",
             "/data/local/"
     };
-
-    private String SHARED_PACKAGE_NAME = null;
-    private String PREFERENCES_FILE_NAME = "AdaptiveSettings"; // default value
+    private ILogging logger;
+    // Context
+    private Context context;
 
     /**
      * Default Constructor.
@@ -113,27 +108,6 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
-    }
-
-    /**
-     * Searches in possible su binary locations
-     *
-     * @param binaryName filename
-     * @return true if found; false otherwise
-     */
-    public static boolean findBinary(String binaryName) {
-        boolean found = false;
-        if (!found) {
-
-            for (String where : SULocation) {
-                if (new File(where + binaryName).exists()) {
-                    found = true;
-
-                    break;
-                }
-            }
-        }
-        return found;
     }
 
     /**
@@ -146,37 +120,37 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      */
     public void deleteSecureKeyValuePairs(final String[] keys, final String publicAccessName, final ISecurityResultCallback callback) {
 
-                List<SecureKeyPair> successfulKeyPairs = new ArrayList<SecureKeyPair>();
-                List<SecureKeyPair> failedKeyPairs = new ArrayList<SecureKeyPair>();
-                SecureKeyPair sc;
-                SharedPreferences settings = GetOtherAppSharedPreferences(publicAccessName);
-                if (settings != null) {
-                    for (String keyName : keys) {
-                        if (settings.contains(keyName)) {
-                            SharedPreferences.Editor ed = settings.edit();
-                            ed.remove(keyName);
-                            ed.apply();
-                            sc = new SecureKeyPair();
-                            sc.setSecureKey(keyName);
-                            successfulKeyPairs.add(sc);
+        List<SecureKeyPair> successfulKeyPairs = new ArrayList<>();
+        List<SecureKeyPair> failedKeyPairs = new ArrayList<>();
+        SecureKeyPair sc;
+        SharedPreferences settings = GetOtherAppSharedPreferences(publicAccessName);
+        if (settings != null) {
+            for (String keyName : keys) {
+                if (settings.contains(keyName)) {
+                    SharedPreferences.Editor ed = settings.edit();
+                    ed.remove(keyName);
+                    ed.apply();
+                    sc = new SecureKeyPair();
+                    sc.setSecureKey(keyName);
+                    successfulKeyPairs.add(sc);
 
-                        } else {
-                            sc = new SecureKeyPair();
-                            sc.setSecureKey(keyName);
-                            failedKeyPairs.add(sc);
-                        }
-                    }
                 } else {
-                    logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeStoredKeyValuePairs: Storage Unit is null.");
-                    callback.onError(ISecurityResultCallbackError.NoMatchesFound);
+                    sc = new SecureKeyPair();
+                    sc.setSecureKey(keyName);
+                    failedKeyPairs.add(sc);
                 }
+            }
+        } else {
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeStoredKeyValuePairs: Storage Unit is null.");
+            callback.onError(ISecurityResultCallbackError.NoMatchesFound);
+        }
 
-                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeStoredKeyValuePairs: Keys removed from storage unit: " + successfulKeyPairs.size() + "; Keys Not removed from storage unit: " + failedKeyPairs.size());
-                if (failedKeyPairs.size() != 0) {
-                    callback.onWarning((SecureKeyPair[]) successfulKeyPairs.toArray(new SecureKeyPair[successfulKeyPairs.size()]), ISecurityResultCallbackWarning.Unknown);
-                } else {
-                    callback.onResult((SecureKeyPair[]) successfulKeyPairs.toArray(new SecureKeyPair[successfulKeyPairs.size()]));
-                }
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeStoredKeyValuePairs: Keys removed from storage unit: " + successfulKeyPairs.size() + "; Keys Not removed from storage unit: " + failedKeyPairs.size());
+        if (failedKeyPairs.size() != 0) {
+            callback.onWarning(successfulKeyPairs.toArray(new SecureKeyPair[successfulKeyPairs.size()]), ISecurityResultCallbackWarning.Unknown);
+        } else {
+            callback.onResult(successfulKeyPairs.toArray(new SecureKeyPair[successfulKeyPairs.size()]));
+        }
 
     }
 
@@ -190,30 +164,75 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
      */
     public void getSecureKeyValuePairs(final String[] keys, final String publicAccessName, final ISecurityResultCallback callback) {
 
-                List<SecureKeyPair> foundKeyPairs = new ArrayList<SecureKeyPair>();
-                try {
+        List<SecureKeyPair> foundKeyPairs = new ArrayList<>();
+        try {
 
-                    SharedPreferences settings = GetOtherAppSharedPreferences(publicAccessName);
-                    if (settings != null) {
-                        for (String keyname : keys) {
-                            if (settings != null && settings.contains(keyname)) {
-                                SecureKeyPair keyPair = new SecureKeyPair();
-                                keyPair.setSecureKey(keyname);
-                                keyPair.setSecureData(settings.getString(keyname, null));
-                                foundKeyPairs.add(keyPair);
-                            }
-                        }
-                    } else {
-                        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getSecureKeyValuePairs: Storage Unit is null.");
-                        callback.onError(ISecurityResultCallbackError.NoMatchesFound);
+            SharedPreferences settings = GetOtherAppSharedPreferences(publicAccessName);
+            if (settings != null) {
+                for (String keyname : keys) {
+                    if (settings != null && settings.contains(keyname)) {
+                        SecureKeyPair keyPair = new SecureKeyPair();
+                        keyPair.setSecureKey(keyname);
+                        keyPair.setSecureData(settings.getString(keyname, null));
+                        foundKeyPairs.add(keyPair);
                     }
-                } catch (Exception ex) {
-                    callback.onError(ISecurityResultCallbackError.NoMatchesFound);
                 }
-                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getSecureKeyValuePairs: Keys found in storage unit: " + foundKeyPairs.size());
+            } else {
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getSecureKeyValuePairs: Storage Unit is null.");
+                callback.onError(ISecurityResultCallbackError.NoMatchesFound);
+            }
+        } catch (Exception ex) {
+            callback.onError(ISecurityResultCallbackError.NoMatchesFound);
+        }
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getSecureKeyValuePairs: Keys found in storage unit: " + foundKeyPairs.size());
 
-                callback.onResult((SecureKeyPair[]) foundKeyPairs.toArray(new SecureKeyPair[foundKeyPairs.size()]));
+        callback.onResult(foundKeyPairs.toArray(new SecureKeyPair[foundKeyPairs.size()]));
 
+    }
+
+    /**
+     * Stores in the device internal storage the specified item/s.
+     *
+     * @param keyValues        Array containing the items to store on the device internal memory.
+     * @param publicAccessName The name of the shared internal storage object (if needed).
+     * @param callback         callback to be executed upon function result.
+     * @since ARP 1.0
+     */
+    public void setSecureKeyValuePairs(final SecureKeyPair[] keyValues, final String publicAccessName, final ISecurityResultCallback callback) {
+
+        List<SecureKeyPair> successfulKeyPairs = new ArrayList<SecureKeyPair>();
+        List<SecureKeyPair> failedKeyPairs = new ArrayList<SecureKeyPair>();
+        SecureKeyPair sc;
+        SharedPreferences settings = GetOtherAppSharedPreferences(publicAccessName);
+        if (settings != null) {
+            for(SecureKeyPair k : keyValues){
+                try {
+                    String keyName = k.getSecureKey();
+                    String keyValue = k.getSecureData();
+                    SharedPreferences.Editor ed = settings.edit();
+                    ed.putString(keyName, keyValue);
+                    ed.apply();
+                    sc = new SecureKeyPair();
+                    sc.setSecureKey(keyName);
+                    successfulKeyPairs.add(sc);
+
+                } catch (Exception ex) {
+                    sc = new SecureKeyPair();
+                    sc.setSecureKey(k.getSecureKey());
+                    failedKeyPairs.add(sc);
+                }
+            }
+        } else {
+            logger.log(ILoggingLogLevel.Debug, LOG_TAG + " setSecureKeyValuePairs", "Storage Unit is null.");
+            callback.onError(ISecurityResultCallbackError.NoMatchesFound);
+        }
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "setSecureKeyValuePairs: Key stored in storage unit: " + successfulKeyPairs.size() + "; Keys Not stored in storage unit: " + failedKeyPairs.size());
+
+        if (failedKeyPairs.size() != 0) {
+            callback.onWarning(failedKeyPairs.toArray(new SecureKeyPair[failedKeyPairs.size()]), ISecurityResultCallbackWarning.Unknown);
+        } else {
+            callback.onResult(successfulKeyPairs.toArray(new SecureKeyPair[successfulKeyPairs.size()]));
+        }
     }
 
     /**
@@ -279,11 +298,11 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
     private boolean checkRootMethod2() {
         try {
             File file = new File("/system/app/Superuser.apk");
-            if (!file.exists()) {
-            } else {
+            if (file.exists()) {
                 return true;
             }
         } catch (Exception e) {
+            // Nothing to do
         }
         return false;
     }
@@ -302,6 +321,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
                 }
             }
         } catch (Exception e) {
+            // Nothing to do
         }
         return false;
     }
@@ -320,6 +340,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
                 }
             }
         } catch (Exception e) {
+            // Nothing to do
         }
         return false;
     }
@@ -338,12 +359,31 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
             pm = context.getPackageManager();
             packages = pm.getInstalledApplications(0);
             for (ApplicationInfo packageInfo : packages) {
-                //LOGGER.logInfo("PACKAGE NAME: ", packageInfo.packageName);
                 if (apps.contains(packageInfo.packageName)) return true;
             }
         } catch (Exception e) {
+            // Nothing to do
         }
         return false;
+    }
+
+    /**
+     * Searches in possible su binary locations
+     *
+     * @param binaryName filename
+     * @return true if found; false otherwise
+     */
+    private boolean findBinary(String binaryName) {
+
+        boolean found = false;
+        for (String where : SULocation) {
+            if (new File(where + binaryName).exists()) {
+                found = true;
+
+                break;
+            }
+        }
+        return found;
     }
 
     /**
@@ -358,6 +398,7 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
             if (publicAccessName != null) {
                 settings = context.getSharedPreferences(publicAccessName, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
             } else {
+                String PREFERENCES_FILE_NAME = "AdaptiveSettings";
                 settings = context.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_MULTI_PROCESS + Context.MODE_PRIVATE);
             }
 
@@ -368,52 +409,6 @@ public class SecurityDelegate extends BaseSecurityDelegate implements ISecurity 
         return settings;
     }
 
-    /**
-     * Stores in the device internal storage the specified item/s.
-     *
-     * @param keyValues        Array containing the items to store on the device internal memory.
-     * @param publicAccessName The name of the shared internal storage object (if needed).
-     * @param callback         callback to be executed upon function result.
-     * @since ARP 1.0
-     */
-    public void setSecureKeyValuePairs(final SecureKeyPair[] keyValues, final String publicAccessName, final ISecurityResultCallback callback) {
-
-                List<SecureKeyPair> successfulKeyPairs = new ArrayList<SecureKeyPair>();
-                List<SecureKeyPair> failedKeyPairs = new ArrayList<SecureKeyPair>();
-                SecureKeyPair sc;
-                SharedPreferences settings = GetOtherAppSharedPreferences(publicAccessName);
-                if (settings != null) {
-                    for (int i = 0; i < keyValues.length; i++) {
-                        try {
-                            String keyName = keyValues[i].getSecureKey();
-                            String keyValue = keyValues[i].getSecureData();
-                            SharedPreferences.Editor ed = settings.edit();
-                            ed.putString(keyName, keyValue);
-                            ed.apply();
-                            sc = new SecureKeyPair();
-                            sc.setSecureKey(keyName);
-                            successfulKeyPairs.add(sc);
-
-                        } catch (Exception ex) {
-                            sc = new SecureKeyPair();
-                            sc.setSecureKey(keyValues[i].getSecureKey());
-                            failedKeyPairs.add(sc);
-                        }
-                    }
-                } else {
-                    logger.log(ILoggingLogLevel.Debug, LOG_TAG + " setSecureKeyValuePairs", "Storage Unit is null.");
-                    callback.onError(ISecurityResultCallbackError.NoMatchesFound);
-                }
-                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "setSecureKeyValuePairs: Key stored in storage unit: " + successfulKeyPairs.size() + "; Keys Not stored in storage unit: " + failedKeyPairs.size());
-
-                if (failedKeyPairs.size() != 0) {
-                    callback.onWarning((SecureKeyPair[]) failedKeyPairs.toArray(new SecureKeyPair[failedKeyPairs.size()]), ISecurityResultCallbackWarning.Unknown);
-                } else {
-                    callback.onResult((SecureKeyPair[]) successfulKeyPairs.toArray(new SecureKeyPair[successfulKeyPairs.size()]));
-                }
-
-
-    }
 
 }
 /**

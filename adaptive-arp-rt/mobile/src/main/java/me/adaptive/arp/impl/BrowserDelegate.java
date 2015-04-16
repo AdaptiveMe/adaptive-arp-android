@@ -135,10 +135,9 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
      * @since ARP1.0
      */
     public boolean openInternalBrowserModal(String url, String title, String backButtonText) {
-        boolean response;
+
         // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":openInternalBrowserModal");
-        // return response;
+        return false;
     }
 
 }

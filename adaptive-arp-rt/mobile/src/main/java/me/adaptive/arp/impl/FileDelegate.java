@@ -34,7 +34,6 @@
 
 package me.adaptive.arp.impl;
 
-import android.content.Context;
 import android.os.Environment;
 
 import java.io.File;
@@ -69,13 +68,9 @@ import me.adaptive.arp.common.Utils;
  */
 public class FileDelegate extends BaseDataDelegate implements IFile {
 
-
     // logger
     private static final String LOG_TAG = "FileDelegate";
     private ILogging logger;
-
-    // Context
-    private Context context;
 
     /**
      * Default Constructor.
@@ -83,7 +78,6 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
     public FileDelegate() {
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
-        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
     /**
@@ -141,9 +135,9 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
 
             if (cascade && file.isDirectory()) {
                     String[] children = file.list();
-                    for (int i = 0; i < children.length; i++) {
-                        new File(file, children[i]).delete();
-                    }
+                for (String aChildren : children) {
+                    new File(file, aChildren).delete();
+                }
 
             }else file.delete();
         }catch (Exception e) {
@@ -193,10 +187,12 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
      * @since ARP1.0
      */
     public IFileSystemStorageType getFileStorageType(FileDescriptor descriptor) {
+
         IFileSystemStorageType response = IFileSystemStorageType.Unknown;
         String path = descriptor.getPathAbsolute();
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "getFileStorageType -> Path: "+path);
-        //TODO REVIEW
+
+        // TODO: Review this code
         if(path.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())){
                 response = IFileSystemStorageType.External;
         }else if(path.startsWith(Environment.getDataDirectory().getAbsolutePath())){
@@ -214,6 +210,7 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
      * @since ARP1.0
      */
     public IFileSystemType getFileType(FileDescriptor descriptor) {
+
         IFileSystemType response;
         File file = new File(descriptor.getPathAbsolute());
         if(!file.exists()) response = IFileSystemType.Unknown;
@@ -231,7 +228,8 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
      * @since ARP1.0
      */
     public IFileSystemSecurity getSecurityType(FileDescriptor descriptor) {
-        //TODO REVIEW
+
+        // TODO: Review this code
         if(descriptor.getPathAbsolute().startsWith(AppRegistryBridge.getInstance().getFileSystemBridge().getApplicationProtectedFolder().getPathAbsolute())){
             return  IFileSystemSecurity.Protected;
         }
@@ -261,18 +259,18 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
         if(isDirectory(descriptor)){
             File file = new File(descriptor.getPathAbsolute());
             List<FileDescriptor> descriptors = walk(file);
-            callback.onResult((FileDescriptor[]) descriptors.toArray(new FileDescriptor[descriptors.size()]));
+            callback.onResult(descriptors.toArray(new FileDescriptor[descriptors.size()]));
 
         }else callback.onError(IFileListResultCallbackError.InexistentFile);
     }
 
     /**
      * Recursive list directory
-     * @param root
+     * @param root Root entry point
      * @return FileDescriptor
      */
-    public List<FileDescriptor> walk(File root) {
-        List<FileDescriptor> descriptors = new ArrayList<FileDescriptor>();
+    private List<FileDescriptor> walk(File root) {
+        List<FileDescriptor> descriptors = new ArrayList<>();
         File[] list = root.listFiles();
         for (File f : list) {
             if (f.isDirectory()) {
@@ -295,8 +293,8 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
      * @param root
      * @return FileDescriptor
      */
-    public List<FileDescriptor> walk(File root, String regexp) {
-        List<FileDescriptor> descriptors = new ArrayList<FileDescriptor>();
+    private List<FileDescriptor> walk(File root, String regexp) {
+        List<FileDescriptor> descriptors = new ArrayList<>();
         File[] list = root.listFiles();
         for (File f : list) {
             if (f.isDirectory()) {
@@ -325,14 +323,13 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
      * @since ARP1.0
      */
     public void listFilesForRegex(FileDescriptor descriptor, String regex, IFileListResultCallback callback) {
+
         if(isDirectory(descriptor)){
             File file = new File(descriptor.getPathAbsolute());
             List<FileDescriptor> descriptors = walk(file, regex);
-            callback.onResult((FileDescriptor[]) descriptors.toArray(new FileDescriptor[descriptors.size()]));
+            callback.onResult(descriptors.toArray(new FileDescriptor[descriptors.size()]));
 
         }else callback.onError(IFileListResultCallbackError.InexistentFile);
-
-
     }
 
     /**
@@ -404,11 +401,10 @@ public class FileDelegate extends BaseDataDelegate implements IFile {
      * @since ARP1.0
      */
     public void setContent(FileDescriptor descriptor, byte[] content, IFileDataStoreResultCallback callback) {
+
         FileOutputStream fos = null;
-        String source = descriptor.getPathAbsolute().substring(0,descriptor.getPathAbsolute().indexOf(descriptor.getName()));
         try {
             File f = new File(descriptor.getPathAbsolute());
-            //fos = context.openFileOutput(f.getName(), Context.MODE_PRIVATE);
             fos = new FileOutputStream(f);
             fos.write(content);
             fos.flush();

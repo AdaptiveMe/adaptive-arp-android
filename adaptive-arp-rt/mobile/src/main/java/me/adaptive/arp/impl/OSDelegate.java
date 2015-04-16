@@ -74,7 +74,6 @@ public class OSDelegate extends BaseSystemDelegate implements IOS {
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Operating System: " + os);
         return os;
     }
-
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

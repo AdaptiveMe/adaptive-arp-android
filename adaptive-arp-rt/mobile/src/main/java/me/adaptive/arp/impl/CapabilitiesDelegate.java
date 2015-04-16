@@ -60,9 +60,10 @@ import me.adaptive.arp.api.ICapabilitiesSensor;
  */
 public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabilities {
 
+    // Tv Device indicator
+    private final boolean tv;
 
-    private final boolean tvDevice;
-
+    // Packet Manager
     private PackageManager pm;
 
     /**
@@ -72,7 +73,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         super();
         Context context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(context.UI_MODE_SERVICE);
-        tvDevice = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+        tv = uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
         pm = context.getPackageManager();
     }
 
@@ -98,11 +99,10 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      */
     @Override
     public ICapabilitiesOrientation[] getOrientationsSupported() {
-        if (tvDevice) {
+        if (tv) {
             return new ICapabilitiesOrientation[]{ICapabilitiesOrientation.PortraitUp};
         } else {
-            return new ICapabilitiesOrientation[]{ICapabilitiesOrientation.PortraitUp, ICapabilitiesOrientation.LandscapeLeft,
-                    ICapabilitiesOrientation.LandscapeRight, ICapabilitiesOrientation.PortraitDown};
+            return new ICapabilitiesOrientation[]{ICapabilitiesOrientation.PortraitUp, ICapabilitiesOrientation.LandscapeLeft, ICapabilitiesOrientation.LandscapeRight, ICapabilitiesOrientation.PortraitDown};
         }
     }
 
@@ -118,7 +118,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
             case BackButton:
             case HomeButton:
             case OptionButton:
-                return !tvDevice;
+                return !tv;
             default:
                 return false;
         }
@@ -133,6 +133,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      * @since ARP1.0
      */
     public boolean hasCommunicationSupport(ICapabilitiesCommunication type) {
+
         String capability = null;
         boolean supported = false;
         ActivityInfo activityInfo;
@@ -178,6 +179,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
         }
         if (capability != null && !capability.isEmpty())
             supported = pm.hasSystemFeature(capability);
+
         return supported;
     }
 
@@ -191,9 +193,9 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
     public boolean hasDataSupport(ICapabilitiesData type) {
         switch (type) {
             case Database:
-                return !tvDevice;
+                return !tv;
             case File:
-                return !tvDevice;
+                return !tv;
             case Cloud:
             default:
                 return false;
@@ -209,6 +211,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      * @since ARP1.0
      */
     public boolean hasMediaSupport(ICapabilitiesMedia type) {
+
         String capability = null;
         boolean supported = false;
         ActivityInfo activityInfo;
@@ -247,6 +250,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
                 capability = PackageManager.FEATURE_CAMERA_ANY;
                 break;
             case VideoPlayback:
+                intent = new Intent();
                 intent = intent.setAction(Intent.ACTION_VIEW);
                 intent.setType("video/*");
                 activityInfo = intent.resolveActivityInfo(pm, intent.getFlags());
@@ -288,7 +292,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
             case HSDPA:
             case LTE:
                 //Assuming min api lvl 21, will return true but it is not true.
-                return !tvDevice;
+                return !tv;
             case WIFI:
                 capability = PackageManager.FEATURE_WIFI;
         }
@@ -306,7 +310,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      * @since ARP1.0
      */
     public boolean hasNotificationSupport(ICapabilitiesNotification type) {
-        return !tvDevice;
+        return !tv;
     }
 
     /**
@@ -318,7 +322,7 @@ public class CapabilitiesDelegate extends BaseSystemDelegate implements ICapabil
      */
     @Override
     public boolean hasOrientationSupport(ICapabilitiesOrientation orientation) {
-        return !tvDevice;
+        return !tv;
     }
 
     /**

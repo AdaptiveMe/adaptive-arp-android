@@ -60,7 +60,7 @@ public class WebViewClient extends android.webkit.WebViewClient {
         String url = request.getUrl().toString();
 
         try {
-           if (!(url == null || url.isEmpty() || method == null || method.isEmpty())) {
+            if (!(url == null || url.isEmpty() || method == null || method.isEmpty())) {
 
                 if (url.startsWith(context.getString(R.string.arp_url)) && method.equals("GET")) {
 
@@ -84,7 +84,7 @@ public class WebViewClient extends android.webkit.WebViewClient {
                     logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Intercepting ARP request: " + apiRequest);
 
                     if (!apiRequest.getApiVersion().equals(AppRegistryBridge.getInstance().getAPIVersion())) {
-                        logger.log(ILoggingLogLevel.Warn, LOG_TAG, "\"The API version of the Typescript API is not the same as the Platform API version");
+                        logger.log(ILoggingLogLevel.Warn, LOG_TAG, "The API version of the Typescript API is not the same as the Platform API version");
                     }
 
                     // Call the service and return the data
@@ -96,25 +96,25 @@ public class WebViewClient extends android.webkit.WebViewClient {
                                 "UTF-8", apiResponse.getStatusCode(), apiResponse.getStatusMessage(),
                                 request.getRequestHeaders(), new ByteArrayInputStream(AppRegistryBridge.getJSONInstance().create().toJson(apiResponse).getBytes("utf-8")));
                     } catch (UnsupportedEncodingException e) {
-                        logger.log(ILoggingLogLevel.Error, LOG_TAG, "shouldInterceptRequest Error:"+e.getLocalizedMessage());
+                        logger.log(ILoggingLogLevel.Error, LOG_TAG, "shouldInterceptRequest Error:" + e.getLocalizedMessage());
+                        return nonPermissionResponse(request);
                     }
                     return response;
 
                 } else {
-                    if(Utils.validateUrl(url)) return null;
-                    else return nonPermisionResponse(request);
+                    if (Utils.validateUrl(url)) return null;
+                    else return nonPermissionResponse(request);
                 }
             } else {
                 logger.log(ILoggingLogLevel.Error, LOG_TAG, "The method or the url is received is empty");
-                return null;
+                return nonPermissionResponse(request);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "shouldInterceptRequest Error:"+e.getLocalizedMessage());
-            return null;
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "shouldInterceptRequest Error:" + e.getLocalizedMessage());
+            return nonPermissionResponse(request);
         }
     }
-
 
 
     /**
@@ -130,20 +130,27 @@ public class WebViewClient extends android.webkit.WebViewClient {
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
 
-        //TODO REVIEW WHY THIS IS CALLED TWICE IN JQUERY APPS
-        if(url.equals(context.getString(R.string.arp_url) + context.getString(R.string.arp_page))){
+        // TODO: In jQuery Apps this method is calling twice
+        if (url.equals(context.getString(R.string.arp_url) + context.getString(R.string.arp_page))) {
             AppRegistryBridge.getInstance().getRuntimeBridge().dismissSplashScreen();
         }
     }
 
-    private WebResourceResponse nonPermisionResponse(WebResourceRequest request){
+    /**
+     * Create a non-permission response for the untrusted requests to the Adaptive Core
+     *
+     * @param request Object containing the details of the request.
+     * @return Response for non-permission requests
+     */
+    private WebResourceResponse nonPermissionResponse(WebResourceRequest request) {
+
         WebResourceResponse response = null;
         try {
             response = new WebResourceResponse("application/javascript; charset=utf-8",
                     "UTF-8", HttpStatus.SC_FORBIDDEN, "The service you're trying to call is not registered in the io-services config file.",
                     request.getRequestHeaders(), new ByteArrayInputStream(AppRegistryBridge.getJSONInstance().create().toJson("The service you're trying to call is not registered in the io-services config file.").getBytes("utf-8")));
         } catch (UnsupportedEncodingException e) {
-            logger.log(ILoggingLogLevel.Error, LOG_TAG, "nonPermisionResponse Error:"+e.getLocalizedMessage());
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "nonPermissionResponse Error:" + e.getLocalizedMessage());
         }
         return response;
     }

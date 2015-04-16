@@ -72,7 +72,6 @@ public class MailDelegate extends BasePIMDelegate implements IMail {
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
-
     }
 
     /**
