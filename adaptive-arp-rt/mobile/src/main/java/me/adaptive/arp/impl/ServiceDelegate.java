@@ -42,6 +42,8 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -258,15 +260,16 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         HttpResponse response = null;
         String url = null;
         try {
-
+            url = getURL(serviceRequest);
             switch(serviceRequest.getServiceToken().getInvocationMethod()){
                 case Get:
-                    url = getURL(serviceRequest);
                     response = httpClient.execute(new HttpGet(url));
                     break;
                 case Post:
+                    response = httpClient.execute(new HttpPost(url));
                     break;
                 case Head:
+                    response = httpClient.execute(new HttpHead(url));
                     break;
                 default:
             }
