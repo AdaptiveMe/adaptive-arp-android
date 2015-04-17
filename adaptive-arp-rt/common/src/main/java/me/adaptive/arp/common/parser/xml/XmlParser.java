@@ -159,6 +159,9 @@ public class XmlParser {
         return services;
     }
 
+    /**
+     * Init function -- should be called just once
+     */
     private void initialize() {
         services = new HashMap<>();
         resources = new ArrayList<>();
@@ -173,7 +176,7 @@ public class XmlParser {
             validator = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(IO_CONFIG_DEFINITION_FILENAME).getData());
 
 
-//            if (validate(origin, validator)) {
+//            if (validate(origin, "io")) {
 //                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VALID");
 //            } else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");
 
@@ -186,7 +189,7 @@ public class XmlParser {
             origin = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(I18N_CONFIG_FILENAME).getData());
             validator = new ByteArrayInputStream(AppResourceManager.getInstance().retrieveConfigResource(I18N_DEFINITIONS_CONFIG_FILENAME).getData());
 
-//            if (validate(origin, validator)) {
+//            if (validate(origin, "i18n")) {
 //                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VALID");
 //            } else logger.log(ILoggingLogLevel.Error, LOG_TAG, "INVALID");
 
@@ -206,6 +209,8 @@ public class XmlParser {
             logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Parsing xml - Error: " + e.getLocalizedMessage());
         } catch (SAXException e) {
             logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Validating xml - Error: " + e.getLocalizedMessage());
+        } catch (Exception e) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error Validating xml - Error: " + e.getLocalizedMessage());
         } finally {
             closeStream(plistIS);
             closeStream(origin);
@@ -214,8 +219,10 @@ public class XmlParser {
         }
     }
 
+
     /**
      * Return the Document parsed from InputStream
+     *
      * @param xml origin InputStream
      * @param xsd validation InputStream
      * @return Document parsed
@@ -238,8 +245,9 @@ public class XmlParser {
 
     /**
      * Returns the i18n locale data
+     *
      * @param document to read
-     * @param tag node to read
+     * @param tag      node to read
      * @return locales data
      * @throws ParserConfigurationException
      * @throws SAXException

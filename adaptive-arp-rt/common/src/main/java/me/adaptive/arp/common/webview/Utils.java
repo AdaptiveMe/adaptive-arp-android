@@ -9,7 +9,6 @@ import java.net.URL;
 import java.net.URLStreamHandler;
 import java.util.Hashtable;
 
-import me.adaptive.arp.common.BuildConfig;
 
 /**
  * Utils class for webView management
@@ -21,7 +20,7 @@ public class Utils {
      *
      * @param webView Webview reference
      */
-    public static void setWebViewSettings(WebView webView) {
+    public static void setWebViewSettings(WebView webView, boolean debug) {
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -37,8 +36,9 @@ public class Utils {
         webSettings.setDomStorageEnabled(true);
         webSettings.setSupportZoom(false);
         webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        if (BuildConfig.DEBUG)
-        { WebView.setWebContentsDebuggingEnabled(true); }
+        if (debug){
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
 
 
     }

@@ -95,12 +95,13 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
      * @return The result of the operation
      * @since ARP1.0
      */
-    private boolean openInternalBrowser(String url, String title) {
+    private boolean openInternalBrowser(String url, String title,boolean modal) {
 
         try {
             Intent intent = new Intent(context, BrowserActivity.class);
             intent.putExtra("url", url);
             intent.putExtra("title", title);
+            intent.putExtra("modal", modal);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
             return true;
@@ -122,7 +123,7 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
      * @since ARP1.0
      */
     public boolean openInternalBrowser(String url, String title, String backButtonText) {
-        return openInternalBrowser(url,title);
+        return openInternalBrowser(url,title,false);
     }
 
     /**
@@ -135,10 +136,7 @@ public class BrowserDelegate extends BaseUIDelegate implements IBrowser {
      * @since ARP1.0
      */
     public boolean openInternalBrowserModal(String url, String title, String backButtonText) {
-        boolean response;
-        // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":openInternalBrowserModal");
-        // return response;
+        return openInternalBrowser(url,title,true);
     }
 
 }
