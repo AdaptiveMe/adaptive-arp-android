@@ -26,7 +26,6 @@ public class DeviceDelegateTest extends AbstractTest<IDevice> {
         Utils.log(ILoggingLogLevel.Debug, LOG_TAG, deviceInfo.getName());
         Utils.log(ILoggingLogLevel.Debug, LOG_TAG, deviceInfo.getVendor());
 
-
         Assert.assertNotNull(deviceInfo);
     }
 
