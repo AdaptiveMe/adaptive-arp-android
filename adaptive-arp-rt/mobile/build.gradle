@@ -38,5 +38,6 @@ dependencies {
     testCompile 'org.apache.maven:maven-ant-tasks:2.1.3'
     // TODO: it's a RC, must change to release
     testCompile 'org.robolectric:robolectric:3.0-rc2'
+    testCompile 'org.robolectric:shadows-httpclient:3.0-rc2'
     //testCompile 'org.mockito:mockito-all:1.10.19'
 }

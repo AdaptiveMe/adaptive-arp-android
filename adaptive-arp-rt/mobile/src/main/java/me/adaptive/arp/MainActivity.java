@@ -116,12 +116,12 @@ public class MainActivity extends Activity {
         webView = (WebView) findViewById(R.id.webView);
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
-
+        logger.log(ILoggingLogLevel.Info,LOG_TAG,"Build Mode set to: "+BuildConfig.BUILD_TYPE);
         // Save the primary Webview reference
         ((AppContextWebviewDelegate) AppRegistryBridge.getInstance().getPlatformContextWeb().getDelegate()).setPrimaryView(webView);
 
         // webView settings
-        Utils.setWebViewSettings(webView);
+        Utils.setWebViewSettings(webView,BuildConfig.DEBUG);
 
 
         LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
