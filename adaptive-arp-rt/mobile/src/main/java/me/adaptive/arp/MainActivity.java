@@ -18,7 +18,6 @@ import me.adaptive.arp.api.ICapabilitiesButton;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
 import me.adaptive.arp.api.LifecycleState;
-import me.adaptive.arp.util.Utils;
 import me.adaptive.arp.core.WebChromeClient;
 import me.adaptive.arp.core.WebViewClient;
 import me.adaptive.arp.impl.AccelerationDelegate;
@@ -46,6 +45,7 @@ import me.adaptive.arp.impl.SecurityDelegate;
 import me.adaptive.arp.impl.ServiceDelegate;
 import me.adaptive.arp.impl.TelephonyDelegate;
 import me.adaptive.arp.impl.VideoDelegate;
+import me.adaptive.arp.util.Utils;
 
 
 public class MainActivity extends Activity {
@@ -116,12 +116,12 @@ public class MainActivity extends Activity {
         webView = (WebView) findViewById(R.id.webView);
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
-        logger.log(ILoggingLogLevel.Info,LOG_TAG,"Build Mode set to: "+BuildConfig.BUILD_TYPE);
+        logger.log(ILoggingLogLevel.Info, LOG_TAG, "Build Mode set to: " + BuildConfig.BUILD_TYPE);
         // Save the primary Webview reference
         ((AppContextWebviewDelegate) AppRegistryBridge.getInstance().getPlatformContextWeb().getDelegate()).setPrimaryView(webView);
 
         // webView settings
-        Utils.setWebViewSettings(webView,BuildConfig.DEBUG);
+        Utils.setWebViewSettings(webView, BuildConfig.DEBUG);
 
 
         LifecycleDelegate lifecycleDelegate = ((LifecycleDelegate) AppRegistryBridge.getInstance().getLifecycleBridge().getDelegate());
@@ -134,7 +134,7 @@ public class MainActivity extends Activity {
         webView.evaluateJavascript("(function(){ str = navigator.userAgent; return str; })();", new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String value) {
-                ((AppContextWebviewDelegate)AppRegistryBridge.getInstance().getPlatformContextWeb().getDelegate()).setUserAgent(value);
+                ((AppContextWebviewDelegate) AppRegistryBridge.getInstance().getPlatformContextWeb().getDelegate()).setUserAgent(value);
             }
         });
 
@@ -266,19 +266,19 @@ public class MainActivity extends Activity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Display display = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        switch (display.getRotation()){
+        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        switch (display.getRotation()) {
             case Surface.ROTATION_0:
-                logger.log(ILoggingLogLevel.Debug,LOG_TAG, "ROTATION 0");
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "ROTATION 0");
                 break;
             case Surface.ROTATION_90:
-                logger.log(ILoggingLogLevel.Debug,LOG_TAG, "ROTATION 90");
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "ROTATION 90");
                 break;
             case Surface.ROTATION_180:
-                logger.log(ILoggingLogLevel.Debug,LOG_TAG, "ROTATION 180");
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "ROTATION 180");
                 break;
             case Surface.ROTATION_270:
-                logger.log(ILoggingLogLevel.Debug,LOG_TAG, "ROTATION 270");
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "ROTATION 270");
         }
 
 
@@ -293,6 +293,7 @@ public class MainActivity extends Activity {
      * inside of the activity. So, for example, key presses while the cursor
      * is inside a TextView will not trigger the event (unless it is a navigation
      * to another object) because TextView handles its own key presses.
+     *
      * @param keyCode
      * @param event
      * @return Return <code>true</code> to prevent this event from being propagated
@@ -304,7 +305,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        switch (keyCode){
+        switch (keyCode) {
             case KeyEvent.KEYCODE_HOME:
                 //THIS CANNOT BE PREVENTED
                 ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.HomeButton);
@@ -316,11 +317,11 @@ public class MainActivity extends Activity {
                 ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.BackButton);
                 return true;
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                logger.log(ILoggingLogLevel.Debug,LOG_TAG,"VOL DOWN KEY");
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VOL DOWN KEY");
                 ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.Unknown);
                 return true;
             case KeyEvent.KEYCODE_VOLUME_UP:
-                logger.log(ILoggingLogLevel.Debug,LOG_TAG,"VOL UP KEY");
+                logger.log(ILoggingLogLevel.Debug, LOG_TAG, "VOL UP KEY");
                 ((DeviceDelegate) AppRegistryBridge.getInstance().getDeviceBridge().getDelegate()).fireButtonsListeners(ICapabilitiesButton.Unknown);
                 return true;
 
@@ -343,8 +344,8 @@ public class MainActivity extends Activity {
     /**
      * Create the splash Dialog
      */
-    private void buildDialog(){
-        splashDialog = new Dialog(this,android.R.style.Theme_NoTitleBar_Fullscreen);
+    private void buildDialog() {
+        splashDialog = new Dialog(this, android.R.style.Theme_NoTitleBar_Fullscreen);
         splashDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         splashDialog.setContentView(R.layout.splash_layout);
@@ -353,6 +354,7 @@ public class MainActivity extends Activity {
 
     /**
      * Returns the SplashDialog
+     *
      * @return SplashDialog
      */
     public Dialog getSplashDialog() {
