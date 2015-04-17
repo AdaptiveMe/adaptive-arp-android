@@ -1,21 +1,17 @@
 package me.adaptive.arp;
 
 import android.app.Activity;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
-import me.adaptive.arp.common.webview.Utils;
+import me.adaptive.arp.util.Utils;
+import me.adaptive.arp.core.WebChromeClient;
+import me.adaptive.arp.core.WebViewClient;
 
 /**
  * Custom Activity to show an internal browser inside an Adaptive ARP Application
@@ -29,52 +25,12 @@ public class BrowserActivity extends Activity {
     // Internal webView (layout defined)
     private WebView webView = null;
 
-    private String url;
-    private String title;
-    private boolean modal = false;
     /**
      * Default Constructor.
      */
     public BrowserActivity() {
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
-    }
-
-    /**
-     * This method overrides the MainActivity method to set up the actual window for the popup.
-     * This is really the only method needed to turn the app into popup form. Any other methods would change the behavior of the UI.
-     * Call this method at the beginning of the main activity.
-     * You can't call setContentView(...) before calling the window service because it will throw an error every time.
-     */
-
-    public void setUpWindow() {
-
-        // Creates the layout for the window and the look of it
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND,
-                WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-        // Params for the window.
-        // You can easily set the alpha and the dim behind the window from here
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.alpha = 1.0f;    // lower than one makes it more transparent
-        params.dimAmount = 0f;  // set it higher if you want to dim behind the window
-        getWindow().setAttributes(params);
-
-        // Gets the display size so that you can set the window to a percent of that
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-
-        // You could also easily used an integer value from the shared preferences to set the percent
-        if (height > width) {
-            getWindow().setLayout((int) (width * .9), (int) (height * .7));
-        } else {
-            getWindow().setLayout((int) (width * .7), (int) (height * .8));
-        }
-        setTheme(R.style.Theme_UserModal);
     }
 
     /**
@@ -89,18 +45,13 @@ public class BrowserActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        url = getIntent().getStringExtra("url");
-        title = getIntent().getStringExtra("title");
-        modal = getIntent().getBooleanExtra("modal",false);
+        String url = getIntent().getStringExtra("url");
+        String title = getIntent().getStringExtra("title");
 
         logger.log(ILoggingLogLevel.Info, LOG_TAG, "Stating Browser Activity with url: " + url);
 
         // animation
         overridePendingTransition(R.anim.slide_up, R.anim.fade_out);
-
-        if(modal) {
-            setUpWindow();
-        }
         setContentView(R.layout.activity_browser);
 
         // Hide the status bar.
@@ -113,15 +64,13 @@ public class BrowserActivity extends Activity {
 
         // webView settings
         webView = (WebView) findViewById(R.id.webView);
-        Utils.setWebViewSettings(webView, BuildConfig.DEBUG);
-
-
+        Utils.setWebViewSettings(webView);
 
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
 
-
         webView.loadUrl(url);
+
     }
 
     /**

@@ -159,7 +159,6 @@ public class DisplayDelegate extends BaseSystemDelegate implements IDisplay {
         }
         origin = orientation;
     }
-
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

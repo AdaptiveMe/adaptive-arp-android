@@ -36,23 +36,19 @@ package me.adaptive.arp.impl;
 
 import android.app.Service;
 import android.content.Context;
-import android.location.Criteria;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseSensorDelegate;
-import me.adaptive.arp.api.Geolocation;
 import me.adaptive.arp.api.IGeolocation;
 import me.adaptive.arp.api.IGeolocationListener;
-import me.adaptive.arp.api.IGeolocationListenerWarning;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.util.LocationListenerImpl;
 
 /**
  * Interface for Managing the Geolocation operations
@@ -64,47 +60,19 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
     private static final String LOG_TAG = "GeolocationDelegate";
     private ILogging logger;
 
-    // Listeners
-    public List<IGeolocationListener> listeners;
-
-    // Context
-    private Context context;
-
+    // Update interval
     private static final long UPDATE_INTERVAL = 5 * 1000;
+    // Listeners
 
-    /**
-     * Define a listener that responds to location updates
-     */
-    private LocationListener locationListener = new LocationListener() {
-        public void onLocationChanged(Location location) {
-            // Called when a new location is found by the network location provider.
-            makeUseOfNewLocation(location);
-        }
+    public List<IGeolocationListener> listeners;
+    // Listener for managing geo events
 
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
+    private LocationListener locationListener;
 
-        public void onProviderEnabled(String provider) {
-        }
-
-        public void onProviderDisabled(String provider) {
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-            criteria.setAltitudeRequired(false);
-            criteria.setBearingRequired(false);
-            criteria.setCostAllowed(true);
-            criteria.setPowerRequirement(Criteria.POWER_LOW);
-            provider = locationManager.getBestProvider(criteria, true);
-            Location location = locationManager.getLastKnownLocation(provider);
-            Geolocation geo = toARP(location);
-            if (!listeners.isEmpty()) {
-                for (IGeolocationListener geoListener : listeners) {
-                    geoListener.onWarning(geo, IGeolocationListenerWarning.StaleData);
-                }
-            }
-        }
-    };
+    // Location manager
     private LocationManager locationManager;
+
+    // boolean for searching status
     private boolean searching = false;
 
     /**
@@ -112,11 +80,11 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
      */
     public GeolocationDelegate() {
         super();
-        listeners = new ArrayList<IGeolocationListener>();
+        listeners = new ArrayList<>();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
-        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
-
-
+        Context context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
+        locationListener = new LocationListenerImpl();
+        locationManager = (LocationManager) context.getSystemService(Service.LOCATION_SERVICE);
     }
 
     /**
@@ -160,25 +128,12 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeGeolocationListeners: ALL GeolocationListeners have been removed!");
     }
 
-    private Geolocation toARP(Location location) {
-        return new Geolocation(location.getLatitude(), location.getLongitude(), location.getAltitude(), location.getAccuracy(), location.getAccuracy(), System.currentTimeMillis());
-    }
-
-    private void makeUseOfNewLocation(Location location) {
-        if (!listeners.isEmpty()) {
-            Geolocation geo = toARP(location);
-            for (IGeolocationListener geoListener : listeners) {
-                geoListener.onResult(geo);
-            }
-        }
-    }
-
+    /**
+     * Start the location notification for the system
+     *
+     * @return Result of the operation
+     */
     private boolean startUpdatingLocation() {
-
-        if (locationManager == null) {
-            locationManager = (LocationManager) context.getSystemService(Service.LOCATION_SERVICE);
-
-        }
 
         boolean isGPSRegistered = false;
         boolean isNetworkRegistered = false;
@@ -212,46 +167,36 @@ public class GeolocationDelegate extends BaseSensorDelegate implements IGeolocat
             isNetworkRegistered = true;
         }
 
-		/* DO NOT STORE ANY LAST KNOWN LOCATION.
-         * OTHER PLATFORMS DO NOT HAVE THIS DATA AVAILABLE.
-		 * SAME BEHAVOUR SHOULD BE PRESERVED ACROSS PLATFORMS.
-		 *
-		Location lastGps = locationManager
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		Location lastNetwork = locationManager
-				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-		if (!isBetterLocation(lastGps, lastNetwork)) {
-			LOG.Log(Module.PLATFORM,
-					"NETWORK location is better than GPS.");
-			setLocation(lastNetwork);
-		} else {
-			LOG.Log(Module.PLATFORM,
-					"GPS location is better than NETWORK.");
-			setLocation(lastGps);
-		}
-		*/
         searching = (isGPSRegistered || isNetworkRegistered);
         return searching;
     }
 
+    /**
+     * Stop generation location events
+     *
+     * @return Result of the operation
+     */
     private boolean stopUpdatingLocation() {
 
         Runnable rRemove = new Runnable() {
 
             @Override
             public void run() {
-                if (locationManager == null) {
-                    locationManager = (LocationManager) context.getSystemService(android.app.Service.LOCATION_SERVICE);
-                }
                 locationManager.removeUpdates(locationListener);
             }
         };
         ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getExecutor().submit(rRemove);
-
         return true;
     }
 
+    /**
+     * Getter for the listeners list
+     *
+     * @return List of registered listeners
+     */
+    public List<IGeolocationListener> getListeners() {
+        return listeners;
+    }
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

@@ -30,11 +30,11 @@ public class ServiceHandler {
 
     /**
      * Method that executes the method with the parameters from the APIRequest object send it by the
-     * Typescript. This method could return some data in the syncronous methods or execute some
-     * callback/listeners in the asyncronous ones
+     * Typescript. This method could return some data in the synchronous methods or execute some
+     * callback/listeners in the asynchronous ones
      *
      * @param request API Request object
-     * @return Data for returning the syncronous responses
+     * @return Data for returning the synchronous responses
      */
     public APIResponse handleServiceUrl(APIRequest request) {
 

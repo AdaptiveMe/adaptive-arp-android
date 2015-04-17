@@ -50,7 +50,6 @@ import me.adaptive.arp.api.INetworkStatusListener;
  */
 public class NetworkStatusDelegate extends BaseCommunicationDelegate implements INetworkStatus {
 
-
     // logger
     private static final String LOG_TAG = "NetworkStatusDelegate";
     private ILogging logger;
@@ -64,10 +63,10 @@ public class NetworkStatusDelegate extends BaseCommunicationDelegate implements 
     public NetworkStatusDelegate() {
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
-        listeners = new ArrayList<INetworkStatusListener>();
+        listeners = new ArrayList<>();
     }
 
-    public static List<INetworkStatusListener> getListeners() {
+    public List<INetworkStatusListener> getListeners() {
         return listeners;
     }
 

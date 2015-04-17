@@ -86,7 +86,6 @@ public class LoggingDelegate extends BaseUtilDelegate implements ILogging {
                 break;
         }
     }
-
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

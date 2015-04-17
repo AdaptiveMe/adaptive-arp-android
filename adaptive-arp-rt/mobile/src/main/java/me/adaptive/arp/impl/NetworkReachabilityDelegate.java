@@ -57,9 +57,7 @@ import me.adaptive.arp.api.INetworkReachabilityCallbackError;
  */
 public class NetworkReachabilityDelegate extends BaseCommunicationDelegate implements INetworkReachability {
 
-
     private static final String HTTP_SCHEME = "http://";
-    private static final String HTTPS_SCHEME = "https://";
 
     // logger
     private static final String LOG_TAG = "NetworkReachabilityDelegate";
@@ -84,7 +82,7 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
      * @param callback Callback called at the end.
      * @since ARP1.0
      */
-    public void isNetworkReachable(final String host, final INetworkReachabilityCallback callback) {
+    public void isNetworkReachable(String host, INetworkReachabilityCallback callback) {
         checkHttpConnection(host, callback);
     }
 
@@ -96,11 +94,17 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
      * @since ARP1.0
      */
     public void isNetworkServiceReachable(String url, INetworkReachabilityCallback callback) {
-        //TODO REVIEW
-        isNetworkReachable(url, callback);
+        checkHttpConnection(url, callback);
     }
 
+    /**
+     * Check the connectivity with a host
+     *
+     * @param testUrl URl for testing purposes
+     * @param cb      Callback
+     */
     private void checkHttpConnection(String testUrl, INetworkReachabilityCallback cb) {
+
         boolean hasScheme = testUrl.contains("://");
         if (!hasScheme) {
             testUrl = HTTP_SCHEME + testUrl;
@@ -110,62 +114,26 @@ public class NetworkReachabilityDelegate extends BaseCommunicationDelegate imple
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnected()) {
             try {
-                URL url = new URL(testUrl);   // Change to "http://google.com" for www  test.
+                URL url = new URL(testUrl);
                 HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
-                urlc.setConnectTimeout(10 * 1000);          // 10 s.
+                urlc.setConnectTimeout(10 * 1000);
                 urlc.connect();
-                if (urlc.getResponseCode() == 200) {        // 200 = "OK" code (http connection is fine).
+                if (urlc.getResponseCode() == 200) {
                     logger.log(ILoggingLogLevel.Debug, LOG_TAG, "Connection: Success !");
-                    //return true;
                     cb.onResult(true);
                 } else {
                     logger.log(ILoggingLogLevel.Error, LOG_TAG, "Connection: Failure ! response code " + urlc.getResponseCode());
                     cb.onError(INetworkReachabilityCallbackError.NoResponse);
-                    //return false;
                 }
             } catch (MalformedURLException e) {
                 logger.log(ILoggingLogLevel.Error, LOG_TAG, "Connection: Failure ! MalformedURLException");
                 cb.onError(INetworkReachabilityCallbackError.WrongParams);
-                //return false;
             } catch (IOException e) {
                 cb.onError(INetworkReachabilityCallbackError.NotAllowed);
                 logger.log(ILoggingLogLevel.Error, LOG_TAG, "Connection: Failure ! IOException");
             }
         }
         logger.log(ILoggingLogLevel.Error, LOG_TAG, "Connection: Failure !");
-        //return false;
-
-    }
-
-    private boolean isNetworkAvailable() {
-
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-
-
-    }
-
-    public boolean NetworkAvailable() {
-        ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
-                || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING) {
-
-            // notify user you are online
-            //ServiceLocator.getLogger().log(ILogging.LogLevel.DEBUG, LOG_TAG, "NETWORK AVAILABLE");
-            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "NETWORK AVAILABLE");
-            return true;
-        } else if (conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
-                || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
-
-            // notify user you are not online
-            //ServiceLocator.getLogger().log(ILogging.LogLevel.DEBUG, LOG_TAG, "NETWORK IS NOT AVAILABLE");
-            logger.log(ILoggingLogLevel.Debug, LOG_TAG, "NETWORK IS NOT AVAILABLE");
-            return false;
-        }
-        return false;
     }
 }
 /**

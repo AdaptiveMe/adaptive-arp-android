@@ -49,10 +49,9 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
 
     // logger
     private static final String LOG_TAG = "DeviceDelegate";
-    private ILogging logger;
-
     //listeners
     private static List<INetworkStatusListener> listeners;
+    private ILogging logger;
 
     /**
      * Default Constructor.
@@ -60,19 +59,33 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
     public NetworkStatusReceiver() {
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
-        listeners = ((NetworkStatusDelegate) AppRegistryBridge.getInstance().getNetworkStatusBridge().getDelegate()).getListeners();
+        //listeners = ((NetworkStatusDelegate) AppRegistryBridge.getInstance().getNetworkStatusBridge().getDelegate()).getListeners();
     }
 
+    /**
+     * This method is called when the BroadcastReceiver is receiving an Intent
+     * broadcast.
+     *
+     * @param context The Context in which the receiver is running.
+     * @param intent  The Intent being received.
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if(listeners.isEmpty()) return;
-        ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        // Pork solution for passing the tests. Robolectric instantiates every class in the
+        // manifest and we can't call a delegate on a constructor
+        if (listeners == null){
+            listeners = ((NetworkStatusDelegate) AppRegistryBridge.getInstance().getNetworkStatusBridge().getDelegate()).getListeners();
+        }
+
+        if (listeners.isEmpty()) return;
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         ICapabilitiesNet NetworkType = ICapabilitiesNet.Unavailable;
+
         if (isConnected)
             switch (activeNetwork.getType()) {
                 case ConnectivityManager.TYPE_WIMAX:
@@ -115,6 +128,7 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
             }
 
         final NetworkEvent networkEvent = new NetworkEvent(NetworkType, System.currentTimeMillis());
+
         for (INetworkStatusListener listener : listeners) {
             listener.onResult(networkEvent);
         }

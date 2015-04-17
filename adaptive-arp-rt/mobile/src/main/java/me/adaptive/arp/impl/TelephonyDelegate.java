@@ -66,6 +66,7 @@ public class TelephonyDelegate extends BaseCommunicationDelegate implements ITel
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
+
     }
 
     /**

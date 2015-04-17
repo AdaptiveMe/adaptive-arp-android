@@ -120,10 +120,9 @@ public class FileSystemDelegate extends BaseDataDelegate implements IFileSystem 
      * @since ARP1.0
      */
     public FileDescriptor getApplicationCloudFolder() {
-        FileDescriptor response;
+
         // TODO: Not implemented.
-        throw new UnsupportedOperationException(this.getClass().getName() + ":getApplicationCloudFolder");
-        // return response;
+        return null;
     }
 
     /**
@@ -209,7 +208,7 @@ public class FileSystemDelegate extends BaseDataDelegate implements IFileSystem 
      * @since ARP1.0
      */
     public FileDescriptor getSystemExternalFolder() {
-        FileDescriptor response = null;
+        FileDescriptor response;
         if(Utils.isExternalStorageReadable())
             response = Utils.toArp(context.getExternalFilesDir(null));
         else response = new FileDescriptor();

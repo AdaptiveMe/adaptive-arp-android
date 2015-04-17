@@ -48,7 +48,7 @@ import me.adaptive.arp.api.IOSType;
  */
 public class AppContextDelegate implements IAppContext {
 
-    // MAin activity of the application
+    // Main activity of the application
     private Activity activity;
 
     // Executor service of the application
@@ -113,15 +113,6 @@ public class AppContextDelegate implements IAppContext {
      */
     public Activity getActivity() {
         return activity;
-    }
-
-    /**
-     * Set the Main activity
-     *
-     * @param activity Main activity
-     */
-    public void setActivity(Activity activity) {
-        this.activity = activity;
     }
 }
 /**

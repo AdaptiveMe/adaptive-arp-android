@@ -252,7 +252,6 @@ public class DeviceDelegate extends BaseSystemDelegate implements IDevice {
             listener.onResult(new Button(button, new Date().getTime()));
         }
     }
-
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

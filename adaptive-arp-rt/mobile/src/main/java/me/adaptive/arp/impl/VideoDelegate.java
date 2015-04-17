@@ -66,7 +66,6 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
         context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
     }
 
-
     /**
      * Play url video stream
      *
@@ -83,9 +82,6 @@ public class VideoDelegate extends BaseMediaDelegate implements IVideo {
         } catch (Exception ex) {
             logger.log(ILoggingLogLevel.Error, LOG_TAG, "openInternalBrowser Error: " + ex.getLocalizedMessage());
         }
-
-
-
     }
 }
 /**

@@ -36,21 +36,18 @@ package me.adaptive.arp.impl;
 
 import android.content.Context;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import me.adaptive.arp.api.Acceleration;
 import me.adaptive.arp.api.AppRegistryBridge;
 import me.adaptive.arp.api.BaseSensorDelegate;
 import me.adaptive.arp.api.IAcceleration;
 import me.adaptive.arp.api.IAccelerationListener;
 import me.adaptive.arp.api.ILogging;
 import me.adaptive.arp.api.ILoggingLogLevel;
+import me.adaptive.arp.util.SensorEventListenerImpl;
 
 /**
  * Interface defining methods about the acceleration sensor
@@ -58,98 +55,30 @@ import me.adaptive.arp.api.ILoggingLogLevel;
  */
 public class AccelerationDelegate extends BaseSensorDelegate implements IAcceleration {
 
-
-
     // logger
-    private ILogging logger;
     private static final String LOG_TAG = "AccelerationDelegate";
+    private ILogging logger;
 
     // Listeners
     private List<IAccelerationListener> listeners;
 
+    // Sensor Listener
+    private SensorEventListenerImpl sensorListener;
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
-
-    static final float ALPHA = 0.15f;
-    protected float[] gravSensorVals;
-    private float[] grav = new float[3];
-    private float[] geomagnetic = new float[3];
-    private float[] orientation = new float[3];
-    private float[] rotation = new float[9];
-    private float[] linear_acceleration = new float[3];
-    private SensorEventListener sensorListener = new SensorEventListener() {
-
-        @Override
-        public void onSensorChanged(SensorEvent evt) {
-            if (evt.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                if (evt.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                    gravSensorVals = lowPass(evt.values.clone(), gravSensorVals);
-                    grav[0] = gravSensorVals[0];
-                    grav[1] = gravSensorVals[1];
-                    grav[2] = gravSensorVals[2];
-
-                }
-                if (gravSensorVals != null) {
-                    // updating the rotation array
-                    SensorManager.getRotationMatrix(rotation, null, grav,
-                            geomagnetic);
-                    // updating the orientation array
-                    SensorManager.getOrientation(rotation, orientation);
-                    /*
-                    //azimuth -- Z
-                    euler_acceleration[0] = (float)(((gravSensorVals[0]*180)/Math.PI)+180);
-                    //pitch -- X
-                    euler_acceleration[1] = (float)(((gravSensorVals[1]*180/Math.PI))+90);
-                    //roll -- Y
-                    euler_acceleration[2] = (float)(((gravSensorVals[2]*180/Math.PI)));
-                    */
-                    linear_acceleration[0] = gravSensorVals[0] - grav[0];
-                    linear_acceleration[1] = gravSensorVals[1] - grav[1];
-                    linear_acceleration[2] = gravSensorVals[2] - grav[2];
-                    Acceleration acc = new Acceleration(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], new Date().getTime());
-
-                    if (!listeners.isEmpty()) {
-                        for (IAccelerationListener accListener : listeners) {
-                            accListener.onResult(acc);
-                        }
-                    }
-                }
-
-            }
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor arg0, int arg1) {
-            // has nothing to do
-        }
-    };
-    private float[] euler_acceleration = new float[3];
-    private boolean searching = false;
 
     /**
      * Default Constructor.
      */
     public AccelerationDelegate() {
+
         super();
-
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
-        mSensorManager = (SensorManager) ((Context)AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager = (SensorManager) ((Context) AppRegistryBridge.getInstance().getPlatformContext().getContext()).getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        listeners = new ArrayList<IAccelerationListener>();
-    }
-
-    /**
-     * listen to sensor (ACCELEROMETER, MAGNETIC FIELD) changes
-     */
-
-    protected float[] lowPass(float[] input, float[] output) {
-        if (output == null) return input;
-
-        for (int i = 0; i < input.length; i++) {
-            output[i] = output[i] + ALPHA * (input[i] - output[i]);
-        }
-        return output;
+        listeners = new ArrayList<>();
+        sensorListener = new SensorEventListenerImpl();
     }
 
     /**
@@ -159,14 +88,15 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
      * @since ARP1.0
      */
     public void addAccelerationListener(IAccelerationListener listener) {
+
         if (!listeners.contains(listener)) {
             listeners.add(listener);
             logger.log(ILoggingLogLevel.Debug, LOG_TAG, "addAccelerationListener: " + listener.toString() + " Added!");
         } else
             logger.log(ILoggingLogLevel.Warn, LOG_TAG, "addAccelerationListener: " + listener.toString() + " is already added!");
+
         if (!listeners.isEmpty()) {
-            mSensorManager.registerListener(sensorListener, mSensor,
-                    SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(sensorListener, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
@@ -177,11 +107,13 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
      * @since ARP1.0
      */
     public void removeAccelerationListener(IAccelerationListener listener) {
+
         if (listeners.contains(listener)) {
             listeners.remove(listener);
             logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeAccelerationListener" + listener.toString() + " Removed!");
         } else
             logger.log(ILoggingLogLevel.Warn, LOG_TAG, "removeAccelerationListener: " + listener.toString() + " is NOT registered");
+
         if (listeners.isEmpty()) mSensorManager.unregisterListener(sensorListener);
     }
 
@@ -191,12 +123,20 @@ public class AccelerationDelegate extends BaseSensorDelegate implements IAcceler
      * @since ARP1.0
      */
     public void removeAccelerationListeners() {
+
         listeners.clear();
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "removeAccelerationListeners: ALL AccelerationListeners have been removed!");
         mSensorManager.unregisterListener(sensorListener);
     }
 
-
+    /**
+     * Getter for the listeners array
+     *
+     * @return Array of listeners
+     */
+    public List<IAccelerationListener> getListeners() {
+        return listeners;
+    }
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

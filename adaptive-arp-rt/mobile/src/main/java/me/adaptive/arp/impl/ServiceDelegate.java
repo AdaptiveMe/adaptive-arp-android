@@ -34,17 +34,11 @@
 
 package me.adaptive.arp.impl;
 
-import android.content.Context;
-
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
@@ -87,18 +81,11 @@ import me.adaptive.arp.common.parser.xml.XmlParser;
  */
 public class ServiceDelegate extends BaseCommunicationDelegate implements IService {
 
- // logger
+    // logger
     private static final String LOG_TAG = "ServiceDelegate";
     private ILogging logger;
 
-
-    private HttpClient httpClient = null;
-    private CookieStore httpCookieStore = new BasicCookieStore();
-
-
-    // Context
-    private Context context;
-
+    // List of service sessions
     private Map<String, Session> serviceSession;
 
 
@@ -108,10 +95,8 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     public ServiceDelegate() {
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
-        context = (Context) AppRegistryBridge.getInstance().getPlatformContext().getContext();
-        serviceSession = new HashMap<String, Session>();
+        serviceSession = new HashMap<>();
     }
-
 
     /**
      * Obtains a Service token by a concrete uri (http://domain.com/path). This method would be useful when
@@ -126,21 +111,21 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     @Override
     public ServiceToken getServiceTokenByUri(String uri) {
 
-        URL url = null;
-        if(!Utils.validateURI(uri, "^https?://.*")) return null;
+        URL url;
+        if (!Utils.validateURI(uri, "^https?://.*")) return null;
         try {
             url = new URL(uri);
         } catch (MalformedURLException e) {
-            logger.log(ILoggingLogLevel.Error,LOG_TAG,"uri Error: "+e.getLocalizedMessage());
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "uri Error: " + e.getLocalizedMessage());
             return null;
         }
-        for(Service ser: XmlParser.getInstance().getServices().values())
-            for(ServiceEndpoint endpoint: ser.getServiceEndpoints())
-                if(!url.getProtocol().concat("://").concat(url.getHost()).equals(endpoint.getHostURI()))
+        for (Service ser : XmlParser.getInstance().getServices().values())
+            for (ServiceEndpoint endpoint : ser.getServiceEndpoints())
+                if (!url.getProtocol().concat("://").concat(url.getHost()).equals(endpoint.getHostURI()))
                     continue;
                 else
-                    for(ServicePath path: endpoint.getPaths())
-                        if(!url.getPath().equals(path.getPath()))
+                    for (ServicePath path : endpoint.getPaths())
+                        if (!url.getPath().equals(path.getPath()))
                             continue;
                         else
                             return new ServiceToken(ser.getName(), endpoint.getHostURI(), path.getPath(), path.getMethods()[0]);
@@ -161,29 +146,25 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     @Override
     public ServiceRequest getServiceRequest(ServiceToken serviceToken) {
 
-        if(!isServiceRegistered(serviceToken)){
+        if (!isServiceRegistered(serviceToken)) {
             return null;
         }
-        ServiceRequest request = new ServiceRequest(null,serviceToken);
+        ServiceRequest request = new ServiceRequest(null, serviceToken);
         request.setContentEncoding(IServiceContentEncoding.Utf8);
         request.setServiceToken(serviceToken);
         AppContextWebviewDelegate webViewDelegate = (AppContextWebviewDelegate) AppRegistryBridge.getInstance().getPlatformContextWeb().getDelegate();
         request.setUserAgent(webViewDelegate.getUserAgent());
         request.setContentType(String.valueOf(XmlParser.getInstance().getContentType(serviceToken)));
 
-        if(serviceSession.containsKey(serviceToken.getEndpointName())){
+        if (serviceSession.containsKey(serviceToken.getEndpointName())) {
             Session session = serviceSession.get(serviceToken.getEndpointName());
             request.setServiceHeaders(session.headers);
-            request.setServiceSession(new ServiceSession(session.cookies,session.attribs));
+            request.setServiceSession(new ServiceSession(session.cookies, session.attributes));
             request.setUserAgent(session.userAgent);
         }
 
         return request;
-
-
     }
-
-
 
     /**
      * Obtains a ServiceToken for the given parameters to be used for the creation of requests.
@@ -199,15 +180,15 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     @Override
     public ServiceToken getServiceToken(String serviceName, String endpointName, String functionName, IServiceMethod method) {
 
-        if(XmlParser.getInstance().getServices().containsKey(serviceName)){
+        if (XmlParser.getInstance().getServices().containsKey(serviceName)) {
             Service serv = XmlParser.getInstance().getServices().get(serviceName);
-            for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
-                if(endpoint.getHostURI().equals(endpointName)){
-                    for(ServicePath path: endpoint.getPaths()){
-                        if(path.equals(functionName)){
-                            for(IServiceMethod serviceMethod: path.getMethods()){
-                                if(serviceMethod.equals(method)){
-                                    return new ServiceToken(serviceName,endpoint.getHostURI(),path.getPath(),serviceMethod);
+            for (ServiceEndpoint endpoint : serv.getServiceEndpoints()) {
+                if (endpoint.getHostURI().equals(endpointName)) {
+                    for (ServicePath path : endpoint.getPaths()) {
+                        if (path.equals(functionName)) {
+                            for (IServiceMethod serviceMethod : path.getMethods()) {
+                                if (serviceMethod.equals(method)) {
+                                    return new ServiceToken(serviceName, endpoint.getHostURI(), path.getPath(), serviceMethod);
                                 }
                             }
                         }
@@ -228,11 +209,11 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     public ServiceToken[] getServicesRegistered() {
 
         List<ServiceToken> tokens = new ArrayList<>();
-        for(Service serv: XmlParser.getInstance().getServices().values()){
-            for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
-                for(ServicePath path:endpoint.getPaths()){
-                    for(IServiceMethod method: path.getMethods()){
-                        tokens.add(new ServiceToken(serv.getName(),endpoint.getHostURI(),path.getPath(),method));
+        for (Service serv : XmlParser.getInstance().getServices().values()) {
+            for (ServiceEndpoint endpoint : serv.getServiceEndpoints()) {
+                for (ServicePath path : endpoint.getPaths()) {
+                    for (IServiceMethod method : path.getMethods()) {
+                        tokens.add(new ServiceToken(serv.getName(), endpoint.getHostURI(), path.getPath(), method));
                     }
                 }
             }
@@ -249,27 +230,27 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      */
     @Override
     public void invokeService(ServiceRequest serviceRequest, IServiceResultCallback callback) {
-        if(!Utils.validateService(serviceRequest.getServiceToken())){
+
+        if (!Utils.validateService(serviceRequest.getServiceToken())) {
             callback.onError(IServiceResultCallbackError.NotRegisteredService);
             return;
         }
 
-        httpClient = new DefaultHttpClient();
+        HttpClient httpClient = new DefaultHttpClient();
 
         ServiceResponse serviceResponse = new ServiceResponse();
         HttpResponse response = null;
         String url = null;
         try {
-            url = getURL(serviceRequest);
-            switch(serviceRequest.getServiceToken().getInvocationMethod()){
+
+            switch (serviceRequest.getServiceToken().getInvocationMethod()) {
                 case Get:
+                    url = getURL(serviceRequest);
                     response = httpClient.execute(new HttpGet(url));
                     break;
                 case Post:
-                    response = httpClient.execute(new HttpPost(url));
                     break;
                 case Head:
-                    response = httpClient.execute(new HttpHead(url));
                     break;
                 default:
             }
@@ -278,139 +259,137 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
 
             int status = statusLine.getStatusCode();
 
-            if (isBetween(status, 200,406)||isBetween(status,500,599)) {
+            if (isBetween(status, 200, 406) || isBetween(status, 500, 599)) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 response.getEntity().writeTo(out);
 
                 String responseString = out.toString();
                 out.close();
 
-                //..more logic
-                //TODO PREPARE Session
+                // TODO: Prepare the session attributes
                 serviceResponse.setContentType(EntityUtils.getContentCharSet(response.getEntity()));
                 serviceResponse.setContentEncoding(IServiceContentEncoding.Utf8);
                 serviceResponse.setContent(responseString);
                 serviceResponse.setContentLength(responseString.length());
                 serviceResponse.setServiceHeaders(getHeaders(response.getAllHeaders()));
                 serviceResponse.setStatusCode(status);
-                if(!url.startsWith("https://")){
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Not Secured URL (https): "+url);
+                if (!url.startsWith("https://")) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Not Secured URL (https): " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.NotSecure);
                     return;
                 }
 
-                if (isBetween(status, 200,299)) {
+                if (isBetween(status, 200, 299)) {
 
                     callback.onResult(serviceResponse);
                     return;
-                }else if (isBetween(status, 300,399)) {
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Redirected Response");
+                } else if (isBetween(status, 300, 399)) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Redirected Response");
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.Redirected);
                     return;
-                }else if (status == 400) {
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Wrong params: "+url);
+                } else if (status == 400) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Wrong params: " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.WrongParams);
                     return;
-                }else if (status == 401) {
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Not authenticaded: "+url);
+                } else if (status == 401) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Not authenticaded: " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.NotAuthenticated);
                     return;
-                }else if (status == 402) {
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Payment Required: "+url);
+                } else if (status == 402) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Payment Required: " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.PaymentRequired);
                     return;
-                }else if (status == 403) {
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Forbidden: "+url);
+                } else if (status == 403) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Forbidden: " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.Forbidden);
                     return;
-                }else if (status == 404) {
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"NotFound: "+url);
+                } else if (status == 404) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "NotFound: " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.NotFound);
                     return;
-                }else if (status == 405) {
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Method not allowed: "+url);
+                } else if (status == 405) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Method not allowed: " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.MethodNotAllowed);
                     return;
-                }else if (status == 406) {
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Not allowed: "+url);
+                } else if (status == 406) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Not allowed: " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.NotAllowed);
                     return;
-                }if (isBetween(status, 500,599)) {
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"Server error: "+url);
+                }
+                if (isBetween(status, 500, 599)) {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Server error: " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.ServerError);
                     return;
-                }else{
-                    logger.log(ILoggingLogLevel.Warn,LOG_TAG,"The status code received ["+status+"] is not handled by the platform");
+                } else {
+                    logger.log(ILoggingLogLevel.Warn, LOG_TAG, "The status code received [" + status + "] is not handled by the platform");
                     callback.onError(IServiceResultCallbackError.Unreachable);
                     return;
                 }
 
 
             } else if (status == 408) {
-                logger.log(ILoggingLogLevel.Error,LOG_TAG,"There is a timeout calling the service: "+url);
+                logger.log(ILoggingLogLevel.Error, LOG_TAG, "There is a timeout calling the service: " + url);
                 callback.onError(IServiceResultCallbackError.TimeOut);
                 return;
-            }else if (status == 444) {
-                logger.log(ILoggingLogLevel.Error,LOG_TAG, "There is no response calling the service: "+url);
+            } else if (status == 444) {
+                logger.log(ILoggingLogLevel.Error, LOG_TAG, "There is no response calling the service: " + url);
                 callback.onError(IServiceResultCallbackError.NoResponse);
                 return;
-            }else {
-                logger.log(ILoggingLogLevel.Error,LOG_TAG,"The status code received ["+status+"] is not handled by the platform");
+            } else {
+                logger.log(ILoggingLogLevel.Error, LOG_TAG, "The status code received [" + status + "] is not handled by the platform");
                 callback.onError(IServiceResultCallbackError.Unknown);
                 return;
 
             }
 
-        } catch (IOException e){
-            logger.log(ILoggingLogLevel.Error,LOG_TAG, "invokeService Error: "+e.getLocalizedMessage());
+        } catch (IOException e) {
+            logger.log(ILoggingLogLevel.Error, LOG_TAG, "invokeService Error: " + e.getLocalizedMessage());
             assert response != null;
             try {
                 response.getEntity().getContent().close();
             } catch (IOException e1) {
-                logger.log(ILoggingLogLevel.Error,LOG_TAG, "Error closing the response: "+e1.getLocalizedMessage());
+                logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error closing the response: " + e1.getLocalizedMessage());
             }
         }
 
-        logger.log(ILoggingLogLevel.Error,LOG_TAG,"The status code received is not handled by the platform");
+        logger.log(ILoggingLogLevel.Error, LOG_TAG, "The status code received is not handled by the platform");
         callback.onError(IServiceResultCallbackError.Unreachable);
-
 
 
     }
 
     /**
      * Get ServiceHeader[] from Header[]
+     *
      * @param headers array
      * @return serviceHeader array
      */
-    private ServiceHeader[] getHeaders(Header[] headers){
+    private ServiceHeader[] getHeaders(Header[] headers) {
         ServiceHeader[] serviceHeaders = new ServiceHeader[0];
 
         for (Header header : headers) {
-            ServiceHeader serviceHeader = new ServiceHeader(header.getName(),header.getValue());
-            serviceHeaders = Utils.addElement(serviceHeaders,serviceHeader);
+            ServiceHeader serviceHeader = new ServiceHeader(header.getName(), header.getValue());
+            serviceHeaders = Utils.addElement(serviceHeaders, serviceHeader);
         }
         return serviceHeaders;
     }
 
-
     /**
      * Return the url string from a ServiceRequest
-     * @param request
+     *
+     * @param request Request object
      * @return Url string
      */
-    private String getURL(ServiceRequest request){
+    private String getURL(ServiceRequest request) {
         String urlString;
         ServiceToken token = request.getServiceToken();
         String parameters = "";
         for (ServiceRequestParameter serviceRequestParameter : request.getQueryParameters()) {
-            if(!parameters.isEmpty()) parameters += "&";
-            parameters += serviceRequestParameter.getKeyName()+"="+serviceRequestParameter.getKeyData();
+            if (!parameters.isEmpty()) parameters += "&";
+            parameters += serviceRequestParameter.getKeyName() + "=" + serviceRequestParameter.getKeyData();
         }
 
-        String content = request.getContent();
-        urlString  = token.getEndpointName()+token.getFunctionName()+(parameters.isEmpty()?"":("?"+parameters));
-
+        urlString = token.getEndpointName() + token.getFunctionName() + (parameters.isEmpty() ? "" : ("?" + parameters));
         return urlString;
     }
 
@@ -428,14 +407,14 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     @Override
     public boolean isServiceRegistered(String serviceName, String endpointName, String functionName, IServiceMethod method) {
 
-        if(XmlParser.getInstance().getServices().containsKey(serviceName)) {
+        if (XmlParser.getInstance().getServices().containsKey(serviceName)) {
             Service serv = XmlParser.getInstance().getServices().get(serviceName);
-            for(ServiceEndpoint endpoint: serv.getServiceEndpoints()){
-                if(endpoint.getHostURI().equals(endpointName)){
-                    for(ServicePath path: endpoint.getPaths()){
-                        if(path.getPath().equals(functionName)){
-                            for(IServiceMethod serviceMethod: path.getMethods()){
-                                if(serviceMethod.equals(method))
+            for (ServiceEndpoint endpoint : serv.getServiceEndpoints()) {
+                if (endpoint.getHostURI().equals(endpointName)) {
+                    for (ServicePath path : endpoint.getPaths()) {
+                        if (path.getPath().equals(functionName)) {
+                            for (IServiceMethod serviceMethod : path.getMethods()) {
+                                if (serviceMethod.equals(method))
                                     return true;
                             }
                         }
@@ -446,20 +425,35 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         return false;
     }
 
+    /**
+     * Method for testing if a service is registered
+     *
+     * @param serviceToken Service Token to test
+     * @return TRue is registered, false otherwise
+     */
     private boolean isServiceRegistered(ServiceToken serviceToken) {
-        return isServiceRegistered(serviceToken.getServiceName(),serviceToken.getEndpointName(),serviceToken.getFunctionName(),serviceToken.getInvocationMethod());
+        return isServiceRegistered(serviceToken.getServiceName(), serviceToken.getEndpointName(), serviceToken.getFunctionName(), serviceToken.getInvocationMethod());
     }
 
-    public static boolean isBetween(int x, int lower, int upper) {
+    /**
+     * Check if a number is between two numbers
+     *
+     * @param x     Number to check
+     * @param lower Lower number
+     * @param upper Upper number
+     * @return Returns true or false
+     */
+    private boolean isBetween(int x, int lower, int upper) {
         return lower <= x && x <= upper;
     }
 
-
-
+    /**
+     * Internal class to represent a session object travelling for the ARP
+     */
     private class Session {
         ServiceHeader[] headers;
         ServiceSessionCookie[] cookies;
-        ServiceSessionAttribute[] attribs;
+        ServiceSessionAttribute[] attributes;
         String userAgent;
     }
 }

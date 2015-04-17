@@ -11,7 +11,7 @@ android:
 
 script:
   - cd adaptive-arp-rt
-  - ./gradlew build
+  - ./gradlew build --info
   
 cache:
   directories:

@@ -95,6 +95,7 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
         final String js = javaScriptText;
 
         primaryView.post(new Runnable() {
+
             @Override
             public void run() {
                 primaryView.evaluateJavascript(js, null);
@@ -114,6 +115,7 @@ public class AppContextWebviewDelegate implements IAppContextWebview {
         final WebView wv = (WebView) webViewReference;
 
         wv.post(new Runnable() {
+
             @Override
             public void run() {
                 wv.evaluateJavascript(js, null);

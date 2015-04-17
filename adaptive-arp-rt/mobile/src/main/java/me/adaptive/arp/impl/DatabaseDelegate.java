@@ -36,7 +36,6 @@ package me.adaptive.arp.impl;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
@@ -64,10 +63,9 @@ import me.adaptive.arp.api.ILoggingLogLevel;
  */
 public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
 
+    private static final String LOG_TAG = "DatabaseDelegate";
     // logger
     private ILogging logger;
-    private static final String LOG_TAG = "DatabaseDelegate";
-
     // Context
     private Context context;
 
@@ -88,7 +86,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void createDatabase(Database database, IDatabaseResultCallback callback) {
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "createDatabase: dbName " + database.getName());
+
         SQLiteDatabase sqlDB = null;
         try {
 
@@ -119,8 +117,9 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void createTable(Database database, DatabaseTable databaseTable, IDatabaseTableResultCallback callback) {
+
         SQLiteDatabase sqlDB = null;
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "createTable: " + databaseTable.getName());
+
         try {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < databaseTable.getDatabaseColumns().length; i++) {
@@ -134,8 +133,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
 
             sqlDB = openDatabase(database);
             if (sqlDB != null) {
-                String sql = "CREATE TABLE IF NOT EXISTS " + databaseTable.getName() + " ("
-                        + columns + ")";
+                String sql = "CREATE TABLE IF NOT EXISTS " + databaseTable.getName() + " (" + columns + ")";
                 sqlDB.execSQL(sql);
             }
         } catch (Exception ex) {
@@ -157,16 +155,15 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void deleteDatabase(Database database, IDatabaseResultCallback callback) {
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "deleteDatabase: " + database.getName());
+
         try {
             context.deleteDatabase(database.getName());
         } catch (Exception ex) {
             logger.log(ILoggingLogLevel.Error, LOG_TAG, "deleteDatabase: Error " + ex.getLocalizedMessage());
             callback.onError(IDatabaseResultCallbackError.NotDeleted);
             return;
-        } finally {
-
         }
+
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "deleteDatabase: " + database.getName() + " Deleted!");
         callback.onResult(database);
 
@@ -181,19 +178,10 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void deleteTable(Database database, DatabaseTable databaseTable, IDatabaseTableResultCallback callback) {
-        SQLiteDatabase sqlDB = null;
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "deleteTable: Deleting Table: " + databaseTable);
-        try {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < databaseTable.getDatabaseColumns().length; i++) {
-                if (i != 0) {
-                    sb.append(",");
-                }
-                sb.append(databaseTable.getDatabaseColumns()[i]);
-            }
-            String columns = sb.toString();
-            columns = columns.replace("\"", "");
 
+        SQLiteDatabase sqlDB = null;
+
+        try {
             sqlDB = openDatabase(database);
             if (sqlDB != null) {
                 String sql = "DROP TABLE " + databaseTable.getName();
@@ -221,11 +209,11 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void executeSqlStatement(Database database, String statement, String[] replacements, IDatabaseTableResultCallback callback) {
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "executeSqlStatement: " + String.valueOf(new Object[]{database, statement,
-                replacements}));
-        String formatedStatement = null;
+
+        String formattedStatement = null;
         SQLiteDatabase sqlDB = null;
         DatabaseTable result = null;
+
         try {
             sqlDB = openDatabase(database);
             if (sqlDB != null) {
@@ -237,9 +225,9 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                     result = cursorToTable(c);
                 } else {
                     if ((replacements != null) && (replacements.length > 0)) {
-                        formatedStatement = getFormattedSQL(statement, replacements);
+                        formattedStatement = getFormattedSQL(statement, replacements);
                     }
-                    sqlDB.execSQL(formatedStatement);
+                    sqlDB.execSQL(formattedStatement);
                     result = new DatabaseTable();
 
                 }
@@ -252,7 +240,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
         } finally {
             closeDatabase(sqlDB);
         }
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "executeSqlStatement: " + formatedStatement + " executed!");
+        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "executeSqlStatement: " + formattedStatement + " executed!");
         callback.onResult(result);
 
     }
@@ -268,12 +256,10 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public void executeSqlTransactions(Database database, String[] statements, boolean rollbackFlag, IDatabaseTableResultCallback callback) {
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "executeSqlTransactions: " + String.valueOf(new Object[]{database, statements,
 
-                rollbackFlag}));
-
-        boolean result = false, rollback = false;
+        boolean rollback = false;
         SQLiteDatabase sqlDB = null;
+
         try {
             sqlDB = openDatabase(database);
             if (sqlDB != null) {
@@ -282,12 +268,9 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                     try {
                         sqlDB.execSQL(statement);
                     } catch (Exception ex) {
-                        logger.log(ILoggingLogLevel.Error, LOG_TAG, "executeSqlTransactions: " +
-                                "ExecuteSQLTransaction error executing sql statement ["
-                                + statement + "] " + ex.getLocalizedMessage());
+                        logger.log(ILoggingLogLevel.Error, LOG_TAG, "executeSqlTransactions: " + "ExecuteSQLTransaction error executing sql statement [" + statement + "] " + ex.getLocalizedMessage());
                         if (rollbackFlag) {
-                            logger.log(ILoggingLogLevel.Info, LOG_TAG, "executeSqlTransactions: " +
-                                    "Transaction rolled back");
+                            logger.log(ILoggingLogLevel.Info, LOG_TAG, "executeSqlTransactions: " + "Transaction rolled back");
                             rollback = true;
                             break;
                         }
@@ -295,7 +278,6 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
                 }
                 if (!rollback) {
                     sqlDB.setTransactionSuccessful();
-                    result = true;
                 }
             }
         } catch (Exception ex) {
@@ -309,7 +291,8 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
             closeDatabase(sqlDB);
         }
         logger.log(ILoggingLogLevel.Debug, LOG_TAG, "executeSqlTransactions: SQL Transaction finished");
-        //TODO create table?
+
+        // MARK: The table is empty
         callback.onResult(new DatabaseTable());
     }
 
@@ -321,8 +304,9 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public boolean existsDatabase(Database database) {
+
         boolean result = false;
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "existsDatabase: dbName " + database.getName());
+
         try {
             String[] databaseNames = context.databaseList();
             for (String dbName : databaseNames) {
@@ -349,12 +333,11 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @since ARP1.0
      */
     public boolean existsTable(Database database, DatabaseTable databaseTable) {
+
         boolean result = false;
-        logger.log(ILoggingLogLevel.Debug, LOG_TAG, "existsTable: dbName " + databaseTable.getName());
+
         SQLiteDatabase sqlDB = null;
         try {
-
-
             sqlDB = openDatabase(database);
             if (sqlDB != null) {
                 Cursor cursor = sqlDB.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + databaseTable.getName() + "'", null);
@@ -384,18 +367,18 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
      * @return Adaptive Database
      */
     private DatabaseTable cursorToTable(Cursor cursor) {
+
         DatabaseTable table = new DatabaseTable();
-        MatrixCursor mxcursor;
         String[] columnNames = cursor.getColumnNames();
         int colL = columnNames.length;
         table.setColumnCount(colL);
         DatabaseColumn[] columns = new DatabaseColumn[colL];
+
         int i;
         for (i = 0; i < colL; i++) {
             columns[i] = new DatabaseColumn(columnNames[i]);
         }
         table.setDatabaseColumns(columns);
-        //mxcursor = new MatrixCursor(columnNames, cursor.getCount());
         DatabaseRow[] rows = new DatabaseRow[colL];
         i = 0;
         cursor.moveToFirst();
@@ -407,7 +390,6 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
             }
             cursor.moveToNext();
             rows[i++].setValues((String[]) row);
-            //mxcursor.addRow(row);
 
         }
         table.setDatabaseRows(rows);
@@ -425,9 +407,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
     private SQLiteDatabase openDatabase(Database db) throws SQLiteException {
 
         if (db != null) {
-            return SQLiteDatabase.openDatabase(context
-                            .getDatabasePath(db.getName()).getAbsolutePath(), null,
-                    SQLiteDatabase.OPEN_READWRITE);
+            return SQLiteDatabase.openDatabase(context.getDatabasePath(db.getName()).getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
         }
 
         logger.log(ILoggingLogLevel.Error, LOG_TAG, "openDatabase: openDatabase() Given database object is null. Please, check code to provide appropiated database object.");
@@ -446,6 +426,7 @@ public class DatabaseDelegate extends BaseDataDelegate implements IDatabase {
             try {
                 sqlDB.close();
             } catch (Exception ex) {
+                logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error closing the database");
             }
         }
     }

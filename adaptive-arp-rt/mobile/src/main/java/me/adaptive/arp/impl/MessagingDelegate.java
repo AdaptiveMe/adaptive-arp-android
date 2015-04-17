@@ -80,7 +80,6 @@ public class MessagingDelegate extends BasePIMDelegate implements IMessaging {
     public void sendSMS(final String number, final String text, final IMessagingCallback callback) {
 
         try {
-
             if (PhoneNumberUtils.isWellFormedSmsAddress(number)) {
 
                 Intent intent = new Intent(Intent.ACTION_VIEW);

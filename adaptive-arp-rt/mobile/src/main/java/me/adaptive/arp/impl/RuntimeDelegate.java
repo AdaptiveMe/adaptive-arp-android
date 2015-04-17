@@ -53,7 +53,6 @@ public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
     private static final String LOG_TAG = "RuntimeDelegate";
     private ILogging logger;
 
-
     private Activity activity;
     /**
      * Default Constructor.
@@ -62,7 +61,6 @@ public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
         super();
         logger = AppRegistryBridge.getInstance().getLoggingBridge();
         activity = ((AppContextDelegate) AppRegistryBridge.getInstance().getPlatformContext().getDelegate()).getActivity();
-
     }
 
     /**
@@ -91,9 +89,6 @@ public class RuntimeDelegate extends BaseSystemDelegate implements IRuntime {
         return true;
 
     }
-
-
-
 }
 /**
  ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------

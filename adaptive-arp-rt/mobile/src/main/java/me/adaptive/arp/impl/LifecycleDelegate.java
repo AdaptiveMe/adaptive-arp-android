@@ -34,8 +34,6 @@
 
 package me.adaptive.arp.impl;
 
-import android.content.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,6 +125,7 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
 
     /**
      * Method for updating the lifecycle listeners
+     *
      * @param state State of the lifecycle
      */
     public void updateLifecycleListeners(LifecycleState state) {
@@ -137,7 +136,8 @@ public class LifecycleDelegate extends BaseApplicationDelegate implements ILifec
 
     /**
      * Method for updating the background state of the application
-     * @param isBackground
+     *
+     * @param isBackground True is application is in background, false otherwise
      */
     public void updateBackground(boolean isBackground) {
         this.isBackground = isBackground;
