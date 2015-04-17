@@ -2,10 +2,12 @@ package me.adaptive.arp.common;
 
 import android.os.Environment;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -240,4 +242,14 @@ public class Utils {
     }
 
 
+    public static String getStringFromInputStream(InputStream origin) throws IOException {
+
+        BufferedReader r = new BufferedReader(new InputStreamReader(origin));
+        StringBuilder total = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) {
+            total.append(line);
+        }
+        return total.toString();
+    }
 }
