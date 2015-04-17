@@ -3,8 +3,6 @@ package me.adaptive.arp.util;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import me.adaptive.arp.common.BuildConfig;
-
 /**
  * Utils class for webView management
  */
@@ -15,7 +13,7 @@ public class Utils {
      *
      * @param webView Webview reference
      */
-    public static void setWebViewSettings(WebView webView) {
+    public static void setWebViewSettings(WebView webView, boolean debug) {
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -32,8 +30,9 @@ public class Utils {
         webSettings.setDomStorageEnabled(true);
         webSettings.setSupportZoom(false);
         webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        if (BuildConfig.DEBUG)
-        { WebView.setWebContentsDebuggingEnabled(true); }
+        if (debug) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
 
 
     }

@@ -380,13 +380,16 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
      * @param request Request object
      * @return Url string
      */
-    private String getURL(ServiceRequest request) {
+    public String getURL(ServiceRequest request) {
         String urlString;
         ServiceToken token = request.getServiceToken();
         String parameters = "";
-        for (ServiceRequestParameter serviceRequestParameter : request.getQueryParameters()) {
-            if (!parameters.isEmpty()) parameters += "&";
-            parameters += serviceRequestParameter.getKeyName() + "=" + serviceRequestParameter.getKeyData();
+
+        if (request.getQueryParameters() != null){
+            for (ServiceRequestParameter serviceRequestParameter : request.getQueryParameters()) {
+                if (!parameters.isEmpty()) parameters += "&";
+                parameters += serviceRequestParameter.getKeyName() + "=" + serviceRequestParameter.getKeyData();
+            }
         }
 
         urlString = token.getEndpointName() + token.getFunctionName() + (parameters.isEmpty() ? "" : ("?" + parameters));
