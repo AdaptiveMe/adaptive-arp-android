@@ -34,10 +34,10 @@ dependencies {
     compile 'com.google.android.gms:play-services:6.5.87'
     compile project(':common')
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.apache.maven:maven-ant-tasks:2.1.3'
+    testCompile 'junit:junit:4.12' // Testing purposes
+    testCompile 'org.apache.maven:maven-ant-tasks:2.1.3' // Testing purposes
     // TODO: it's a RC, must change to release
-    testCompile 'org.robolectric:robolectric:3.0-rc2'
-    testCompile 'org.robolectric:shadows-httpclient:3.0-rc2'
+    testCompile 'org.robolectric:robolectric:3.0-rc2' // Testing purposes
+    testCompile 'org.robolectric:shadows-httpclient:3.0-rc2' // Testing purposes
     //testCompile 'org.mockito:mockito-all:1.10.19'
 }
