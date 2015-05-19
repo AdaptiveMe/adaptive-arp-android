@@ -1,9 +1,7 @@
-*.java.new
-
-update.bat
-
+# local files
+*.iml
 adaptive-arp-rt/.idea/
-
 adaptive-arp-rt/local.properties
 
-*.iml
+# application
+adaptive-arp-rt/mobile/src/main/assets
