@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         buildDialog();
-        splashDialog.show();
+        //splashDialog.show();
         setContentView(R.layout.activity_main);
 
         // Register Logging delegate
