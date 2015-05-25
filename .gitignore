@@ -1,5 +1,6 @@
 # local files
 *.iml
+*.java.new
 adaptive-arp-rt/.idea/
 adaptive-arp-rt/local.properties
 
