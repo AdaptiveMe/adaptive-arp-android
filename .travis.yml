@@ -11,8 +11,3 @@ android:
 script:
   - cd adaptive-arp-rt
   - ./gradlew clean assemble
-  
-cache:
-  directories:
-  - $HOME/.gradle/wrapper/
-  - $HOME/.gradle/caches/
