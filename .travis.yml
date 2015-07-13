@@ -1,13 +1,12 @@
 sudo: false
 language: android
 jdk: oraclejdk8
-env:
-  matrix:
-    - ANDROID_TARGET=android-22
 
 android:
   components:
     - build-tools-22.0.1
+    - android-22
+    - extra
 
 script:
   - cd adaptive-arp-rt
