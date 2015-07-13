@@ -10,4 +10,4 @@ android:
 
 script:
   - cd adaptive-arp-rt
-  - ./gradlew clean assemble
+  - ./gradlew build
