@@ -3,7 +3,7 @@ language: android
 jdk: oraclejdk8
 env:
   matrix:
-    - ANDROID_TARGET=android-21
+    - ANDROID_TARGET=android-22
 
 android:
   components:
@@ -11,7 +11,7 @@ android:
 
 script:
   - cd adaptive-arp-rt
-  - ./gradlew build --info
+  - ./gradlew clean assemble
   
 cache:
   directories:
