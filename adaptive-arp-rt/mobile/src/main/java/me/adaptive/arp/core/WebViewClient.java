@@ -5,10 +5,9 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
-import org.apache.http.HttpStatus;
-
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 
 import me.adaptive.arp.R;
 import me.adaptive.arp.api.APIRequest;
@@ -147,7 +146,7 @@ public class WebViewClient extends android.webkit.WebViewClient {
         WebResourceResponse response = null;
         try {
             response = new WebResourceResponse("application/javascript; charset=utf-8",
-                    "UTF-8", HttpStatus.SC_FORBIDDEN, "The service you're trying to call is not registered in the io-services config file.",
+                    "UTF-8", HttpURLConnection.HTTP_FORBIDDEN, "The service you're trying to call is not registered in the io-services config file.",
                     request.getRequestHeaders(), new ByteArrayInputStream(AppRegistryBridge.getJSONInstance().create().toJson("The service you're trying to call is not registered in the io-services config file.").getBytes("utf-8")));
         } catch (UnsupportedEncodingException e) {
             logger.log(ILoggingLogLevel.Error, LOG_TAG, "nonPermissionResponse Error:" + e.getLocalizedMessage());

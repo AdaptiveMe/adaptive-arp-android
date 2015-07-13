@@ -1,51 +1,46 @@
 /**
- --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
-
- (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
-
- Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
- License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
- -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
- WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
- permissions and limitations under the License.
-
- Original author:
-
+ * --| ADAPTIVE RUNTIME PLATFORM |----------------------------------------------------------------------------------------
+ * <p/>
+ * (C) Copyright 2013-2015 Carlos Lozano Diez t/a Adaptive.me <http://adaptive.me>.
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by appli-
+ * -cable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,  WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the  License  for the specific language governing
+ * permissions and limitations under the License.
+ * <p/>
+ * Original author:
+ * <p/>
  * Carlos Lozano Diez
- <http://github.com/carloslozano>
- <http://twitter.com/adaptivecoder>
- <mailto:carlos@adaptive.me>
-
- Contributors:
-
+ * <http://github.com/carloslozano>
+ * <http://twitter.com/adaptivecoder>
+ * <mailto:carlos@adaptive.me>
+ * <p/>
+ * Contributors:
+ * <p/>
  * Ferran Vila Conesa
- <http://github.com/fnva>
- <http://twitter.com/ferran_vila>
- <mailto:ferran.vila.conesa@gmail.com>
-
+ * <http://github.com/fnva>
+ * <http://twitter.com/ferran_vila>
+ * <mailto:ferran.vila.conesa@gmail.com>
+ * <p/>
  * See source code files for contributors.
-
- Release:
-
+ * <p/>
+ * Release:
+ *
  * @version v2.0.3
-
--------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
+ * <p/>
+ * -------------------------------------------| aut inveniam viam aut faciam |--------------------------------------------
  */
 
 package me.adaptive.arp.impl;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -121,13 +116,9 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         }
         for (Service ser : XmlParser.getInstance().getServices().values())
             for (ServiceEndpoint endpoint : ser.getServiceEndpoints())
-                if (!url.getProtocol().concat("://").concat(url.getHost()).equals(endpoint.getHostURI()))
-                    continue;
-                else
+                if (url.getProtocol().concat("://").concat(url.getHost()).equals(endpoint.getHostURI()))
                     for (ServicePath path : endpoint.getPaths())
-                        if (!url.getPath().equals(path.getPath()))
-                            continue;
-                        else
+                        if (url.getPath().equals(path.getPath()))
                             return new ServiceToken(ser.getName(), endpoint.getHostURI(), path.getPath(), path.getMethods()[0]);
 
         return null;
@@ -185,7 +176,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
             for (ServiceEndpoint endpoint : serv.getServiceEndpoints()) {
                 if (endpoint.getHostURI().equals(endpointName)) {
                     for (ServicePath path : endpoint.getPaths()) {
-                        if (path.equals(functionName)) {
+                        if (path.getPath().equals(functionName)) {
                             for (IServiceMethod serviceMethod : path.getMethods()) {
                                 if (serviceMethod.equals(method)) {
                                     return new ServiceToken(serviceName, endpoint.getHostURI(), path.getPath(), serviceMethod);
@@ -236,14 +227,17 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
             return;
         }
 
-        HttpClient httpClient = new DefaultHttpClient();
+        //HttpClient httpClient = new DefaultHttpClient();
 
         ServiceResponse serviceResponse = new ServiceResponse();
-        HttpResponse response = null;
-        String url = null;
+        //HttpResponse response = null;
+        //String url = null;
         try {
 
-            switch (serviceRequest.getServiceToken().getInvocationMethod()) {
+            URL url = new URL(getURL(serviceRequest));
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            /*switch (serviceRequest.getServiceToken().getInvocationMethod()) {
                 case Get:
                     url = getURL(serviceRequest);
                     response = httpClient.execute(new HttpGet(url));
@@ -253,27 +247,41 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
                 case Head:
                     break;
                 default:
-            }
+            }*/
 
-            StatusLine statusLine = response.getStatusLine();
+            //StatusLine statusLine = response.getStatusLine();
 
-            int status = statusLine.getStatusCode();
+            //int status = statusLine.getStatusCode();
+
+            int status = connection.getResponseCode();
 
             if (isBetween(status, 200, 406) || isBetween(status, 500, 599)) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                /*ByteArrayOutputStream out = new ByteArrayOutputStream();
                 response.getEntity().writeTo(out);
 
                 String responseString = out.toString();
-                out.close();
+                out.close();*/
+
+                String responseString;
+
+                try {
+                    InputStream in = new BufferedInputStream(connection.getInputStream());
+                    responseString = Utils.getStringFromInputStream(in);
+                } finally {
+                    connection.disconnect();
+                }
 
                 // TODO: Prepare the session attributes
-                serviceResponse.setContentType(EntityUtils.getContentCharSet(response.getEntity()));
+                //serviceResponse.setContentType(EntityUtils.getContentCharSet(response.getEntity()));
+                serviceResponse.setContentType(connection.getContentType());
                 serviceResponse.setContentEncoding(IServiceContentEncoding.Utf8);
                 serviceResponse.setContent(responseString);
                 serviceResponse.setContentLength(responseString.length());
-                serviceResponse.setServiceHeaders(getHeaders(response.getAllHeaders()));
+                //serviceResponse.setServiceHeaders(getHeaders(response.getAllHeaders()));
+                serviceResponse.setServiceHeaders(getHeaders(connection));
+
                 serviceResponse.setStatusCode(status);
-                if (!url.startsWith("https://")) {
+                if (!url.getProtocol().startsWith("https://")) {
                     logger.log(ILoggingLogLevel.Warn, LOG_TAG, "Not Secured URL (https): " + url);
                     callback.onWarning(serviceResponse, IServiceResultCallbackWarning.NotSecure);
                     return;
@@ -344,12 +352,12 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
 
         } catch (IOException e) {
             logger.log(ILoggingLogLevel.Error, LOG_TAG, "invokeService Error: " + e.getLocalizedMessage());
-            assert response != null;
+            /*assert response != null;
             try {
                 response.getEntity().getContent().close();
             } catch (IOException e1) {
                 logger.log(ILoggingLogLevel.Error, LOG_TAG, "Error closing the response: " + e1.getLocalizedMessage());
-            }
+            }*/
         }
 
         logger.log(ILoggingLogLevel.Error, LOG_TAG, "The status code received is not handled by the platform");
@@ -361,14 +369,17 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     /**
      * Get ServiceHeader[] from Header[]
      *
-     * @param headers array
+     * @param connection URLConnection
      * @return serviceHeader array
      */
-    private ServiceHeader[] getHeaders(Header[] headers) {
+    private ServiceHeader[] getHeaders(URLConnection connection) {
         ServiceHeader[] serviceHeaders = new ServiceHeader[0];
 
-        for (Header header : headers) {
-            ServiceHeader serviceHeader = new ServiceHeader(header.getName(), header.getValue());
+        Map<String, List<String>> map = connection.getHeaderFields();
+
+        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+
+            ServiceHeader serviceHeader = new ServiceHeader(entry.getKey(), entry.getValue().get(0));
             serviceHeaders = Utils.addElement(serviceHeaders, serviceHeader);
         }
         return serviceHeaders;
@@ -385,7 +396,7 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
         ServiceToken token = request.getServiceToken();
         String parameters = "";
 
-        if (request.getQueryParameters() != null){
+        if (request.getQueryParameters() != null) {
             for (ServiceRequestParameter serviceRequestParameter : request.getQueryParameters()) {
                 if (!parameters.isEmpty()) parameters += "&";
                 parameters += serviceRequestParameter.getKeyName() + "=" + serviceRequestParameter.getKeyData();
@@ -461,5 +472,5 @@ public class ServiceDelegate extends BaseCommunicationDelegate implements IServi
     }
 }
 /**
- ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
+ * ------------------------------------| Engineered with ♥ in Barcelona, Catalonia |--------------------------------------
  */
