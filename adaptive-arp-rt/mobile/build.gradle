@@ -1,14 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.robolectric'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
 android {
+
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
 
@@ -17,27 +14,43 @@ android {
         minSdkVersion 21
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "##APP_VERSION##"
     }
     buildTypes {
+        all {
+            resValue "string", "app_name", "##APP_NAME##"
+            resValue "string", "arp_url", "https://adaptiveapp/"
+            resValue "string", "arp_page", "index.html"
+            resValue "string", "splash_description", "SplashScreen"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+        }
+    }
+
+}
+
+// Copy and rename output apk
+android.applicationVariants.all { variant ->
+    variant.assemble.doLast {
+        variant.outputs.each { output ->
+            copy {
+                from "$output.outputFile"
+                into "$rootProject.projectDir/out"
+                rename ("$output.outputFile.name", "##APP_NAME##-##APP_VERSION##-$output.outputFile.name")
+            }
+        }
     }
 }
 
-apply plugin: 'org.robolectric'
+clean.doLast {
+    project.delete "$rootProject.projectDir/out"
+}
 
 dependencies {
-    //wearApp project(':wear')
     compile 'com.google.android.gms:play-services:7.5.0'
     compile project(':common')
-
-    //testCompile 'junit:junit:4.12' // Testing purposes
-    //testCompile 'org.apache.maven:maven-ant-tasks:2.1.3' // Testing purposes
-
-    // TODO: it's a RC, must change to release
-    //testCompile 'org.robolectric:robolectric:3.0-rc3' // Testing purposes
-    //testCompile 'org.robolectric:shadows-httpclient:3.0-rc3' // Testing purposes
 }

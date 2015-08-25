@@ -6,3 +6,4 @@ adaptive-arp-rt/local.properties
 
 # application
 adaptive-arp-rt/mobile/src/main/assets
+adaptive-arp-rt/out
