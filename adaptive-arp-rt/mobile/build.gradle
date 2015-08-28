@@ -10,7 +10,7 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "me.adaptive.arp"
+        applicationId "me.adaptive.replace"
         minSdkVersion 21
         targetSdkVersion 22
         versionCode 1
